@@ -1,0 +1,99 @@
+name: com.tara_driver_application
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  flutter_bloc: ^8.1.6
+  easy_localization: ^3.0.0
+  get_it: ^7.7.0
+  dartz: ^0.10.1
+  http: ^1.2.2
+  flutter_svg: ^2.0.10+1
+  flutter_switch: ^0.3.2
+  dotted_line: ^3.2.2
+  geolocator: ^10.1.0
+  geocoding: ^3.0.0
+  location: ^6.0.1
+  google_maps_flutter: ^2.6.1
+  flutter_local_notifications: ^17.2.3
+  vibration: ^2.0.1
+  logger: ^2.4.0
+  pinput: ^5.0.0
+  firebase_auth: ^5.3.1
+  firebase_core: ^3.6.0
+  smart_auth: ^2.0.0
+  dotted_border: ^2.1.0
+  dropdown_button2: ^2.3.9
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+  dio: ^5.7.0
+  pretty_dio_logger: ^1.4.0
+  socket_io_client: ^3.0.0
+  device_info_plus: ^11.0.0
+  shared_preferences: ^2.3.2
+  meta: ^1.15.0
+  flutter_polyline_points: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^3.0.0
+
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - assets/marker/
+    - assets/marker/car_marker.png
+    - assets/image/country/
+    # - assets/image/png/
+    - assets/icon/svg/
+    - assets/icon/png/
+    - assets/nav_icon/
+    - assets/translations/km.json
+    - assets/translations/en.json
+    - assets/translations/
+    - assets/sounds/booking_sound.wav
+
+
+  fonts:
+    - family: KantumruyPro
+      fonts:
+        - asset: fonts/KantumruyPro-VariableFont_wght.ttf
+    - family: KantumruyPro-SemiBold
+      fonts:
+        - asset: fonts/KantumruyPro-SemiBold.ttf
+    - family: KantumruyPro-Regular
+      fonts:
+        - asset: fonts/KantumruyPro-Regular.ttf
+
