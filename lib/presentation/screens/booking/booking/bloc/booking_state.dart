@@ -14,3 +14,13 @@ class ConfirmBookingFail extends BookingState {}
 class CancelBookingSuccess extends BookingState {}
 
 class CancelBookingFail extends BookingState {}
+
+// Start Trip
+
+class StartTripSuccess extends BookingState {}
+
+class StartTripFail extends BookingState {}
+
+// Complete Trip
+class CompletedTripSuccess extends BookingState{}
+class CompletedTripFail extends BookingState{}

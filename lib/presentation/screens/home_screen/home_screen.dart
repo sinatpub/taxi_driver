@@ -555,8 +555,10 @@
 import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
+// import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -584,6 +586,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final Location location = Location();
   GoogleMapController? mapController;
   final DriverSocketService driverSocketService = DriverSocketService();
+  SetDriverStatusApi statusApi = SetDriverStatusApi();
 
   bool isCameraInitialized = false;
 
@@ -591,7 +594,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     initialize();
-
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -602,22 +604,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  void initialize() async {
-    await Taxi.shared.init();
+  checkDriverStatus() async {
+    try {
+      var response = await statusApi.getStatusDriver();
+      setState(() {
+        switchButton = response.data?.isAvailable == 1;
+      });
+    } catch (e) {
+      tlog("Error $e");
+    }
+  }
 
+  void initialize() async {
+    await checkDriverStatus();
+    await Taxi.shared.init();
     driverSocketService.connectToSocket(
         AppConstant.socketBasedUrl, Taxi.shared.driverId.toString(), "Driver",
         context: context);
     currentLocation = Taxi.shared.driverLocation;
-    savedLocation = await StorageGet.getSavedLocation();
+    // savedLocation = await StorageGet.getSavedLocation();
 
-    if (savedLocation != null) {
-      currentLocation = LocationData.fromMap({
-        'latitude': savedLocation?.latitude,
-        'longitude': savedLocation?.longitude,
-      });
-    }
-    
+    // if (savedLocation != null) {
+    //   currentLocation = LocationData.fromMap({
+    //     'latitude': savedLocation?.latitude,
+    //     'longitude': savedLocation?.longitude,
+    //   });
+    // }
+
     if (currentLocation != null) {
       _updateMarkerPosition();
       // Save the current location to shared preferences
@@ -637,30 +650,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _updateMarkerPosition() async {
-    _markers.removeWhere(
-      (marker) => marker.markerId == const MarkerId("driverMarker"),
-    );
-    _markers.add(Taxi.shared.driverMarker!);
-
-    setState(() {});
+    setState(() {
+      _markers.removeWhere(
+        (marker) => marker.markerId == const MarkerId("driverMarker"),
+      );
+      _markers.add(Taxi.shared.driverMarker!);
+    });
   }
 
   void navigateBooking() {
-    driverSocketService
-        .showNewRideAlert({"passengerId": "1234", "booking_code": "123"});
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BookingScreen(
-          bookingId: "123",
-          lat: 11.622195850500255,
-          lng: 104.90432260877373,
-          // desLat: data["destination"]['latitude'],
-          // desLng: data["destination"]['longitude'],
-          passengerId: "12",
-        ),
-      ),
-    );
+    // driverSocketService
+    //     .showNewRideAlert({"passengerId": "1234", "booking_code": "123"});
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => BookingScreen(
+    //       bookingId: "123",
+    //       lat: 11.622195850500255,
+    //       lng: 104.90432260877373,
+    //       // desLat: data["destination"]['latitude'],
+    //       // desLng: data["destination"]['longitude'],
+    //       passengerId: "12",
+    //     ),
+    //   ),
+    // );
   }
 
   Widget buildSwitchButton() {
@@ -671,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       inactiveColor: AppColors.light1,
       activeText: "Online".tr(),
       inactiveText: "Offline".tr(),
-      value: switchButton,
+      value: Taxi.shared.isDriverActive, //switchButton,
       valueFontSize: 14.0,
       width: 105,
       borderRadius: 15,
@@ -680,8 +693,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       padding: 3,
       showOnOff: true,
       onToggle: (val) async {
-        navigateBooking();
-        await StorageGet.getDriverData();
+        Taxi.shared.toggleDriverAvailable(isAvailable: val);
+        setState(() {
+          Taxi.shared.isDriverActive = val;
+        });
         setState(() {
           switchButton = !switchButton;
         });
@@ -804,14 +819,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       builder: (context, state) {
         return Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Hello Kosal",
-                    style: ThemeConstands.font18SemiBold
-                        .copyWith(color: AppColors.dark1)),
-                buildSwitchButton(),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Hello Kosal",
+                      style: ThemeConstands.font18SemiBold
+                          .copyWith(color: AppColors.dark1)),
+                  buildSwitchButton(),
+                ],
+              ),
             ),
             Expanded(child: buildGoogleMap()),
             if (state is CurrentDriverLoading)

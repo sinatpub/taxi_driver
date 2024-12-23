@@ -11,6 +11,7 @@ import 'package:com.tara_driver_application/presentation/widgets/dropdown_widget
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,6 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
               showErrorCustomDialog(context, "Something went wrong!",
                   "All of the fields are require");
             } else if (state is DriverRegisterLoaded) {
+              Taxi.shared.checkDriverAvailability();
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const NavScreen()));
             }

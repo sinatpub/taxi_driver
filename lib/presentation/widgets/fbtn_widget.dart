@@ -25,7 +25,7 @@ class FBTNWidget extends StatelessWidget {
     return SizedBox(
       //margin: const EdgeInsets.symmetric(horizontal: 18),
       width: enableWidth ? (width ?? MediaQuery.of(context).size.width) : null,
-      height: 42,
+      height: 52,
       child: MaterialButton(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstant.padding02)),
@@ -33,7 +33,7 @@ class FBTNWidget extends StatelessWidget {
         disabledColor: AppColors.light1,
         color: color ?? Theme.of(context).primaryColor,
         textColor: textColor,
-        child: Text(label),
+        child: Text(label,style: const TextStyle(fontSize: 16),),
       ),
     );
   }

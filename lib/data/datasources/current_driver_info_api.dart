@@ -6,7 +6,7 @@ class GetCurrentDriverInfo {
     return BaseApiService().onRequest<CurrentDriverInfoModel>(
         path: "/taxi-driver/get-current-drive-info",
         method: "GET",
-        customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
+        // customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",

@@ -20,6 +20,26 @@ abstract class BaseSocketService {
     _socket?.onConnect((_) {
       tlog('$role connected to socket');
       register(id);
+      _socket?.on(
+        'newRide',
+        (data) {
+          tlog("Socket New Ride $data");
+          // showNewRideAlert(data);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookingScreen(
+                bookingId: data["booking_code"],
+                lat: data["location"]['latitude'],
+                lng: data["location"]['longitude'],
+                // desLat: data["destination"]['latitude'],
+                // desLng: data["destination"]['longitude'],
+                passengerId: data["passengerId"],
+              ),
+            ),
+          );
+        },
+      );
     });
 
     _socket?.onConnectError((err) {
@@ -52,13 +72,13 @@ class DriverSocketService extends BaseSocketService {
     required String passengerId,
     required double currentLat,
     required double currentLng,
-     double? destinationLat,
-     double? destinationLng,
+    double? destinationLat,
+    double? destinationLng,
   }) {
     _socket?.emit('acceptRide', {
-      "driverId": driverId,
-      "booking_code": bookingCode,
-      "passengerId": passengerId,
+      "driverId": "5", //driverId,
+      "booking_code": "098765", // bookingCode,
+      "passengerId": "6", //passengerId,
       "location": {
         "latitude": "$currentLat",
         "longitude": "$currentLng",
@@ -69,6 +89,30 @@ class DriverSocketService extends BaseSocketService {
       }
     });
     tlog('Ride accepted with booking code: $bookingCode');
+  }
+
+
+  void newRide(context){
+     _socket?.on(
+      'newRide',
+      (data) {
+        tlog("Socket New Ride $data");
+        showNewRideAlert(data);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookingScreen(
+              bookingId: data["booking_code"],
+              lat: data["location"]['latitude'],
+              lng: data["location"]['longitude'],
+              // desLat: data["destination"]['latitude'],
+              // desLng: data["destination"]['longitude'],
+              passengerId: data["passengerId"],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -87,8 +131,8 @@ class DriverSocketService extends BaseSocketService {
               bookingId: data["booking_code"],
               lat: data["location"]['latitude'],
               lng: data["location"]['longitude'],
-              desLat: data["destination"]['latitude'],
-              desLng: data["destination"]['longitude'],
+              // desLat: data["destination"]['latitude'],
+              // desLng: data["destination"]['longitude'],
               passengerId: data["passengerId"],
             ),
           ),
@@ -97,13 +141,13 @@ class DriverSocketService extends BaseSocketService {
     );
   }
 
-  void showNewRideAlert(dynamic data,{String? lat,String? lng}) {
+  void showNewRideAlert(dynamic data, {String? lat, String? lng}) {
     Taxi.shared.showNotification(
-      driverId:lat??"",
-      // ?? data['passengerId']??"123",
-      bookingCode:lng??""
-      // ?? data['booking_code']??"123",
-    );
+        driverId: lat ?? "",
+        // ?? data['passengerId']??"123",
+        bookingCode: lng ?? ""
+        // ?? data['booking_code']??"123",
+        );
   }
 }
 

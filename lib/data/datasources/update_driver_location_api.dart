@@ -17,7 +17,7 @@ class UpdateDriverLocation {
         "Accept": "application/json",
         "Content-Type": "application/json",
       },
-      customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
+      // customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
       onSuccess: (result) {
         return UpdateDriverLocationModel?.fromJson(result.data);
       },
