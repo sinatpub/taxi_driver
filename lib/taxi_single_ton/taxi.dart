@@ -62,6 +62,8 @@ class Taxi {
     driverId = data?.data?.driver?.id;
   }
 
+
+
   Future<void> requestLocationPermission([BuildContext? context]) async {
     if (await location.serviceEnabled() || await location.requestService()) {
       locationPermissionStatus = await location.requestPermission();
@@ -101,8 +103,7 @@ class Taxi {
   Future<void> getCurrentLocationAndCreateMarker() async {
     driverLocation = await location.getLocation();
     if (driverLocation != null) {
-      currentLocation =
-          LatLng(driverLocation!.latitude!, driverLocation!.longitude!);
+      currentLocation = LatLng(driverLocation!.latitude!, driverLocation!.longitude!);
       driverMarker = Marker(
         markerId: const MarkerId(AppConstant.driverMarker),
         position: currentLocation!,
@@ -114,7 +115,7 @@ class Taxi {
     // tlog(driverLocation.toString());
   }
 
-  Future<void> setupBackgroundLocationTracking() async {
+  setupBackgroundLocationTracking() async {
     await location.enableBackgroundMode(enable: true);
     location.onLocationChanged.listen((locationData) {
       currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
@@ -126,21 +127,64 @@ class Taxi {
   }
 
   void _handleLocationChange() {
-    _locationUpdateTimer?.cancel();
-    _locationUpdateTimer = Timer(const Duration(seconds: 30), () {
+    //_locationUpdateTimer?.cancel();
+    _locationUpdateTimer = Timer(const Duration(seconds: 10), () {
+      print("fnasdf");
       if (currentLocation != null) {
         _updateLocationOnServer(currentLocation!);
         notifyBooking();
       }
     });
   }
+//  funtion update current location =================
+  Future<bool> requestPermissionLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (!serviceEnabled) {
+      return false;
+    }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) { 
+        return false;
+      }
+    }
+    print("permission is allowed");
+    return true; 
+  }
+
+  void updateCurrentLocation() async {
+    bool granted = await requestPermissionLocation();
+    if(granted == true){
+      try { 
+        await Geolocator.getCurrentPosition().then((value) {
+          print(value.latitude);
+           print(value.longitude);
+           UpdateDriverLocation().updateDriverLocationApi(
+              lat: value.latitude,
+              log: value.longitude,
+            );
+         
+        });
+      } catch (e) {
+        if (e is TimeoutException) {
+          print('Location request timed out.');
+        } else {
+          print('Error fetching location: $e');
+        }
+      }
+    }else{
+    }
+  }
+
+  // End funtion update current location =================
 
   Future<void> _updateLocationOnServer(LatLng location) async {
     try {
       await UpdateDriverLocation().updateDriverLocationApi(
-        lat: location.latitude,
-        log: location.longitude,
-      );
+              lat: location.latitude,
+              log: location.longitude,
+            );
       tlog('Location updated on server', level: LogLevel.info);
     } catch (error) {
       tlog('Error updating location on server: $error', level: LogLevel.error);

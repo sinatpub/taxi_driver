@@ -1,4 +1,5 @@
 import 'package:dotted_line/dotted_line.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
@@ -14,6 +15,11 @@ class RidingHistoryScreen extends StatefulWidget {
 
 class _RidingHistoryScreenState extends State<RidingHistoryScreen> {
   int indexActive = 0;
+  formartDate(String dateTime){
+    var newStr = '${dateTime.substring(0,10)} ${dateTime.substring(11,23)}';
+    DateTime dt = DateTime.parse(newStr);
+    return DateFormat("EEE/d/MMM/yyyy - HH:mm").format(dt);
+  }
   @override
   Widget build(BuildContext context) {
     return Column(

@@ -1,5 +1,5 @@
 class CurrentDriverInfoModel {
-  Data? data;
+  DataDriverInfo? data;
   bool? status;
   String? message;
 
@@ -11,7 +11,7 @@ class CurrentDriverInfoModel {
 
   factory CurrentDriverInfoModel.fromJson(Map<String, dynamic> json) =>
       CurrentDriverInfoModel(
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : DataDriverInfo.fromJson(json["data"]),
         status: json["status"],
         message: json["message"],
       );
@@ -23,7 +23,7 @@ class CurrentDriverInfoModel {
       };
 }
 
-class Data {
+class DataDriverInfo {
   int? id;
   String? bookingCode;
   String? startLatitude;
@@ -39,11 +39,11 @@ class Data {
   String? statusName;
   Driver? passenger;
   Driver? driver;
-  dynamic payment;
+  Payment? payment;
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  Data({
+  DataDriverInfo({
     this.id,
     this.bookingCode,
     this.startLatitude,
@@ -64,7 +64,7 @@ class Data {
     this.updatedAt,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory DataDriverInfo.fromJson(Map<String, dynamic> json) => DataDriverInfo(
         id: json["id"],
         bookingCode: json["booking_code"],
         startLatitude: json["start_latitude"],
@@ -84,7 +84,7 @@ class Data {
             ? null
             : Driver.fromJson(json["passenger"]),
         driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
-        payment: json["payment"],
+        payment: json["payment"] == null?null:Payment.fromJson(json["payment"]),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -109,7 +109,7 @@ class Data {
         "status_name": statusName,
         "passenger": passenger?.toJson(),
         "driver": driver?.toJson(),
-        "payment": payment,
+        "payment": payment?.toJson(),
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
       };
@@ -311,4 +311,60 @@ class VehicleImage {
         "object_type": objectType,
         "created_by": createdBy,
       };
+}
+
+class Payment {
+    int? id;
+    int? invoiceId;
+    int? rideId;
+    String? distance;
+    String? duration;
+    String? amount;
+    String? paymentMethod;
+    int? status;
+    String? statusName;
+    String? createdAt;
+    String? updatedAt;
+
+    Payment({
+        this.id,
+        this.invoiceId,
+        this.rideId,
+        this.distance,
+        this.duration,
+        this.amount,
+        this.paymentMethod,
+        this.status,
+        this.statusName,
+        this.createdAt,
+        this.updatedAt,
+    });
+
+    factory Payment.fromJson(Map<String, dynamic> json) => Payment(
+        id: json["id"],
+        invoiceId: json["invoice_id"],
+        rideId: json["ride_id"],
+        distance: json["distance"],
+        duration: json["duration"],
+        amount: json["amount"],
+        paymentMethod: json["payment_method"],
+        status: json["status"],
+        statusName: json["status_name"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "invoice_id": invoiceId,
+        "ride_id": rideId,
+        "distance": distance,
+        "duration": duration,
+        "amount": amount,
+        "payment_method": paymentMethod,
+        "status": status,
+        "status_name": statusName,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+    };
 }

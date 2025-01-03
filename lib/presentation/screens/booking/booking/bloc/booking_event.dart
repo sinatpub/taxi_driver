@@ -5,25 +5,7 @@ sealed class BookingEvent {}
 
 class ConfirmBookingEvent extends BookingEvent {
   final int rideId;
-  // Param for Accept Ride Socket
-
-  final String driverId;
-  final String bookingCode;
-  final String passengerId;
-  final double currentLat;
-  final double currentLng;
-  double? destinationLat;
-  double? destinationLng;
-
-  ConfirmBookingEvent(
-      {required this.rideId,
-      required this.driverId,
-      required this.bookingCode,
-      required this.passengerId,
-      required this.currentLat,
-      required this.currentLng,
-      this.destinationLat,
-      this.destinationLng});
+  ConfirmBookingEvent({required this.rideId,});
 }
 
 class CanceBookingEvent extends BookingEvent {
@@ -32,10 +14,10 @@ class CanceBookingEvent extends BookingEvent {
   CanceBookingEvent({required this.rideId});
 }
 
-class StartTripEvent extends BookingEvent {
+class ArrivedPassengerEvent extends BookingEvent {
   final int rideId;
 
-  StartTripEvent({required this.rideId});
+  ArrivedPassengerEvent({required this.rideId});
 }
 
 class CompletedTripEvent extends BookingEvent {

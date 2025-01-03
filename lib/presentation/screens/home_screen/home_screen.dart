@@ -552,12 +552,15 @@
 //   return convertMarkerIcon;
 // }
 
+import 'dart:async';
+
 import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
+import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
 // import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
@@ -592,6 +595,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    // setState(() {
+    //   Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateCurrentLocation());
+    // });
     super.initState();
     initialize();
     WidgetsBinding.instance.addObserver(this);
@@ -614,13 +620,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       tlog("Error $e");
     }
   }
-
   void initialize() async {
+     driverSocketService.connectToSocket(
+        AppConstant.socketBasedUrl, "5", "Driver",
+        context: context);
     await checkDriverStatus();
     await Taxi.shared.init();
-    driverSocketService.connectToSocket(
-        AppConstant.socketBasedUrl, Taxi.shared.driverId.toString(), "Driver",
-        context: context);
+   
     currentLocation = Taxi.shared.driverLocation;
     // savedLocation = await StorageGet.getSavedLocation();
 
@@ -712,15 +718,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       trafficEnabled: true,
       initialCameraPosition: CameraPosition(
         target: currentLocation != null
-            ? LatLng(currentLocation!.latitude!, currentLocation!.longitude!)
-            : const LatLng(11.5746909,
-                104.8930405), // Default position if location is unavailable
+            ? LatLng(currentLocation!.latitude??11.5746909, currentLocation!.longitude??104.8930405)
+            : const LatLng(11.5746909,104.8930405), // Default position if location is unavailable
         zoom: 17.0,
       ),
       markers: _markers,
       onMapCreated: (GoogleMapController controller) {
         mapController = controller;
-
         // Only animate camera if currentLocation is available and not initialized
         if (currentLocation != null && !isCameraInitialized) {
           controller.animateCamera(
@@ -815,7 +819,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CurrentDriverInfoBloc, CurrentDriverInfoState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is CurrentDriverLoading) {
+              tlog("Current Driver Loading");
+            } else if (state is CurrentDriverInfoLoaded) {
+              var dataDriver = state.currentDriverInfoModel.data;
+              tlog("Current Driver Loaded");
+              if(dataDriver != null){
+                if(dataDriver.status == 6){
+                  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CalculateFeeScreen(dataDriverInfo: dataDriver,routFrom: "FromHome",startAddress: dataDriver.startAddress.toString(),endAddress: dataDriver.endAddress.toString())));
+                }
+              }
+            } else {
+              setState(() {
+              });
+              tlog("Current Driver Fail");
+            }
+      },
       builder: (context, state) {
         return Column(
           children: [
@@ -824,16 +844,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hello Kosal",
-                      style: ThemeConstands.font18SemiBold
-                          .copyWith(color: AppColors.dark1)),
+                  Text("Hello Kosal",style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark1)),
                   buildSwitchButton(),
                 ],
               ),
             ),
             Expanded(child: buildGoogleMap()),
             if (state is CurrentDriverLoading)
-              const CircularProgressIndicator(),
+              const SizedBox(),
           ],
         );
       },

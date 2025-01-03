@@ -35,10 +35,14 @@ class _NavScreenState extends State<NavScreen> {
             if (state is CurrentDriverLoading) {
               tlog("Current Driver Loading");
             } else if (state is CurrentDriverInfoLoaded) {
+              var dataDriver = state.currentDriverInfoModel.data;
               tlog("Current Driver Loaded");
               setState(() {
                 isApproved = true;
               });
+              if(dataDriver != null){
+                
+              }
             } else {
               setState(() {
                 isApproved = false;

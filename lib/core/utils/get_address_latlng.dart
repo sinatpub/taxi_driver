@@ -1,9 +1,10 @@
+import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
 import 'package:geocoding/geocoding.dart';
 
 Future<String> getAddressFromLatLng(double latitude, double longitude) async {
   try {
     // Get the list of placemarks from the provided lat, lng
-    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude,);
     
     if (placemarks.isNotEmpty) {
       Placemark placemark = placemarks.first; // Get the first placemark

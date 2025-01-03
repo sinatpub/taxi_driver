@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:com.tara_driver_application/core/helper/get_address_latlng_helper.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
-import 'package:com.tara_driver_application/presentation/widgets/count_down_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
@@ -72,11 +74,13 @@ class _BookingScreenState extends State<BookingScreen> {
 
   @override
   void initState() {
+    BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
     super.initState();
     polylinePoints = PolylinePoints();
     syncMarker();
     _drawPolylines();
-    setupBackgroundLocationTracking();
+    Taxi.shared.setupBackgroundLocationTracking();
+    // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateCurrentLocation());
   }
 
   // Sync markers for driver and passenger locations
@@ -89,8 +93,8 @@ class _BookingScreenState extends State<BookingScreen> {
         await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
 
     _addMarker(pDesLat, pDesLng, "destinationMarker", passengerMarker);
-    _addMarker(Taxi.shared.driverLocation!.latitude!,
-        Taxi.shared.driverLocation!.longitude!, 'driverMarker', driverMarker);
+    // _addMarker(Taxi.shared.driverLocation!.latitude!,
+    //     Taxi.shared.driverLocation!.longitude!, 'driverMarker', driverMarker);
 
     getAddressPlaceMarker();
     setState(() {});
@@ -114,8 +118,8 @@ class _BookingScreenState extends State<BookingScreen> {
     List<Map<String, LatLng>> routes = [
       {
         'start': LatLng(
-          Taxi.shared.driverLocation!.latitude!,
-          Taxi.shared.driverLocation!.longitude!,
+          11.591565,
+          104.876107,
         ),
         'end': LatLng(pDesLat, pDesLng),
       },
@@ -142,8 +146,7 @@ class _BookingScreenState extends State<BookingScreen> {
           Polyline(
             polylineId: const PolylineId("driverRoute"),
             color: Colors.red,
-            points:
-                polylineCoordinates, // Use the accumulated list of coordinates
+            points:polylineCoordinates, // Use the accumulated list of coordinates
             width: 5,
           ),
         );
@@ -160,10 +163,7 @@ class _BookingScreenState extends State<BookingScreen> {
       _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(
-                Taxi.shared.driverLocation!.latitude!,
-                Taxi.shared.driverLocation!
-                    .longitude!), // Use the provided LatLng for camera movement
+            target: LatLng(11.591565,104.876107), // Use the provided LatLng for camera movement
             zoom: 19.151926040649414, // Set zoom level
           ),
         ),
@@ -178,10 +178,8 @@ class _BookingScreenState extends State<BookingScreen> {
         setState(() {
           Taxi.shared.driverLocation = locationData;
         });
-        polylineCoordinates
-            .add(LatLng(locationData.latitude!, locationData.longitude!));
-        _addMarker(locationData.latitude!, locationData.longitude!,
-            "driverMarker", driverMarker);
+        polylineCoordinates.add(LatLng(locationData.latitude!, locationData.longitude!));
+        _addMarker(locationData.latitude!, locationData.longitude!,"driverMarker", driverMarker);
         _drawPolylines();
         Taxi.shared.notifyAcceptBooking();
       });
@@ -204,9 +202,9 @@ class _BookingScreenState extends State<BookingScreen> {
   // Get address for the place marker
   void getAddressPlaceMarker() async {
     currentPassengerPM = await getAddressFromLatLng(
-        Taxi.shared.driverLocation!.latitude!,
-        Taxi.shared.driverLocation!.longitude!);
-    destinationPassengerPM = await getAddressFromLatLng(pDesLat, pDesLng);
+        widget.lat,
+        widget.lng);
+    // destinationPassengerPM = await getAddressFromLatLng(pDesLat, pDesLng);
     setState(() {});
   }
 
@@ -220,115 +218,121 @@ class _BookingScreenState extends State<BookingScreen> {
             : "Accepted Passenger"),
       ),
       body: BlocConsumer<BookingBloc, BookingState>(
-        listener: (context, state) {
-          if (state is BookingLoading) {
-            tlog("Booking Loading");
-          } else if (state is CancelBookingSuccess) {
-            Navigator.pop(context);
-          } else if (state is ConfirmBookingSuccess) {
-            setState(() {
-              isConfirmBooking = true;
-            });
-            _turnRight();
-            tlog("Confirm Booking Successfully");
-            Taxi.shared.connectAndEmitEvent(
-              'http://206.189.38.88:3009/driver/',
-              "acceptRide",
-              {
-                "driverId": "5", //driverId,
-                "booking_code": "098765", // bookingCode,
-                "passengerId": "6", //passengerId,
-                "location": {"latitude": 12.9715987, "longitude": 77.594566},
-                "destination": {"latitude": 12.927923, "longitude": 77.627108}
-              },
-            );
-          } else if (state is StartTripSuccess) {
-            tlog("Start Trip Success");
-            setState(() {
-              isArrivedPassenger = true;
-            });
-          } else if (state is CompletedTripSuccess) {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CalculateFeeScreen()));
-          } else {
-            tlog("Booking Fail");
-            showErrorCustomDialog(context, "Please Try Again!",
-                "Please try again. Something went wrong.");
-          }
-        },
-        builder: (context, state) {
-          bool isLoading = state is BookingLoading;
-          return Stack(
-            children: [
-              GoogleMap(
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                indoorViewEnabled: true,
-                myLocationButtonEnabled: true,
-                compassEnabled: true,
-                zoomControlsEnabled: true,
-                zoomGesturesEnabled: true,
-                mapToolbarEnabled: true,
-                polylines: _polylines,
-                markers: _markers,
-                initialCameraPosition: CameraPosition(
-                  bearing: 192.8334901395799,
-                  target: LatLng(Taxi.shared.driverLocation!.latitude!,
-                      Taxi.shared.driverLocation!.longitude!),
-                  tilt: 0.0,
-                  zoom: 17.151926040649414,
-                ),
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController = controller;
-                },
-              ),
-              isConfirmBooking != true && isArrivedPassenger == false
-                  ? const Positioned(
-                      top: 60,
-                      left: 0,
-                      right: 0,
-                      child: SmoothCircularCountdown(
-                        countDuration: 900,
-                        isPop: true,
-                      ),
-                    )
-                  : const SizedBox(),
-              isConfirmBooking == false
-                  ? rideRequestWidget(context)
-                  : isArrivedPassenger == false
-                      ? arrivedPassengerWidget(context)
-                      : isStartDriver == false
-                          ? startDriveWidget(context)
-                          : Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 18, horizontal: 18),
-                                color: Colors.red,
-                                alignment: Alignment.center,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    BlocProvider.of<BookingBloc>(context)
-                                        .add(CompletedTripEvent(
-                                      rideId: int.parse(widget.bookingId),
-                                      endAddress: destinationPassengerPM,
-                                      endLatitude: pDesLat,
-                                      endLongitude: pDesLng,
-                                    ));
-                                  },
-                                  child: const Text("Drop Off"),
+            listener: (context, state) {
+              if (state is BookingLoading) {
+                tlog("Booking Loading");
+              } else if (state is CancelBookingSuccess) {
+                Navigator.pop(context);
+              } else if (state is ConfirmBookingSuccess) {
+                var dataConfirmBooking = state.confirmBookingModel.data;
+                setState(() {
+                  isConfirmBooking = true;
+                });
+                _turnRight();
+                tlog("Confirm Booking Successfully");
+                Taxi.shared.connectAndEmitEvent(
+                  'http://206.189.38.88:3009/driver/',
+                  "acceptRide",
+                  {
+                    "driver_id": dataConfirmBooking!.driver!.id,
+                    "booking_id": dataConfirmBooking.id,
+                    "passenger_id": dataConfirmBooking.passenger!.id,
+                    "location": {"latitude": "", "longitude": ""},
+                    "destination": {"latitude": 12.927923, "longitude": 77.627108}
+                  },
+                );
+              } else if (state is StartTripSuccess) {
+                tlog("Start Trip Success");
+                setState(() {
+                  isArrivedPassenger = true;
+                });
+              } else if (state is CompletedTripSuccess) {
+                setState(() async{
+                  var data = state.completeDriver;
+                  String startAddress = await getAddressFromLatLng(double.parse(data.data!.startLatitude.toString()),double.parse(data.data!.startLongitude.toString()));
+                  String endAddress = await getAddressFromLatLng(double.parse(data.data!.endLatitude.toString()),double.parse(data.data!.endLongitude.toString()));
+                  Navigator.pushReplacement(context,MaterialPageRoute( builder: (context) => CalculateFeeScreen(routFrom: "FromDropBooking",dataComplete: data,startAddress: startAddress,endAddress: endAddress)));
+                });
+              } else {
+                tlog("Booking Fail");
+                showErrorCustomDialog(context, "Please Try Again!",
+                    "Please try again. Something went wrong.");
+              }
+            },
+            builder: (context, state) {
+              bool isLoading = state is BookingLoading;
+              return Stack(
+                children: [
+                  GoogleMap(
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    indoorViewEnabled: true,
+                    myLocationButtonEnabled: true,
+                    compassEnabled: true,
+                    zoomControlsEnabled: true,
+                    zoomGesturesEnabled: true,
+                    mapToolbarEnabled: true,
+                    polylines: _polylines,
+                    markers: _markers,
+                    initialCameraPosition: CameraPosition(
+                      bearing: 192.8334901395799,
+                      target: LatLng(11.591565,
+                          104.876107),
+                      tilt: 0.0,
+                      zoom: 17.151926040649414,
+                    ),
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                    },
+                  ),
+                  // isConfirmBooking != true && isArrivedPassenger == false
+                  //     ? const Positioned(
+                  //         top: 60,
+                  //         left: 0,
+                  //         right: 0,
+                  //         child: SmoothCircularCountdown(
+                  //           countDuration: 30,
+                  //           isPop: true,
+                  //         ),
+                  //       )
+                  //     : const SizedBox(),
+                  isConfirmBooking == false
+                      ? rideRequestWidget(context)
+                      : isArrivedPassenger == false
+                          ? arrivedPassengerWidget(context)
+                          : isStartDriver == false
+                              ? startDriveWidget(context)
+                              : Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18, horizontal: 18),
+                                    color: Colors.red,
+                                    alignment: Alignment.center,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        debugPrint("dfsadf ${widget.bookingId}");
+                                        debugPrint("dfsadf $pDesLat");
+                                        debugPrint("dfsadf $pDesLng");
+                                        BlocProvider.of<BookingBloc>(context)
+                                            .add(CompletedTripEvent(
+                                          rideId: int.parse(widget.bookingId),
+                                          endAddress: "fjasd dsafsdna",
+                                          endLatitude: pDesLat,
+                                          endLongitude: pDesLng,
+                                        ));
+                                      },
+                                      child: const Text("Drop Off"),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-              if (isLoading) const Positioned(child: LoadingWidget()),
-            ],
-          );
-        },
-      ),
+                  if (isLoading) const Positioned(child: LoadingWidget()),
+                ],
+              );
+            },
+          ),
     );
   }
 
@@ -525,16 +529,21 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       FBTNWidget(
                         onPressed: () {
+            //                Taxi.shared.connectAndEmitEvent(
+            //   'http://206.189.38.88:3009/driver/',
+            //   "acceptRide",
+            //   {
+            //     "driverId": "5",
+            //     // "booking_id":  "87", // event.bookingId,
+            //     "booking_code":"098765",
+            //     "passenger_id":   "8888", //event.passengerId,
+            //     "location": {"latitude": 12.9715987, "longitude": 77.594566},
+            //     "destination": {"latitude": 12.927923, "longitude": 77.627108}
+            //   },
+            // );
                           BlocProvider.of<BookingBloc>(context).add(
                             ConfirmBookingEvent(
-                              rideId: int.parse(widget.bookingId),
-                              driverId: AppConstant.driverId,
-                              bookingCode: widget.bookingId,
-                              passengerId: widget.passengerId,
-                              currentLat: widget.lat,
-                              currentLng: widget.lng,
-                              destinationLng: widget.desLat,
-                              destinationLat: widget.desLng,
+                              rideId: int.parse(widget.bookingId.toString()),
                             ),
                           );
                         },
@@ -579,6 +588,7 @@ class _BookingScreenState extends State<BookingScreen> {
           child: Column(
             children: [
               ExpansionTile(
+                shape:const Border(),
                 initiallyExpanded: true,
                 title: Text(
                   "Navigate to Passenger",
@@ -638,12 +648,64 @@ class _BookingScreenState extends State<BookingScreen> {
                           ],
                         ),
                         const Divider(thickness: .1, color: Colors.grey),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Here you can add more details or actions related to the passenger.",
-                            style: AppTextStyles.body,
-                          ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Top location text
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Passenger Location",
+                                  style: AppTextStyles.bodyDark.copyWith(
+                                    color: AppColors.dark3,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  " $currentPassengerPM  ",
+                                  style: AppTextStyles.bodyDark.copyWith(
+                                    color: AppColors.dark1,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 3,
+                                ),
+                              ],
+                            ),
+                            // Bottom destination text
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            widget.desLat != null && widget.desLng != null
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Destination Location",
+                                        style:
+                                            AppTextStyles.bodyDark.copyWith(
+                                          color: AppColors.dark3,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${widget.desLat} - ${widget.desLng}",
+                                        style:
+                                            AppTextStyles.bodyDark.copyWith(
+                                          color: AppColors.dark1,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox(),
+                          ],
                         ),
                       ],
                     ),
@@ -674,11 +736,23 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     FBTNWidget(
                       onPressed: () {
-                        BlocProvider.of<BookingBloc>(context).add(
-                          StartTripEvent(
-                            rideId: int.parse(widget.bookingId),
-                          ),
-                        );
+                         Taxi.shared.connectAndEmitEvent(
+              'http://206.189.38.88:3009/driver',
+              "acceptRide",
+              {
+                "driverId": "5",
+                "booking_id":  "86", // event.bookingId,
+                "passenger_id":  "6", //event.passengerId,
+                "location": {"latitude": 12.9715987, "longitude": 77.594566},
+                "destination": {"latitude": 12.927923, "longitude": 77.627108}
+              },
+            );
+                        print("object");
+                        // BlocProvider.of<BookingBloc>(context).add(
+                        //   ArrivedPassengerEvent(
+                        //     rideId: int.parse(widget.bookingId),
+                        //   ),
+                        // );
                       },
                       color: AppColors.main,
                       textColor: AppColors.light4,
@@ -765,6 +839,65 @@ class _BookingScreenState extends State<BookingScreen> {
                 const Divider(
                   thickness: .1,
                   color: Colors.grey,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top location text
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Passenger Location",
+                          style: AppTextStyles.bodyDark.copyWith(
+                            color: AppColors.dark3,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          " $currentPassengerPM  ",
+                          style: AppTextStyles.bodyDark.copyWith(
+                            color: AppColors.dark1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 3,
+                        ),
+                      ],
+                    ),
+                    // Bottom destination text
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    widget.desLat != null && widget.desLng != null
+                        ? Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Destination Location",
+                                style:
+                                    AppTextStyles.bodyDark.copyWith(
+                                  color: AppColors.dark3,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                "${widget.desLat} - ${widget.desLng}",
+                                style:
+                                    AppTextStyles.bodyDark.copyWith(
+                                  color: AppColors.dark1,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
+                  ],
                 ),
                 Expanded(
                   child: Row(

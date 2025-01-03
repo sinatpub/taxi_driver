@@ -20,26 +20,6 @@ abstract class BaseSocketService {
     _socket?.onConnect((_) {
       tlog('$role connected to socket');
       register(id);
-      _socket?.on(
-        'newRide',
-        (data) {
-          tlog("Socket New Ride $data");
-          // showNewRideAlert(data);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BookingScreen(
-                bookingId: data["booking_code"],
-                lat: data["location"]['latitude'],
-                lng: data["location"]['longitude'],
-                // desLat: data["destination"]['latitude'],
-                // desLng: data["destination"]['longitude'],
-                passengerId: data["passengerId"],
-              ),
-            ),
-          );
-        },
-      );
     });
 
     _socket?.onConnectError((err) {
@@ -66,7 +46,63 @@ class DriverSocketService extends BaseSocketService {
     tlog('Driver registered with ID: $driverId');
   }
 
-  void acceptRide({
+  @override
+  void connectToSocket(String url, String passengerId, String role,
+      {required BuildContext context}) {
+    super.connectToSocket("http://206.189.38.88:3009/", passengerId, role,
+        context: context);
+    newRide(context);
+  }
+
+  // * Listener
+  void newRide(context) {
+    _socket?.on(
+      'newRide',
+      (data) {
+        tlog("Socket New Ride $data");
+        // showNewRideAlert(data);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookingScreen(
+             bookingId: data["booking_id"].toString(),
+              lat: data["location"]['latitude'],
+              lng: data["location"]['longitude'],
+              // desLat: data["destination"]['latitude'],
+              // desLng: data["destination"]['longitude'],
+              passengerId: data["passenger_id"].toString(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+//   emit event rideArrival with parameter {
+//     "booking_code": "xxxx",
+//     "passengerId": "xxxx",
+//     "location": {
+//         "latitude": 12.9715987,
+//         "longitude": 77.594566
+//     },
+//     "destination": {
+//         "latitude": 12.927923,
+//         "longitude": 77.627108
+//     }
+// }
+
+
+ void arrivedSocket() {
+    _socket?.emit('rideArrival', {
+      "isArrive": true,
+      
+    });
+    tlog('Start ride with booking code:');
+  }
+
+  // * Listener
+  void startDrive({
     required String driverId,
     required String bookingCode,
     required String passengerId,
@@ -75,10 +111,10 @@ class DriverSocketService extends BaseSocketService {
     double? destinationLat,
     double? destinationLng,
   }) {
-    _socket?.emit('acceptRide', {
-      "driverId": "5", //driverId,
-      "booking_code": "098765", // bookingCode,
-      "passengerId": "6", //passengerId,
+    _socket?.emit('startDrive', {
+      "driverId": driverId,
+      "booking_code": bookingCode,
+      "passengerId": passengerId,
       "location": {
         "latitude": "$currentLat",
         "longitude": "$currentLng",
@@ -88,57 +124,66 @@ class DriverSocketService extends BaseSocketService {
         "longitude": "$destinationLng",
       }
     });
-    tlog('Ride accepted with booking code: $bookingCode');
+    tlog('Start ride with booking code: $bookingCode');
   }
 
 
-  void newRide(context){
-     _socket?.on(
-      'newRide',
-      (data) {
-        tlog("Socket New Ride $data");
-        showNewRideAlert(data);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookingScreen(
-              bookingId: data["booking_code"],
-              lat: data["location"]['latitude'],
-              lng: data["location"]['longitude'],
-              // desLat: data["destination"]['latitude'],
-              // desLng: data["destination"]['longitude'],
-              passengerId: data["passengerId"],
-            ),
-          ),
-        );
+
+  void dropDrive({
+    required String driverId,
+    required String bookingCode,
+    required String passengerId,
+    required double currentLat,
+    required double currentLng,
+    double? destinationLat,
+    double? destinationLng,
+  }) {
+    _socket?.emit('dropDrive', {
+      "driverId": driverId,
+      "booking_code": bookingCode,
+      "passengerId": passengerId,
+      "location": {
+        "latitude": "$currentLat",
+        "longitude": "$currentLng",
       },
-    );
+      "destination": {
+        "latitude": "$destinationLat",
+        "longitude": "$destinationLng",
+      }
+    });
+    tlog('Start ride with booking code: $bookingCode');
   }
 
-  @override
-  void connectToSocket(String url, String driverId, String role,
-      {required BuildContext context}) {
-    super.connectToSocket(url, driverId, role, context: context);
-    _socket?.on(
-      'newRide',
-      (data) {
-        tlog("Socket New Ride $data");
-        showNewRideAlert(data);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookingScreen(
-              bookingId: data["booking_code"],
-              lat: data["location"]['latitude'],
-              lng: data["location"]['longitude'],
-              // desLat: data["destination"]['latitude'],
-              // desLng: data["destination"]['longitude'],
-              passengerId: data["passengerId"],
-            ),
-          ),
-        );
+  void acceptPayment({required String passengerId}) {
+    _socket?.emit('acceptPayment', {
+      "passenger_id": passengerId,
+    });
+    tlog('Payment done' );
+  }
+
+  void acceptRide({
+    required String driverId,
+    required String bookingId,
+    required String passengerId,
+    required double currentLat,
+    required double currentLng,
+    double? destinationLat,
+    double? destinationLng,
+  }) {
+    _socket?.emit('acceptRide', {
+      "driverId": driverId,
+      "booking_code":bookingId,
+      "passengerId": passengerId,
+      "location": {
+        "latitude": "$currentLat",
+        "longitude": "$currentLng",
       },
-    );
+      "destination": {
+        "latitude": "$destinationLat",
+        "longitude": "$destinationLng",
+      }
+    });
+    tlog('Ride accepted with booking code: $bookingId - $driverId - $passengerId - $currentLat - $currentLng - $destinationLat - $destinationLng');
   }
 
   void showNewRideAlert(dynamic data, {String? lat, String? lng}) {
@@ -148,42 +193,5 @@ class DriverSocketService extends BaseSocketService {
         bookingCode: lng ?? ""
         // ?? data['booking_code']??"123",
         );
-  }
-}
-
-class PassengerSocketService extends BaseSocketService {
-  @override
-  void register(String passengerId) {
-    _socket?.emit('registerPassenger', passengerId);
-    tlog('Passenger registered with ID: $passengerId');
-  }
-
-  void requestRide({
-    required String bookingCode,
-    required String passengerId,
-    required double startLat,
-    required double startLng,
-    required double destinationLat,
-    required double destinationLng,
-  }) {
-    _socket?.emit('rideRequest', {
-      "booking_code": bookingCode,
-      "passengerId": passengerId,
-      "location": {
-        "latitude": startLat,
-        "longitude": startLng,
-      },
-      "destination": {
-        "latitude": destinationLat,
-        "longitude": destinationLng,
-      }
-    });
-    tlog('Ride requested with booking code: $bookingCode');
-  }
-
-  void handleRideAccepted(dynamic data) {
-    // Implement the UI response or notification here
-    tlog(
-        'Ride accepted! Booking code: ${data["booking_code"]}, Driver ID: ${data["driverId"]}');
   }
 }
