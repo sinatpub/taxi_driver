@@ -43,6 +43,24 @@ class BookingApi {
     );
   }
 
+  Future<ConfirmBookingModel> arriveDriverApi({required int rideId}) async {
+    FormData formData = FormData.fromMap({
+      "ride_id": rideId,
+    });
+    return BaseApiService().onRequest<ConfirmBookingModel>(
+      path: "/taxi-driver/drive-arrive",
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      bodyParse: formData,
+      onSuccess: (result) {
+        return ConfirmBookingModel?.fromJson(result.data);
+      },
+    );
+  }
+
   Future<bool> cancelBookingApi({required int rideId}) async {
     FormData formData = FormData.fromMap({
       "ride_id": rideId,
@@ -109,6 +127,7 @@ class BookingApi {
       },
       bodyParse: formData,
       onSuccess: (result) {
+        print("fasldfk$result");
         return true;
       },
     );

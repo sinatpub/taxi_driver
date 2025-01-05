@@ -40,15 +40,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       }
     });
 
-    on<ArrivedPassengerEvent>((event, emit) async {
+    on<StartTripEvent>((event, emit) async {
       try {
         emit(BookingLoading());
         var result = await bookingApi.startDriverApi(
           rideId: event.rideId,
         );
-        driverSocketService.arrivedSocket();
-
-        tlog("Start Trip => $result");
         emit(StartTripSuccess());
         Taxi.shared.notifyBooking();
       } catch (e) {
@@ -56,24 +53,29 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       }
     });
 
+    on<ArrivedEvent>((event, emit) async {
+      try {
+        emit(BookingLoading());
+        var result = await bookingApi.arriveDriverApi(
+          rideId: event.rideId,
+        );
+        emit(ArriveSuccess());
+        Taxi.shared.notifyArriveBooking();
+      } catch (e) {
+        emit(ArriveFail());
+      }
+    });
+
     on<CompletedTripEvent>((event, emit) async {
       try {
         emit(BookingLoading());
-        // double distance = await Taxi.shared.calculateFare(
-        //     startLatitude: Taxi.shared.driverLocation!.latitude!,
-        //     startLongitude: Taxi.shared.driverLocation!.longitude!,
-        //     endLatitude: event.endLatitude,
-        //     endLongitude: event.endLongitude);
-
-        CompleteDriverModel result = await bookingApi.completeDriveApi(
+        var result = await bookingApi.completeDriveApi(
           rideId: event.rideId,
           endLatitude: event.endLatitude,
           endAddress: event.endAddress,
           endLongitude: event.endLongitude,
-          distance: 10,
+          distance: event.distance,
         );
-
-        tlog("Complete Trip => $result");
         emit(CompletedTripSuccess(completeDriver: result));
         Taxi.shared.notifyBooking();
       } catch (e) {

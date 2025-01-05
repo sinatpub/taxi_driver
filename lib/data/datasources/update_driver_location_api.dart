@@ -19,6 +19,7 @@ class UpdateDriverLocation {
       },
       // customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
       onSuccess: (result) {
+        print("Update location again $result");
         return UpdateDriverLocationModel?.fromJson(result.data);
       },
       bodyParse: formData,

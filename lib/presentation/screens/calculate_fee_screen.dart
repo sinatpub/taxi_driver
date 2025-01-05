@@ -2,7 +2,7 @@ import 'package:com.tara_driver_application/data/datasources/confirm_booking_api
 import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
 import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +85,14 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                             });
                               await BookingApi().completePayment(rideId: widget.routFrom == "FromDropBooking"? widget.dataComplete!.data!.id! :widget.dataDriverInfo!.passenger!.roleId!).then((onValue){
                                 if(onValue == true){
-                                  DriverSocketService().acceptPayment(passengerId: widget.dataDriverInfo!.passenger!.id.toString());
+                                  Taxi.shared.connectAndEmitEvent(
+                                  eventName:"acceptPayment",
+                                  data:{
+                                      "booking_code": widget.routFrom == "FromDropBooking"?widget.dataComplete!.data!.bookingCode.toString() :  widget.dataDriverInfo!.bookingCode.toString(),
+                                      "booking_id": widget.routFrom == "FromDropBooking"?widget.dataComplete!.data!.id.toString() :  widget.dataDriverInfo!.id.toString(),
+                                      "passengerId": widget.routFrom == "FromDropBooking"?widget.dataComplete!.data!.passenger!.id.toString() :  widget.dataDriverInfo!.passenger!.id.toString(),
+                                    },
+                                  );
                                   setState(() {
                                     loadingCompletePay = false;
                                   });

@@ -24,6 +24,10 @@ class StartTripSuccess extends BookingState {}
 
 class StartTripFail extends BookingState {}
 
+class ArriveSuccess extends BookingState {}
+
+class ArriveFail extends BookingState {}
+
 // Complete Trip
 class CompletedTripSuccess extends BookingState{
   final CompleteDriverModel completeDriver;

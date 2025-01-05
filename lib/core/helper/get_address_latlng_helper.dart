@@ -12,7 +12,7 @@ Future<String> getAddressFromLatLng(double latitude, double longitude) async {
     if (placemarks.isNotEmpty) {
       Placemark place = placemarks[0];
 
-      tlog("PlaceMarker: $placemarks");
+      //tlog("PlaceMarker: $placemarks");
       String address = '';
       address += place.name != null ? "${place.name}, " : '';
       address += place.street != null ? "${place.street}, " : '';

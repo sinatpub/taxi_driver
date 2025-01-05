@@ -1,7 +1,9 @@
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 abstract class BaseSocketService {
@@ -49,7 +51,7 @@ class DriverSocketService extends BaseSocketService {
   @override
   void connectToSocket(String url, String passengerId, String role,
       {required BuildContext context}) {
-    super.connectToSocket("http://206.189.38.88:3009/", passengerId, role,
+    super.connectToSocket("http://206.189.38.88:3009", passengerId, role,
         context: context);
     newRide(context);
   }
@@ -61,16 +63,19 @@ class DriverSocketService extends BaseSocketService {
       (data) {
         tlog("Socket New Ride $data");
         // showNewRideAlert(data);
+        BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BookingScreen(
-             bookingId: data["booking_id"].toString(),
-              lat: data["location"]['latitude'],
-              lng: data["location"]['longitude'],
+            processStepBook: 1,
+            bookingCode: data["booking_code"].toString(),
+            bookingId: data["booking_id"].toString(),
+              latPassenger: data["location"]['latitude'],
+              lngPassenger: data["location"]['longitude'],
               // desLat: data["destination"]['latitude'],
               // desLng: data["destination"]['longitude'],
-              passengerId: data["passenger_id"].toString(),
+              passengerId: data["passengerId"].toString(),
             ),
           ),
         );
@@ -156,7 +161,7 @@ class DriverSocketService extends BaseSocketService {
 
   void acceptPayment({required String passengerId}) {
     _socket?.emit('acceptPayment', {
-      "passenger_id": passengerId,
+      "passengerId": passengerId,
     });
     tlog('Payment done' );
   }

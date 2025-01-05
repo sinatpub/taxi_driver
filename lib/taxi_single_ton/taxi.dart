@@ -111,8 +111,6 @@ class Taxi {
         icon: await loadCustomMarker(imagePath: "assets/marker/car_marker.png",height: 68),
       );
     }
-
-    // tlog(driverLocation.toString());
   }
 
   setupBackgroundLocationTracking() async {
@@ -120,17 +118,15 @@ class Taxi {
     location.onLocationChanged.listen((locationData) {
       currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
       driverLocation = locationData;
-      
-      // notifyBooking();
       _handleLocationChange();
     });
   }
 
   void _handleLocationChange() {
-    //_locationUpdateTimer?.cancel();
     _locationUpdateTimer = Timer(const Duration(seconds: 10), () {
       print("fnasdf");
       if (currentLocation != null) {
+        print("fnasdf${currentLocation!.latitude}");
         _updateLocationOnServer(currentLocation!);
         notifyBooking();
       }
@@ -153,18 +149,38 @@ class Taxi {
     return true; 
   }
 
-  void updateCurrentLocation() async {
+  Future<Position?> checkCurrentLocation() async {
+    Position? locationCurrent;
     bool granted = await requestPermissionLocation();
     if(granted == true){
       try { 
         await Geolocator.getCurrentPosition().then((value) {
-          print(value.latitude);
-           print(value.longitude);
-           UpdateDriverLocation().updateDriverLocationApi(
+          print("f,asmdf;asdf${value.longitude}");
+          locationCurrent = value;
+        });
+        return locationCurrent!;
+      } catch (e) {
+        if (e is TimeoutException) {
+          print('Location request timed out.');
+        } else {
+          print('Error fetching location: $e');
+        }
+        return locationCurrent!;
+      }
+    }else{
+      return locationCurrent!;
+    }
+  }
+
+   void updateDriverLocation() async {
+    bool granted = await requestPermissionLocation();
+    if(granted == true){
+      try { 
+        await Geolocator.getCurrentPosition().then((value){
+          UpdateDriverLocation().updateDriverLocationApi(
               lat: value.latitude,
               log: value.longitude,
             );
-         
         });
       } catch (e) {
         if (e is TimeoutException) {
@@ -191,11 +207,11 @@ class Taxi {
     }
   }
 
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double calculateDistance(double latStart, double lonStart, double latEnd, double lonEnd) {
     const R = 6371.01; // Radius of Earth in km
-    final dLat = deg2rad(lat2 - lat1), dLon = deg2rad(lon2 - lon1);
+    final dLat = deg2rad(latEnd - latStart), dLon = deg2rad(lonEnd - lonStart);
     final a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+        cos(deg2rad(latStart)) * cos(deg2rad(latEnd)) * sin(dLon / 2) * sin(dLon / 2);
     return R * 2 * atan2(sqrt(a), sqrt(1 - a)) * 1000.0; // Return in meters
   }
 
@@ -254,6 +270,19 @@ class Taxi {
 
   //   // Accept Notiication
   void notifyAcceptBooking() async {
+    try {
+      await NotificationLocal.notificationBooking(
+        channel: NotificationLocal.channel,
+        plugin: NotificationLocal.notifications,
+      );
+      tlog('Notification triggered successfully.', level: LogLevel.debug);
+    } catch (e) {
+      tlog('Error triggering notification: $e', level: LogLevel.error);
+    }
+  }
+
+   //   // Arrive Notiication
+  void notifyArriveBooking() async {
     try {
       await NotificationLocal.notificationBooking(
         channel: NotificationLocal.channel,
@@ -360,9 +389,11 @@ class Taxi {
       }
       onUpdate(latlng[_currentIndex]);
     });
+
   }
 
-  void connectAndEmitEvent(String url, String eventName, dynamic data) {
+
+void connectAndEmitEvent({required String eventName, dynamic data}) {
     // Create the socket instance and connect to the server
     IO.Socket socket = IO.io(
       AppConstant.socketBasedUrl,
@@ -374,7 +405,7 @@ class Taxi {
 
     // Handle socket connection
     socket.onConnect((_) {
-      tlog('Connected to the socket at $url');
+      tlog('Connected to the socket at ${AppConstant.socketBasedUrl}');
 
       // Emit the event once connected
       socket.emit(eventName, data);
@@ -391,4 +422,37 @@ class Taxi {
       tlog('Socket disconnected');
     });
   }
+
+
+
+  // void connectAndEmitEvent(String url, String eventName, dynamic data) {
+  //   // Create the socket instance and connect to the server
+  //   IO.Socket socket = IO.io(
+  //     AppConstant.socketBasedUrl,
+  //     IO.OptionBuilder()
+  //         .setTransports(['websocket'])
+  //         .enableAutoConnect()
+  //         .build(),
+  //   );
+
+  //   // Handle socket connection
+  //   socket.onConnect((_) {
+  //     tlog('Connected to the socket at $url');
+
+  //     // Emit the event once connected
+  //     socket.emit(eventName, data);
+  //     tlog('Emitted event $eventName with data: $data');
+  //   });
+
+  //   // Handle connection error
+  //   socket.onConnectError((err) {
+  //     tlog('Connection Error: $err');
+  //   });
+
+  //   // Handle socket disconnect
+  //   socket.onDisconnect((_) {
+  //     tlog('Socket disconnected');
+  //   });
+  // }
+
 }

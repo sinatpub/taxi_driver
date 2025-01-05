@@ -14,10 +14,16 @@ class CanceBookingEvent extends BookingEvent {
   CanceBookingEvent({required this.rideId});
 }
 
-class ArrivedPassengerEvent extends BookingEvent {
+class StartTripEvent extends BookingEvent {
   final int rideId;
 
-  ArrivedPassengerEvent({required this.rideId});
+  StartTripEvent({required this.rideId});
+}
+
+class ArrivedEvent extends BookingEvent {
+  final int rideId;
+
+  ArrivedEvent({required this.rideId});
 }
 
 class CompletedTripEvent extends BookingEvent {
@@ -25,13 +31,13 @@ class CompletedTripEvent extends BookingEvent {
   final String endAddress;
   final double endLatitude;
   final double endLongitude;
-   double? distance;
+  final double distance;
 
   CompletedTripEvent({
     required this.rideId,
     required this.endAddress,
     required this.endLatitude,
     required this.endLongitude,
-     this.distance,
+    required this.distance,
   });
 }

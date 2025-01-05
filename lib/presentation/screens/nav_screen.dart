@@ -40,9 +40,6 @@ class _NavScreenState extends State<NavScreen> {
               setState(() {
                 isApproved = true;
               });
-              if(dataDriver != null){
-                
-              }
             } else {
               setState(() {
                 isApproved = false;

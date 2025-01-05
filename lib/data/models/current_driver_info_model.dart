@@ -37,7 +37,7 @@ class DataDriverInfo {
   dynamic fare;
   int? status;
   String? statusName;
-  Driver? passenger;
+  Passenger? passenger;
   Driver? driver;
   Payment? payment;
   DateTime? createdAt;
@@ -82,7 +82,7 @@ class DataDriverInfo {
         statusName: json["status_name"],
         passenger: json["passenger"] == null
             ? null
-            : Driver.fromJson(json["passenger"]),
+            : Passenger.fromJson(json["passenger"]),
         driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
         payment: json["payment"] == null?null:Payment.fromJson(json["payment"]),
         createdAt: json["created_at"] == null
@@ -135,7 +135,7 @@ class Driver {
   String? statusDate;
   String? profileImage;
   Vehicle? vehicle;
-  int? roleId;
+  LastLocation? lastLocation;
 
   Driver({
     this.id,
@@ -157,7 +157,7 @@ class Driver {
     this.statusDate,
     this.profileImage,
     this.vehicle,
-    this.roleId,
+    this.lastLocation,
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
@@ -181,7 +181,103 @@ class Driver {
         profileImage: json["profile_image"],
         vehicle:
             json["vehicle"] == null ? null : Vehicle.fromJson(json["vehicle"]),
+        lastLocation:json["last_location"] ==null?null:LastLocation.fromJson(json["last_location"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "last_name": lastName,
+        "first_name": firstName,
+        "email": email,
+        "gender": gender,
+        "dob": dob,
+        "country_code": countryCode,
+        "phone": phone,
+        "card_type": cardType,
+        "card_number": cardNumber,
+        "card_image": cardImage,
+        "driver_license_number": driverLicenseNumber,
+        "driver_license_expired": driverLicenseExpired,
+        "driver_license_image": driverLicenseImage,
+        "status": status,
+        "status_date": statusDate,
+        "profile_image": profileImage,
+        "vehicle": vehicle?.toJson(),
+        "last_location": lastLocation?.toJson(),
+      };
+}
+
+class Passenger {
+  int? id;
+  String? name;
+  String? lastName;
+  String? firstName;
+  String? email;
+  int? gender;
+  String? dob;
+  String? countryCode;
+  String? phone;
+  int? cardType;
+  String? cardNumber;
+  String? cardImage;
+  String? driverLicenseNumber;
+  String? driverLicenseExpired;
+  String? driverLicenseImage;
+  int? status;
+  String? statusDate;
+  String? profileImage;
+  Vehicle? vehicle;
+  int? roleId;
+  LastLocation? lastLocation;
+
+  Passenger({
+    this.id,
+    this.name,
+    this.lastName,
+    this.firstName,
+    this.email,
+    this.gender,
+    this.dob,
+    this.countryCode,
+    this.phone,
+    this.cardType,
+    this.cardNumber,
+    this.cardImage,
+    this.driverLicenseNumber,
+    this.driverLicenseExpired,
+    this.driverLicenseImage,
+    this.status,
+    this.statusDate,
+    this.profileImage,
+    this.vehicle,
+    this.roleId,
+    this.lastLocation,
+  });
+
+  factory Passenger.fromJson(Map<String, dynamic> json) => Passenger(
+        id: json["id"],
+        name: json["name"],
+        lastName: json["last_name"],
+        firstName: json["first_name"],
+        email: json["email"],
+        gender: json["gender"],
+        dob: json["dob"],
+        countryCode: json["country_code"],
+        phone: json["phone"],
+        cardType: json["card_type"],
+        cardNumber: json["card_number"],
+        cardImage: json["card_image"],
+        driverLicenseNumber: json["driver_license_number"],
+        driverLicenseExpired: json["driver_license_expired"],
+        driverLicenseImage: json["driver_license_image"],
+        status: json["status"],
+        statusDate: json["status_date"],
+        profileImage: json["profile_image"],
+        vehicle:
+            json["vehicle"] == null ? null : Vehicle.fromJson(json["vehicle"]),
         roleId: json["role_id"],
+        lastLocation:json["last_location"] ==null?null:LastLocation.fromJson(json["last_location"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -205,6 +301,7 @@ class Driver {
         "profile_image": profileImage,
         "vehicle": vehicle?.toJson(),
         "role_id": roleId,
+        "last_location": lastLocation?.toJson(),
       };
 }
 
@@ -366,5 +463,25 @@ class Payment {
         "status_name": statusName,
         "created_at": createdAt,
         "updated_at": updatedAt,
+    };
+}
+
+class LastLocation {
+    String? latitude;
+    String? longitude;
+
+    LastLocation({
+        this.latitude,
+        this.longitude,
+    });
+
+    factory LastLocation.fromJson(Map<String, dynamic> json) => LastLocation(
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "latitude": latitude,
+        "longitude": longitude,
     };
 }
