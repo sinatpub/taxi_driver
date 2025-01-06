@@ -16,23 +16,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   BaseHttpClient.init();
   di.init();
-
   WidgetsFlutterBinding.ensureInitialized();
-
-// Initialize the plugin for both iOS and Android
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings();
-
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-  );
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  Taxi.shared.requestIOSPermissions(flutterLocalNotificationsPlugin);
+  Taxi.shared.initLocationNotification();
   EasyLocalization.logger.enableBuildModes = [];
   runApp(
     EasyLocalization(

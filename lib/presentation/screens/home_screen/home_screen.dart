@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
+import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
@@ -33,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final DriverSocketService driverSocketService = DriverSocketService();
   SetDriverStatusApi statusApi = SetDriverStatusApi();
 
+  // * Socket Class
+  DriverSocketService driverSocket = DriverSocketService();
   bool isCameraInitialized = false;
 
   void fetchLocation() async {
@@ -42,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         driverCurrentLat = position.latitude;
         driverCurrentLng = position.longitude;
       });
-      debugPrint("Latitude: ${position.latitude}, Longitude: ${position.longitude}");
+      debugPrint(
+          "Latitude: ${position.latitude}, Longitude: ${position.longitude}");
     } else {
       debugPrint("Failed to get location.");
     }
@@ -50,23 +55,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    // setState(() {
-    Taxi.shared.updateDriverLocation();
-    Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
-    // });
+    // Taxi.shared.updateDriverLocation();
     fetchLocation();
-    super.initState();
     initialize();
-    WidgetsBinding.instance.addObserver(this);
+
+   
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Ensure the widget tree is built before calling registerSocket or accessing Bloc
+      registerSocket();
+    });
+    super.initState();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      // BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
-    }
-  }
-
+  // * Checking Driver Offline or Online
   checkDriverStatus() async {
     try {
       var response = await statusApi.getStatusDriver();
@@ -77,19 +78,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       tlog("Error $e");
     }
   }
+
   void initialize() async {
-    driverSocketService.connectToSocket(AppConstant.socketBasedUrl, "5", "Driver",context: context);
     await checkDriverStatus();
     await Taxi.shared.init();
-      _updateMarkerPosition();
-      if (!isCameraInitialized) {
-        mapController?.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng(driverCurrentLat, driverCurrentLng),
-          ),
-        );
-        isCameraInitialized = true; // Camera is now initialized
-      }
+    _updateMarkerPosition();
+    if (!isCameraInitialized) {
+      mapController?.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(driverCurrentLat, driverCurrentLng),
+        ),
+      );
+      isCameraInitialized = true; // Camera is now initialized
+    }
+  }
+
+  // * Register Socket
+  void registerSocket() async {
+    RegisterModel? driverData = await StorageGet.getDriverData();
+    if (driverData?.data?.driver?.id != null) {
+      driverSocket.connectToSocket(
+        AppConstant.socketBasedUrl,
+        "${driverData?.data?.driver?.id}",
+        "Driver",
+        context: context,
+      );
+    }
   }
 
   void _updateMarkerPosition() async {
@@ -117,43 +131,46 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       toggleSize: 35,
       padding: 3,
       showOnOff: true,
+
       onToggle: (val) async {
-        Taxi.shared.toggleDriverAvailable(isAvailable: val);
-        setState(() {
-          Taxi.shared.isDriverActive = val;
-        });
-        setState(() {
-          switchButton = !switchButton;
-        });
+        Taxi.shared.notifyBooking(title: "Complete Ride");
+        // Taxi.shared.toggleDriverAvailable(isAvailable: val);
+        // setState(() {
+        //   Taxi.shared.isDriverActive = val;
+        //     switchButton = !switchButton;
+        // });
       },
     );
   }
 
   Widget buildGoogleMap() {
-    return driverCurrentLat ==0.0 || driverCurrentLng == 0.0? Container(
-      child:const Center(child: CircularProgressIndicator(),),
-    ): GoogleMap(
-      mapType: MapType.normal,
-      myLocationEnabled: true,
-      compassEnabled: true,
-      trafficEnabled: true,
-      initialCameraPosition: CameraPosition(
-        target: LatLng(driverCurrentLat, driverCurrentLng), // Default position if location is unavailable
-        zoom: 17.0,
-      ),
-      markers: _markers,
-      onMapCreated: (GoogleMapController controller) {
-        mapController = controller;
-        if (!isCameraInitialized) {
-          controller.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(driverCurrentLat, driverCurrentLng),
+    return driverCurrentLat == 0.0 || driverCurrentLng == 0.0
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : GoogleMap(
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            compassEnabled: true,
+            trafficEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(driverCurrentLat,
+                  driverCurrentLng), // Default position if location is unavailable
+              zoom: 17.0,
             ),
+            markers: _markers,
+            onMapCreated: (GoogleMapController controller) {
+              mapController = controller;
+              if (!isCameraInitialized) {
+                controller.animateCamera(
+                  CameraUpdate.newLatLng(
+                    LatLng(driverCurrentLat, driverCurrentLng),
+                  ),
+                );
+                isCameraInitialized = true;
+              }
+            },
           );
-          isCameraInitialized = true;
-        }
-      },
-    );
   }
 
   Widget buildCustomerLocationWidget(
@@ -239,34 +256,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return BlocConsumer<CurrentDriverInfoBloc, CurrentDriverInfoState>(
       listener: (context, state) {
         if (state is CurrentDriverLoading) {
-              tlog("Current Driver Loading");
-            } else if (state is CurrentDriverInfoLoaded) {
-              var dataDriver = state.currentDriverInfoModel.data;
-              tlog("Current Driver Loaded");
-              if(dataDriver != null){
-                if(dataDriver.status == 6){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CalculateFeeScreen(dataDriverInfo: dataDriver,routFrom: "FromHome",startAddress: dataDriver.startAddress.toString(),endAddress: dataDriver.endAddress.toString())));
-                }else if(dataDriver.status == null){
-
-                }
-                else{
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BookingScreen(
-                    processStepBook: dataDriver.status! == 8?3:dataDriver.status! == 3?4:2,
-                    bookingCode: dataDriver.bookingCode.toString(),
-                    bookingId: dataDriver.id.toString(),
-                    latPassenger: double.parse(dataDriver.passenger!.lastLocation!.latitude.toString()),
-                    lngPassenger: double.parse(dataDriver.passenger!.lastLocation!.longitude.toString()),
-                    latDriver: double.parse(dataDriver.driver!.lastLocation!.latitude.toString()),
-                    lngDriver: double.parse(dataDriver.driver!.lastLocation!.longitude.toString()),
+          tlog("Current Driver Loading");
+        } else if (state is CurrentDriverInfoLoaded) {
+          var dataDriver = state.currentDriverInfoModel.data;
+          tlog("Current Driver Loaded");
+          if (dataDriver != null) {
+            if (dataDriver.status == 6) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CalculateFeeScreen(
+                          dataDriverInfo: dataDriver,
+                          routFrom: "FromHome",
+                          startAddress: dataDriver.startAddress.toString(),
+                          endAddress: dataDriver.endAddress.toString())));
+            } else if (dataDriver.status == null) {
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingScreen(
+                      processStepBook: dataDriver.status! == 8
+                          ? 3
+                          : dataDriver.status! == 3
+                              ? 4
+                              : 2,
+                      bookingCode: dataDriver.bookingCode.toString(),
+                      bookingId: dataDriver.id.toString(),
+                      latPassenger: double.parse(dataDriver
+                          .passenger!.lastLocation!.latitude
+                          .toString()),
+                      lngPassenger: double.parse(dataDriver
+                          .passenger!.lastLocation!.longitude
+                          .toString()),
+                      latDriver: double.parse(
+                          dataDriver.driver!.lastLocation!.latitude.toString()),
+                      lngDriver: double.parse(dataDriver
+                          .driver!.lastLocation!.longitude
+                          .toString()),
                       // desLat: data["destination"]['latitude'],
                       // desLng: data["destination"]['longitude'],
-                    passengerId: dataDriver.passenger!.id.toString(),
-                  ),));
-                }
-              }
-            } else {
-              tlog("Current Driver Fail");
+                      passengerId: dataDriver.passenger!.id.toString(),
+                    ),
+                  ));
             }
+          }
+        } else {
+          tlog("Current Driver Fail");
+        }
       },
       builder: (context, state) {
         return Column(
@@ -276,14 +313,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hello Kosal",style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark1)),
+                  Text("Hello Kosal",
+                      style: ThemeConstands.font18SemiBold
+                          .copyWith(color: AppColors.dark1)),
                   buildSwitchButton(),
                 ],
               ),
             ),
             Expanded(child: buildGoogleMap()),
-            if (state is CurrentDriverLoading)
-              const SizedBox(),
+            if (state is CurrentDriverLoading) const SizedBox(),
           ],
         );
       },

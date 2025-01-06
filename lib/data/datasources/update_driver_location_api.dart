@@ -1,6 +1,7 @@
 import 'package:com.tara_driver_application/core/api_service/base_api_service.dart';
 import 'package:com.tara_driver_application/data/models/driver_location_model.dart';
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 
 class UpdateDriverLocation {
   Future<UpdateDriverLocationModel> updateDriverLocationApi(
@@ -19,7 +20,7 @@ class UpdateDriverLocation {
       },
       // customToken: "28|MTbCFQGmG4orNpm7GA0lVKPR4gopEjMHO8Zrq4iY",
       onSuccess: (result) {
-        print("Update location again $result");
+        Logger().e("Update location again $result");
         return UpdateDriverLocationModel?.fromJson(result.data);
       },
       bodyParse: formData,

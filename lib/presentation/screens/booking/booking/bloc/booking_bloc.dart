@@ -31,9 +31,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<ConfirmBookingEvent>((event, emit) async {
       try {
         emit(BookingLoading());
-        var dataResporn = await bookingApi.confirmBookingApi(rideId: event.rideId,);
+        var dataResporn = await bookingApi.confirmBookingApi(
+          rideId: event.rideId,
+        );
         tlog("Accept Ride: ${event.rideId}");
-        Taxi.shared.notifyAcceptBooking();
+        Taxi.shared.notifyBooking(title: "Accept Ride");
         emit(ConfirmBookingSuccess(confirmBookingModel: dataResporn));
       } catch (e) {
         emit(ConfirmBookingFail());
@@ -47,7 +49,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           rideId: event.rideId,
         );
         emit(StartTripSuccess());
-        Taxi.shared.notifyBooking();
+        Taxi.shared.notifyBooking(title: "Start Trip");
       } catch (e) {
         emit(StartTripFail());
       }
@@ -60,7 +62,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           rideId: event.rideId,
         );
         emit(ArriveSuccess());
-        Taxi.shared.notifyArriveBooking();
+        Taxi.shared.notifyBooking(title: "Arrived ");
       } catch (e) {
         emit(ArriveFail());
       }
@@ -77,7 +79,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
         );
         emit(CompletedTripSuccess(completeDriver: result));
-        Taxi.shared.notifyBooking();
+        Taxi.shared.notifyBooking(title: "Complete Ride");
       } catch (e) {
         tlog("Complete Trip => $e");
         emit(CompletedTripFail());

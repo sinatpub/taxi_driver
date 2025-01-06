@@ -1,3 +1,4 @@
+import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
@@ -42,6 +43,13 @@ abstract class BaseSocketService {
 }
 
 class DriverSocketService extends BaseSocketService {
+  static final DriverSocketService _instance = DriverSocketService._internal();
+
+  factory DriverSocketService() {
+    return _instance;
+  }
+
+  DriverSocketService._internal();
   @override
   void register(String driverId) {
     _socket?.emit('registerDriver', driverId);
@@ -51,26 +59,33 @@ class DriverSocketService extends BaseSocketService {
   @override
   void connectToSocket(String url, String passengerId, String role,
       {required BuildContext context}) {
-    super.connectToSocket("http://206.189.38.88:3009", passengerId, role,
+    super.connectToSocket(AppConstant.socketBasedUrl, passengerId, role,
         context: context);
     newRide(context);
   }
 
   // * Listener
   void newRide(context) {
+    _socket?.off('newRide');
     _socket?.on(
       'newRide',
       (data) {
         tlog("Socket New Ride $data");
         // showNewRideAlert(data);
-        BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
+        Taxi.shared.notifyBooking(
+            title: "New Ride Requests",
+            description:
+                "A passenger is waiting for your response. Accept the ride to begin the service.",
+            isSound: true);
+        BlocProvider.of<CurrentDriverInfoBloc>(context)
+            .add(GetCurrentInfoEvent());
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BookingScreen(
-            processStepBook: 1,
-            bookingCode: data["booking_code"].toString(),
-            bookingId: data["booking_id"].toString(),
+              processStepBook: 1,
+              bookingCode: data["booking_code"].toString(),
+              bookingId: data["booking_id"].toString(),
               latPassenger: data["location"]['latitude'],
               lngPassenger: data["location"]['longitude'],
               // desLat: data["destination"]['latitude'],
@@ -82,7 +97,6 @@ class DriverSocketService extends BaseSocketService {
       },
     );
   }
-
 
 //   emit event rideArrival with parameter {
 //     "booking_code": "xxxx",
@@ -97,11 +111,9 @@ class DriverSocketService extends BaseSocketService {
 //     }
 // }
 
-
- void arrivedSocket() {
+  void arrivedSocket() {
     _socket?.emit('rideArrival', {
       "isArrive": true,
-      
     });
     tlog('Start ride with booking code:');
   }
@@ -132,8 +144,6 @@ class DriverSocketService extends BaseSocketService {
     tlog('Start ride with booking code: $bookingCode');
   }
 
-
-
   void dropDrive({
     required String driverId,
     required String bookingCode,
@@ -163,7 +173,7 @@ class DriverSocketService extends BaseSocketService {
     _socket?.emit('acceptPayment', {
       "passengerId": passengerId,
     });
-    tlog('Payment done' );
+    tlog('Payment done');
   }
 
   void acceptRide({
@@ -177,7 +187,7 @@ class DriverSocketService extends BaseSocketService {
   }) {
     _socket?.emit('acceptRide', {
       "driverId": driverId,
-      "booking_code":bookingId,
+      "booking_code": bookingId,
       "passengerId": passengerId,
       "location": {
         "latitude": "$currentLat",
@@ -188,15 +198,7 @@ class DriverSocketService extends BaseSocketService {
         "longitude": "$destinationLng",
       }
     });
-    tlog('Ride accepted with booking code: $bookingId - $driverId - $passengerId - $currentLat - $currentLng - $destinationLat - $destinationLng');
-  }
-
-  void showNewRideAlert(dynamic data, {String? lat, String? lng}) {
-    Taxi.shared.showNotification(
-        driverId: lat ?? "",
-        // ?? data['passengerId']??"123",
-        bookingCode: lng ?? ""
-        // ?? data['booking_code']??"123",
-        );
+    tlog(
+        'Ride accepted with booking code: $bookingId - $driverId - $passengerId - $currentLat - $currentLng - $destinationLat - $destinationLng');
   }
 }
