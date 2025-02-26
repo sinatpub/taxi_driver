@@ -83,6 +83,10 @@ class DriverSocketService extends BaseSocketService {
           context,
           MaterialPageRoute(
             builder: (context) => BookingScreen(
+              namePassanger: data["passenger"]["name"],
+              phonePassanger: data["passenger"]["phone"],
+              imagePassanger: data["passenger"]["profile"],
+              timeOut:  data["timeout"],
               processStepBook: 1,
               bookingCode: data["booking_code"].toString(),
               bookingId: data["booking_id"].toString(),

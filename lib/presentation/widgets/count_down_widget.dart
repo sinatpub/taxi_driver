@@ -1,4 +1,5 @@
 import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:flutter/material.dart';
 
 class SmoothCircularCountdown extends StatefulWidget {
@@ -29,7 +30,12 @@ class _SmoothCircularCountdownState extends State<SmoothCircularCountdown>
     );
     _controller.addListener(() {
       if (_controller.isDismissed && widget.isPop) {
-        Navigator.of(context).pop(); // Pop the screen when countdown finishes
+        Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => const NavScreen(),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),(route) => false,
+        ); // Pop the screen when countdown finishes
       }
     });
     _controller.reverse(from: 1.0);

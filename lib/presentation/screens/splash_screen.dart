@@ -31,18 +31,19 @@ class SplashScreen extends StatelessWidget {
       checkDriverToken(context);
     });
 
-    return const Scaffold(
+    return  Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 40,
+              child: Image.asset("/Users/holy/Desktop/taxi_driver/assets/icon/png/logo_app.png"),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Text("TARA DRIVER", style: AppTextStyles.heading),
+            const Text("TARA DRIVER", style: AppTextStyles.heading),
           ],
         ),
       ),

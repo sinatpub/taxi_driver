@@ -8,6 +8,7 @@ import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
+import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/count_down_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
@@ -23,6 +24,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingScreen extends StatefulWidget {
   final String bookingId;
@@ -35,6 +37,10 @@ class BookingScreen extends StatefulWidget {
   double? latDriver;
   double? lngDriver;
   int processStepBook;
+  int timeOut;
+  String namePassanger;
+  String imagePassanger;
+  String phonePassanger;
 
   BookingScreen({
     super.key,
@@ -47,7 +53,11 @@ class BookingScreen extends StatefulWidget {
     this.desLngPassenger,
     this.latDriver,
     this.lngDriver,
+    required this.timeOut,
     required this.passengerId,
+    required this.namePassanger,
+    required this.phonePassanger,
+    required this.imagePassanger,
   });
 
   @override
@@ -78,14 +88,9 @@ class _BookingScreenState extends State<BookingScreen> {
   double currentLngDriver = 0.0;
   String currentAddressDriver = "";
 
-  double startLatDriver = 0.0;
-  double startLngDriver = 0.0;
-  String startAddressDriver = "";
-
   double dropLatDriver = 0.0;
   double dropLngDriver = 0.0;
   String dropAddressDriver = "";
-  double distance = 0.0;
   // * Socket Class
   DriverSocketService driverSocket = DriverSocketService();
   // * Register Socket
@@ -101,56 +106,70 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
+  Future<void> _launchLink(String url) async {
+    if (await launchUrl(Uri.parse(url))) {
+    }else{
+      await launchUrl(Uri.parse(url),);
+    }
+  }
+
   void getLocation() async {
     // Type  0 = initScreen, 1 = accept ,2 = arrive, 3 = start, 4 = drop;
     Position? position = await Taxi.shared.checkCurrentLocation();
     if (position != null) {
+
+    // ==============  Accept acion ======================
       if (typeProcessBooking == 1) {
-        currentAddressDriver =
-            await getAddressFromLatLng(position.latitude, position.longitude);
-        setState(() {
-          currentLatDriver = position.latitude;
-          currentLngDriver = position.longitude;
-        });
-        BlocProvider.of<BookingBloc>(context).add(
-          ConfirmBookingEvent(
-            rideId: int.parse(widget.bookingId.toString()),
-          ),
-        );
-        debugPrint("accept and get positon");
-        Logger().e(
-            "D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
-        _drawPolylines(
-            dLocation: LatLng(currentLatDriver, currentLngDriver),
-            pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+        // currentAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
+        // setState(() {
+        //   currentLatDriver = position.latitude;
+        //   currentLngDriver = position.longitude;
+        // });
+        // BlocProvider.of<BookingBloc>(context).add(
+        //   ConfirmBookingEvent(
+        //     rideId: int.parse(widget.bookingId.toString()),
+        //   ),
+        // );
+        // debugPrint("accept and get positon");
+        // Logger().e(
+        //     "D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
+        // _drawPolylines(
+        //     dLocation: LatLng(currentLatDriver, currentLngDriver),
+        //     pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+
+  // ==============  Arrive acion ======================
       } else if (typeProcessBooking == 2) {
-        debugPrint("arrived");
-        currentAddressDriver =
-            await getAddressFromLatLng(position.latitude, position.longitude);
-        setState(() {
-          currentLatDriver = position.latitude;
-          currentLngDriver = position.longitude;
-        });
-        BlocProvider.of<BookingBloc>(context).add(
-          ArrivedEvent(
-            rideId: int.parse(widget.bookingId),
-          ),
-        );
-        _clearPolyline();
+        // debugPrint("arrived");
+        // currentAddressDriver =
+        //     await getAddressFromLatLng(position.latitude, position.longitude);
+        // setState(() {
+        //   currentLatDriver = position.latitude;
+        //   currentLngDriver = position.longitude;
+        // });
+        // BlocProvider.of<BookingBloc>(context).add(
+        //   ArrivedEvent(
+        //     rideId: int.parse(widget.bookingId),
+        //   ),
+        // );
+        // _clearPolyline();
+  
+  // ==============  Start acion ======================
       } else if (typeProcessBooking == 3) {
-        debugPrint("start");
-        startAddressDriver =
-            await getAddressFromLatLng(position.latitude, position.longitude);
-        setState(() {
-          startLatDriver = position.latitude;
-          startLngDriver = position.longitude;
-        });
-        BlocProvider.of<BookingBloc>(context).add(
-          StartTripEvent(
-            rideId: int.parse(widget.bookingId),
-          ),
-        );
-        _clearPolyline();
+        // debugPrint("start");
+        // startAddressDriver =
+        //     await getAddressFromLatLng(position.latitude, position.longitude);
+        // setState(() {
+        //   startLatDriver = position.latitude;
+        //   startLngDriver = position.longitude;
+        // });
+        // BlocProvider.of<BookingBloc>(context).add(
+        //   StartTripEvent(
+        //     rideId: int.parse(widget.bookingId),
+        //   ),
+        // );
+        // _clearPolyline();
+
+  // ==============  Drop acion ======================
       } else if (typeProcessBooking == 4) {
         debugPrint("drop - total distance ${Taxi.shared.totalDistance}");
         dropAddressDriver =
@@ -158,28 +177,42 @@ class _BookingScreenState extends State<BookingScreen> {
         setState(() {
           dropLatDriver = position.latitude;
           dropLngDriver = position.longitude;
-          distance = Taxi.shared.calculateDistance(
-              startLatDriver, startLngDriver, dropLatDriver, dropLngDriver);
         });
-
         BlocProvider.of<BookingBloc>(context).add(CompletedTripEvent(
-          distance: Taxi.shared.totalDistance,
+          distance: double.parse((Taxi.shared.totalDistance/100).toStringAsFixed(2).toString()),
           rideId: int.parse(widget.bookingId),
           endAddress: dropAddressDriver,
           endLatitude: dropLatDriver,
           endLongitude: dropLngDriver,
         ));
-        _clearPolyline();
-      } else {
-        currentAddressDriver =
-            await getAddressFromLatLng(position.latitude, position.longitude);
-        setState(() {
-          currentLatDriver = position.latitude;
-          currentLngDriver = position.longitude;
-        });
+      } 
+
+// ==============  New request acion ======================
+      else {
+        currentAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
+        if(typeProcessBooking == 0 && widget.processStepBook !=1){
+           setState(() {
+            widget.latDriver = position.latitude;
+            widget.lngDriver = position.longitude;
+            _turnRight();
+            syncMarker();
+            print("fasdfkads");
+          });
+        }
+        else{
+          setState(() {
+            currentLatDriver = position.latitude;
+            currentLngDriver = position.longitude;
+            widget.latDriver = position.latitude;
+            widget.lngDriver = position.longitude;
+          });
+          Logger().e("D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
+          _drawPolylines(
+              dLocation: LatLng(currentLatDriver, currentLngDriver),
+              pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+        }
       }
-      debugPrint(
-          "Latitude: ${position.latitude}, Longitude: ${position.longitude}");
+      debugPrint("Lat: ${position.latitude}, Lng: ${position.longitude}");
     } else {
       debugPrint("Failed to get location.");
     }
@@ -193,26 +226,21 @@ class _BookingScreenState extends State<BookingScreen> {
     polylinePoints = PolylinePoints();
     syncMarker();
 
-    // Taxi.shared.updateDriverLocation();
+    Taxi.shared.setupBackgroundLocationTracking();
+    Taxi.shared.updateDriverLocation();
     // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
   }
 
   // Sync markers for driver and passenger locations
   void syncMarker() async {
-    driverMarker =
-        await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
-    passengerMarker =
-        await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
-    destinationPassengerMarker =
-        await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
+    driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
+    passengerMarker = await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
+    destinationPassengerMarker = await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
 
     _addMarker(
-        widget.processStepBook == 1 ? widget.latPassenger : widget.latDriver!,
-        widget.processStepBook == 1 ? widget.lngPassenger : widget.lngDriver!,
-        "destinationMarker",
-        widget.processStepBook == 1 ? passengerMarker : driverMarker);
-    // _addMarker(Taxi.shared.driverLocation!.latitude!,
-    //     Taxi.shared.driverLocation!.longitude!, 'driverMarker', driverMarker);
+        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger : widget.latDriver!,
+        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger : widget.lngDriver!,
+        "destinationMarker", widget.processStepBook == 1? passengerMarker : driverMarker);
 
     getAddressPlaceMarker();
     setState(() {});
@@ -249,10 +277,8 @@ class _BookingScreenState extends State<BookingScreen> {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleApiKey: AppConstant.googleKeyApi,
         request: PolylineRequest(
-          origin: PointLatLng(
-              routes[i]['start']!.latitude, routes[i]['start']!.longitude),
-          destination: PointLatLng(
-              routes[i]['end']!.latitude, routes[i]['end']!.longitude),
+          origin: PointLatLng(routes[i]['start']!.latitude, routes[i]['start']!.longitude),
+          destination: PointLatLng(routes[i]['end']!.latitude, routes[i]['end']!.longitude),
           mode: TravelMode.driving,
         ),
       );
@@ -295,12 +321,8 @@ class _BookingScreenState extends State<BookingScreen> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              widget.processStepBook == 1
-                  ? widget.latPassenger
-                  : widget.latDriver!,
-              widget.processStepBook == 1
-                  ? widget.lngPassenger
-                  : widget.lngDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger: widget.latDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger: widget.lngDriver!,
             ), // Use the provided LatLng for camera movement
             zoom: 19.151926040649414, // Set zoom level
           ),
@@ -308,21 +330,6 @@ class _BookingScreenState extends State<BookingScreen> {
       );
     }
   }
-
-  // Future<void> setupBackgroundLocationTracking() async {
-  //   if (isStartDriver == true) {
-  //     await location.enableBackgroundMode(enable: true);
-  //     location.onLocationChanged.listen((locationData) {
-  //       setState(() {
-  //         Taxi.shared.driverLocation = locationData;
-  //       });
-  //       polylineCoordinates.add(LatLng(locationData.latitude!, locationData.longitude!));
-  //       _addMarker(locationData.latitude!, locationData.longitude!,"driverMarker", driverMarker);
-  //       _drawPolylines();
-  //       Taxi.shared.notifyAcceptBooking();
-  //     });
-  //   }
-  // }
 
   // Get address for the place marker
   void getAddressPlaceMarker() async {
@@ -346,21 +353,21 @@ class _BookingScreenState extends State<BookingScreen> {
           if (state is BookingLoading) {
             tlog("Booking Loading");
           } else if (state is CancelBookingSuccess) {
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => const NavScreen(),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
+            ),(route) => false,
+            );
           } else if (state is ConfirmBookingSuccess) {
             var dataConfirmBooking = state.confirmBookingModel.data;
             setState(() {
               widget.processStepBook = 2;
             });
-            if (widget.processStepBook == 2 || widget.processStepBook == 1) {
               _drawPolylines(
-                  dLocation: LatLng(currentLatDriver, currentLngDriver),
-                  pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-            } else {
-              _clearPolyline();
-            }
-
-            // _turnRight();
+                dLocation: LatLng(currentLatDriver, currentLngDriver),
+                pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+            _turnRight();
             tlog("Confirm Booking Successfully");
             debugPrint(
                 "acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
@@ -374,13 +381,15 @@ class _BookingScreenState extends State<BookingScreen> {
                   "latitude": currentLatDriver,
                   "longitude": currentLngDriver
                 },
-                "destination": {"latitude": 12.927923, "longitude": 77.627108}
               },
             );
           } else if (state is StartTripSuccess) {
+            setState(() {
+              _clearPolyline();
+            });
             tlog("Start Trip Success");
             Taxi.shared.simulateTrackingDistance();
-            // _turnRight();
+            _turnRight();
             setState(() {
               widget.processStepBook = 4;
             });
@@ -396,15 +405,13 @@ class _BookingScreenState extends State<BookingScreen> {
                   "latitude": currentLatDriver,
                   "longitude": currentLngDriver
                 },
-                "destination": {"latitude": 12.927923, "longitude": 77.627108}
               },
             );
           } else if (state is ArriveSuccess) {
-            _clearPolyline();
-            // _turnRight();
-            _drawPolylines(
-                dLocation: LatLng(currentLatDriver, currentLngDriver),
-                pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+             _turnRight();
+            setState(() {
+              _clearPolyline();
+            });
             tlog("Arrive Trip Success");
             Taxi.shared.connectAndEmitEvent(
               eventName: "rideArrival",
@@ -415,13 +422,16 @@ class _BookingScreenState extends State<BookingScreen> {
                   "latitude": currentLatDriver,
                   "longitude": currentLngDriver
                 },
-                "destination": {"latitude": 12.927923, "longitude": 77.627108}
               },
             );
             setState(() {
               widget.processStepBook = 3;
             });
           } else if (state is CompletedTripSuccess) {
+             _turnRight();
+            setState(() {
+              _clearPolyline();
+            });
             debugPrint(
                 "dope bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
@@ -434,7 +444,6 @@ class _BookingScreenState extends State<BookingScreen> {
                   "latitude": currentLatDriver,
                   "longitude": currentLngDriver
                 },
-                "destination": {"latitude": 12.927923, "longitude": 77.627108}
               },
             );
             setState(() async {
@@ -466,7 +475,7 @@ class _BookingScreenState extends State<BookingScreen> {
             children: [
               GoogleMap(
                 mapType: MapType.normal,
-                myLocationEnabled: true,
+                myLocationEnabled: false,
                 indoorViewEnabled: true,
                 myLocationButtonEnabled: true,
                 compassEnabled: true,
@@ -477,7 +486,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 markers: _markers,
                 initialCameraPosition: CameraPosition(
                   // bearing: 192.8334901395799,
-                  target: LatLng(widget.latPassenger, widget.lngPassenger),
+                  target: LatLng( widget.latPassenger, widget.lngPassenger),
                   tilt: 0.0,
                   zoom: 17.151926040649414,
                 ),
@@ -485,17 +494,17 @@ class _BookingScreenState extends State<BookingScreen> {
                   _mapController = controller;
                 },
               ),
-              // widget.processStepBook == 1
-              //     ? const Positioned(
-              //         top: 60,
-              //         left: 0,
-              //         right: 0,
-              //         child: SmoothCircularCountdown(
-              //           countDuration: 30,
-              //           isPop: true,
-              //         ),
-              //       )
-              //     : const SizedBox(),
+              widget.processStepBook == 1
+                  ? Positioned(
+                      top: 60,
+                      left: 0,
+                      right: 0,
+                      child: SmoothCircularCountdown(
+                        countDuration: widget.timeOut??30,
+                        isPop: true,
+                      ),
+                    )
+                  : const SizedBox(),
               widget.processStepBook == 1
                   ? rideRequestWidget(context)
                   : widget.processStepBook == 2
@@ -514,6 +523,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
+                                      isLoading = true;
                                       typeProcessBooking = 4;
                                     });
                                     getLocation();
@@ -566,9 +576,10 @@ class _BookingScreenState extends State<BookingScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 0.0),
                   child: Row(
                     children: [
-                      const CircleAvatar(
-                        radius: 24,
-                      ),
+                      CircleAvatar(
+                                  radius: 24,
+                                  child: Image.network(widget.imagePassanger),
+                                ),
                       const SizedBox(
                         width: 18,
                       ),
@@ -576,7 +587,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Passenger",
+                            widget.namePassanger,
                             style: AppTextStyles.body.copyWith(
                                 fontWeight: FontWeight.w600, fontSize: 14),
                           ),
@@ -727,6 +738,17 @@ class _BookingScreenState extends State<BookingScreen> {
                             typeProcessBooking = 1;
                           });
                           getLocation();
+                          BlocProvider.of<BookingBloc>(context).add(
+                            ConfirmBookingEvent(
+                              rideId: int.parse(widget.bookingId.toString()),
+                            ),
+                          );
+                          debugPrint("accept and get positon");
+                          // Logger().e(
+                          //     "D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
+                          // _drawPolylines(
+                          //     dLocation: LatLng(currentLatDriver, currentLngDriver),
+                          //     pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
                         },
                         color: AppColors.main,
                         textColor: AppColors.light4,
@@ -798,13 +820,16 @@ class _BookingScreenState extends State<BookingScreen> {
                           children: [
                             Row(
                               children: [
-                                const CircleAvatar(radius: 24),
+                                CircleAvatar(
+                                  radius: 24,
+                                  child: Image.network(widget.imagePassanger),
+                                ),
                                 const SizedBox(width: 18),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Passenger",
+                                      widget.namePassanger,
                                       style: AppTextStyles.body.copyWith(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14),
@@ -822,7 +847,9 @@ class _BookingScreenState extends State<BookingScreen> {
                               ],
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _launchLink("tel:${widget.phonePassanger}");
+                              },
                               icon: const Icon(Icons.phone_outlined,
                                   color: AppColors.main),
                             ),
@@ -862,9 +889,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             ),
                             widget.desLatPassenger != null &&
                                     widget.desLngPassenger != null
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                ? Column(crossAxisAlignment:CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "Destination Location",
@@ -904,7 +929,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             "Are you sure you want to cancel this booking?",
                             onYes: () {
                           BlocProvider.of<BookingBloc>(context).add(
-                            CanceBookingEvent(rideId: 12345), // Example ID
+                            CanceBookingEvent(rideId: int.parse(widget.bookingId.toString())), // Example ID
                           );
                         });
                       },
@@ -920,6 +945,11 @@ class _BookingScreenState extends State<BookingScreen> {
                           typeProcessBooking = 2;
                         });
                         getLocation();
+                        BlocProvider.of<BookingBloc>(context).add(
+                          ArrivedEvent(
+                            rideId: int.parse(widget.bookingId),
+                          ),
+                        );
                       },
                       color: AppColors.main,
                       textColor: AppColors.light4,
@@ -974,8 +1004,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 0.0),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 24,
+                        child: Image.network(widget.imagePassanger),
                       ),
                       const SizedBox(
                         width: 18,
@@ -984,7 +1015,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Passenger",
+                            widget.namePassanger,
                             style: AppTextStyles.body.copyWith(
                                 fontWeight: FontWeight.w600, fontSize: 14),
                           ),
@@ -1070,10 +1101,13 @@ class _BookingScreenState extends State<BookingScreen> {
                     children: [
                       FBTNWidget(
                         onPressed: () {
-                          setState(() {
-                            typeProcessBooking = 3;
+                          showYesNoCustomDialog(context, "Cancel Booking",
+                              "Are you sure you want to cancel this booking?",
+                              onYes: () {
+                            BlocProvider.of<BookingBloc>(context).add(
+                              CanceBookingEvent(rideId: int.parse(widget.bookingId.toString())), // Example ID
+                            );
                           });
-                          getLocation();
                         },
                         color: AppColors.dark1,
                         textColor: AppColors.light4,
@@ -1088,6 +1122,11 @@ class _BookingScreenState extends State<BookingScreen> {
                               typeProcessBooking = 3;
                             });
                             getLocation();
+                            BlocProvider.of<BookingBloc>(context).add(
+                              StartTripEvent(
+                                rideId: int.parse(widget.bookingId),
+                              ),
+                            );
                           },
                           color: AppColors.main,
                           textColor: AppColors.light4,

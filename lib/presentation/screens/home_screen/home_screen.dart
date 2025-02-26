@@ -55,7 +55,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    // Taxi.shared.updateDriverLocation();
+    Taxi.shared.updateDriverLocation();
+    Taxi.shared.setupBackgroundLocationTracking();
     fetchLocation();
     initialize();
 
@@ -133,12 +134,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       showOnOff: true,
 
       onToggle: (val) async {
-        Taxi.shared.notifyBooking(title: "Complete Ride");
-        // Taxi.shared.toggleDriverAvailable(isAvailable: val);
-        // setState(() {
-        //   Taxi.shared.isDriverActive = val;
-        //     switchButton = !switchButton;
-        // });
+        // Taxi.shared.notifyBooking(title: "Complete Ride");
+        Taxi.shared.toggleDriverAvailable(isAvailable: val);
+        setState(() {
+          Taxi.shared.isDriverActive = val;
+            switchButton = !switchButton;
+        });
       },
     );
   }
@@ -276,24 +277,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   context,
                   MaterialPageRoute(
                     builder: (context) => BookingScreen(
-                      processStepBook: dataDriver.status! == 8
-                          ? 3
-                          : dataDriver.status! == 3
-                              ? 4
-                              : 2,
+                      namePassanger: dataDriver.passenger!.name.toString(),
+                      phonePassanger: dataDriver.passenger!.phone.toString(),
+                      imagePassanger: dataDriver.passenger!.profileImage.toString(),
+                      timeOut: 30,
+                      processStepBook: dataDriver.status! == 8? 3: dataDriver.status! == 3? 4:2,
                       bookingCode: dataDriver.bookingCode.toString(),
                       bookingId: dataDriver.id.toString(),
-                      latPassenger: double.parse(dataDriver
-                          .passenger!.lastLocation!.latitude
-                          .toString()),
-                      lngPassenger: double.parse(dataDriver
-                          .passenger!.lastLocation!.longitude
-                          .toString()),
-                      latDriver: double.parse(
-                          dataDriver.driver!.lastLocation!.latitude.toString()),
-                      lngDriver: double.parse(dataDriver
-                          .driver!.lastLocation!.longitude
-                          .toString()),
+                      latPassenger: double.parse(dataDriver.passenger!.lastLocation!.latitude.toString()),
+                      lngPassenger: double.parse(dataDriver.passenger!.lastLocation!.longitude.toString()),
+                      latDriver: double.parse(dataDriver.driver!.lastLocation!.latitude.toString()),
+                      lngDriver: double.parse(dataDriver.driver!.lastLocation!.longitude.toString()),
                       // desLat: data["destination"]['latitude'],
                       // desLng: data["destination"]['longitude'],
                       passengerId: dataDriver.passenger!.id.toString(),
@@ -331,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 Future<BitmapDescriptor> loadCustomMarker({required String imagePath}) async {
   BitmapDescriptor convertMarkerIcon = await BitmapDescriptor.asset(
-    const ImageConfiguration(size: Size(48, 48)),
+    const ImageConfiguration(),
     imagePath,
   );
   return convertMarkerIcon;
