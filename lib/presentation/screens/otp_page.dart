@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/models/phone_model.dart';
 import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
@@ -24,6 +23,8 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
+
+  final smartAuth = SmartAuth.instance;
   TextEditingController pinputController = TextEditingController();
   int? resentToken;
 
@@ -42,7 +43,7 @@ class _OtpPageState extends State<OtpPage> {
     formKey = GlobalKey<FormState>();
     pinController = TextEditingController();
     focusNode = FocusNode();
-    smsRetriever = SmsRetrieverImpl(SmartAuth());
+    smsRetriever = SmsRetrieverImpl(smartAuth);
 
     // Initialize countdown timer
     secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 90;
@@ -297,24 +298,23 @@ class _OtpPageState extends State<OtpPage> {
 }
 
 class SmsRetrieverImpl implements SmsRetriever {
-  const SmsRetrieverImpl(this.smartAuth);
+  SmsRetrieverImpl(this.smartAuth);
 
   final SmartAuth smartAuth;
 
   @override
   Future<void> dispose() {
-    return smartAuth.removeSmsListener();
+    return smartAuth.removeSmsRetrieverApiListener();
   }
 
   @override
   Future<String?> getSmsCode() async {
     final signature = await smartAuth.getAppSignature();
     debugPrint('App Signature: $signature');
-    final res = await smartAuth.getSmsCode(
-      useUserConsentApi: true,
-    );
-    if (res.succeed && res.codeFound) {
-      return res.code!;
+    final res = await smartAuth.getSmsWithRetrieverApi();
+
+    if (res.hasData) {
+      return res.requireData.code!;
     }
     return null;
   }
@@ -322,3 +322,4 @@ class SmsRetrieverImpl implements SmsRetriever {
   @override
   bool get listenForMultipleSms => false;
 }
+

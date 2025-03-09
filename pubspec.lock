@@ -958,10 +958,10 @@ packages:
     dependency: "direct main"
     description:
       name: smart_auth
-      sha256: "88aa8fe66e951c78a307f26d1c29672dce2e9eb3da2e12e853864d0e615a73ad"
+      sha256: a536423c50d71e9a311d16027346634d0deadd07dafc5b5606b46719cf6fb2b6
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "3.2.0"
   socket_io_client:
     dependency: "direct main"
     description:
