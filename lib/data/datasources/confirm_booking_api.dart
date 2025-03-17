@@ -1,4 +1,6 @@
 import 'package:com.tara_driver_application/core/api_service/base_api_service.dart';
+import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
 import 'package:com.tara_driver_application/data/models/confirm_booking_model.dart';
 import 'package:dio/dio.dart';
 
@@ -41,6 +43,24 @@ class BookingApi {
     );
   }
 
+  Future<ConfirmBookingModel> arriveDriverApi({required int rideId}) async {
+    FormData formData = FormData.fromMap({
+      "ride_id": rideId,
+    });
+    return BaseApiService().onRequest<ConfirmBookingModel>(
+      path: "/taxi-driver/drive-arrive",
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      bodyParse: formData,
+      onSuccess: (result) {
+        return ConfirmBookingModel?.fromJson(result.data);
+      },
+    );
+  }
+
   Future<bool> cancelBookingApi({required int rideId}) async {
     FormData formData = FormData.fromMap({
       "ride_id": rideId,
@@ -61,7 +81,7 @@ class BookingApi {
 
   ///taxi-driver/complete-drive
   ///
-  Future<bool> completeDriveApi({
+  Future<CompleteDriverModel> completeDriveApi({
     required int rideId,
     required double endLatitude,
     required double endLongitude,
@@ -75,7 +95,7 @@ class BookingApi {
       "end_address": endAddress,
       "distance": distance,
     });
-    return BaseApiService().onRequest<bool>(
+    return BaseApiService().onRequest<CompleteDriverModel>(
       path: "/taxi-driver/complete-drive",
       method: "POST",
       headers: {
@@ -84,6 +104,30 @@ class BookingApi {
       },
       bodyParse: formData,
       onSuccess: (result) {
+        // debugPrint(result.data);
+        tlog("${result.data}");
+        return CompleteDriverModel?.fromJson(result.data);
+        //return true;
+      },
+    );
+  }
+
+  Future<bool> completePayment({
+    required int rideId,
+  }) async {
+    FormData formData = FormData.fromMap({
+      "ride_id": rideId
+    });
+    return BaseApiService().onRequest<bool>(
+      path: "/taxi-driver/accept-payment",
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      bodyParse: formData,
+      onSuccess: (result) {
+        print("fasldfk$result");
         return true;
       },
     );

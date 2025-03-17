@@ -9,6 +9,7 @@ class FBTNWidget extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool enableWidth;
   final double? width;
+  final bool? loadingBut;
 
   const FBTNWidget({
     super.key,
@@ -18,6 +19,7 @@ class FBTNWidget extends StatelessWidget {
     required this.onPressed,
     this.enableWidth = false,
     this.width,
+    this.loadingBut = false
   });
 
   @override
@@ -33,7 +35,7 @@ class FBTNWidget extends StatelessWidget {
         disabledColor: AppColors.light1,
         color: color ?? Theme.of(context).primaryColor,
         textColor: textColor,
-        child: Text(label,style: const TextStyle(fontSize: 16),),
+        child: loadingBut==true? const Center(child: CircularProgressIndicator(color: AppColors.light4,),):Text(label,style: const TextStyle(fontSize: 16),),
       ),
     );
   }

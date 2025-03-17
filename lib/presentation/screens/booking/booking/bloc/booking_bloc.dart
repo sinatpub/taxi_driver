@@ -1,5 +1,7 @@
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/datasources/confirm_booking_api.dart';
+import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
+import 'package:com.tara_driver_application/data/models/confirm_booking_model.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:flutter/material.dart';
@@ -29,23 +31,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<ConfirmBookingEvent>((event, emit) async {
       try {
         emit(BookingLoading());
-        await bookingApi.confirmBookingApi(
+        var dataResporn = await bookingApi.confirmBookingApi(
           rideId: event.rideId,
         );
-        driverSocketService.acceptRide(
-          bookingCode: event.bookingCode,
-          driverId: event.driverId,
-          passengerId: event.passengerId,
-          currentLat: event.currentLat,
-          currentLng: event.currentLng,
-          destinationLat: event.destinationLat,
-          destinationLng: event.destinationLng,
-        );
-
-        tlog(
-            "Accept Ride: ${event.bookingCode} , ${event.driverId}, ${event.passengerId}, ${event.currentLat}, ${event.currentLng}, ${event.destinationLat}, ${event.destinationLng}");
-        Taxi.shared.notifyAcceptBooking();
-        emit(ConfirmBookingSuccess());
+        tlog("Accept Ride: ${event.rideId}");
+        Taxi.shared.notifyBooking(title: "Accept Ride");
+        emit(ConfirmBookingSuccess(confirmBookingModel: dataResporn));
       } catch (e) {
         emit(ConfirmBookingFail());
       }
@@ -57,36 +48,40 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         var result = await bookingApi.startDriverApi(
           rideId: event.rideId,
         );
-
-        tlog("Start Trip => $result");
         emit(StartTripSuccess());
-        Taxi.shared.notifyBooking();
+        Taxi.shared.notifyBooking(title: "Start Trip");
       } catch (e) {
         emit(StartTripFail());
+      }
+    });
+
+    on<ArrivedEvent>((event, emit) async {
+      try {
+        emit(BookingLoading());
+        var result = await bookingApi.arriveDriverApi(
+          rideId: event.rideId,
+        );
+        emit(ArriveSuccess());
+        Taxi.shared.notifyBooking(title: "Arrived ");
+      } catch (e) {
+        emit(ArriveFail());
       }
     });
 
     on<CompletedTripEvent>((event, emit) async {
       try {
         emit(BookingLoading());
-        double distance = await Taxi.shared.calculateFare(
-            startLatitude: Taxi.shared.driverLocation!.latitude!,
-            startLongitude: Taxi.shared.driverLocation!.longitude!,
-            endLatitude: event.endLatitude,
-            endLongitude: event.endLongitude);
-
         var result = await bookingApi.completeDriveApi(
           rideId: event.rideId,
           endLatitude: event.endLatitude,
           endAddress: event.endAddress,
           endLongitude: event.endLongitude,
-          distance: distance,
+          distance: event.distance,
         );
-
-        tlog("Complete Trip => $result");
-        emit(CompletedTripSuccess());
-        Taxi.shared.notifyBooking();
+        emit(CompletedTripSuccess(completeDriver: result));
+        Taxi.shared.notifyBooking(title: "Complete Ride");
       } catch (e) {
+        tlog("Complete Trip => $e");
         emit(CompletedTripFail());
       }
     });

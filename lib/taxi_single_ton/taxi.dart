@@ -5,6 +5,7 @@ import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
 import 'package:com.tara_driver_application/data/datasources/update_driver_location_api.dart';
+import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,8 +14,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/models/driver_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart' as geoLocator;
+import 'package:logger/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Taxi {
@@ -30,7 +32,6 @@ class Taxi {
   static const MethodChannel settingsChannel =
       MethodChannel('com.com.tara_driver_application/settings');
   final SetDriverStatusApi statusApi = SetDriverStatusApi();
-
 
   // Properties
   Driver? driver;
@@ -53,7 +54,7 @@ class Taxi {
   Future<void> init() async {
     await checkDriverData();
     await requestLocationPermission();
-    await setupBackgroundLocationTracking();
+    // await setupBackgroundLocationTracking();
     await checkDriverAvailability();
   }
 
@@ -107,33 +108,89 @@ class Taxi {
         markerId: const MarkerId(AppConstant.driverMarker),
         position: currentLocation!,
         infoWindow: const InfoWindow(title: "Driver Location"),
-        icon: await loadCustomMarker(imagePath: "assets/marker/car_marker.png",height: 68),
+        icon: await loadCustomMarker(
+            imagePath: "assets/marker/car_marker.png", height: 68),
       );
     }
-
-    // tlog(driverLocation.toString());
   }
 
-  Future<void> setupBackgroundLocationTracking() async {
+  setupBackgroundLocationTracking() async {
     await location.enableBackgroundMode(enable: true);
     location.onLocationChanged.listen((locationData) {
       currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
       driverLocation = locationData;
-      
-      // notifyBooking();
       _handleLocationChange();
     });
   }
 
   void _handleLocationChange() {
-    _locationUpdateTimer?.cancel();
-    _locationUpdateTimer = Timer(const Duration(seconds: 30), () {
+    _locationUpdateTimer = Timer(const Duration(seconds: 10), () {
       if (currentLocation != null) {
         _updateLocationOnServer(currentLocation!);
-        notifyBooking();
+        // notifyBooking();
       }
     });
   }
+
+//  funtion update current location =================
+  Future<bool> requestPermissionLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (!serviceEnabled) {
+      return false;
+    }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<Position?> checkCurrentLocation() async {
+    Position? locationCurrent;
+    bool granted = await requestPermissionLocation();
+    if (granted == true) {
+      try {
+        await Geolocator.getCurrentPosition().then((value) {
+          locationCurrent = value;
+        });
+        return locationCurrent!;
+      } catch (e) {
+        if (e is TimeoutException) {
+          tlog('Location request timed out.');
+        } else {
+          tlog('Error fetching location: $e');
+        }
+        return locationCurrent!;
+      }
+    } else {
+      return locationCurrent!;
+    }
+  }
+
+  void updateDriverLocation() async {
+    bool granted = await requestPermissionLocation();
+    if (granted == true) {
+      try {
+        await Geolocator.getCurrentPosition().then((value) {
+          UpdateDriverLocation().updateDriverLocationApi(
+            lat: value.latitude,
+            log: value.longitude,
+          );
+        });
+      } catch (e) {
+        if (e is TimeoutException) {
+          print('Location request timed out.');
+        } else {
+          print('Error fetching location: $e');
+        }
+      }
+    } else {}
+  }
+
+  // End funtion update current location =================
 
   Future<void> _updateLocationOnServer(LatLng location) async {
     try {
@@ -141,17 +198,21 @@ class Taxi {
         lat: location.latitude,
         log: location.longitude,
       );
-      tlog('Location updated on server', level: LogLevel.info);
+      // tlog('Location updated on server', level: LogLevel.info);
     } catch (error) {
       tlog('Error updating location on server: $error', level: LogLevel.error);
     }
   }
 
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double calculateDistance(
+      double latStart, double lonStart, double latEnd, double lonEnd) {
     const R = 6371.01; // Radius of Earth in km
-    final dLat = deg2rad(lat2 - lat1), dLon = deg2rad(lon2 - lon1);
+    final dLat = deg2rad(latEnd - latStart), dLon = deg2rad(lonEnd - lonStart);
     final a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+        cos(deg2rad(latStart)) *
+            cos(deg2rad(latEnd)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
     return R * 2 * atan2(sqrt(a), sqrt(1 - a)) * 1000.0; // Return in meters
   }
 
@@ -184,69 +245,85 @@ class Taxi {
     checkDriverAvailability();
   }
 
-  Future<void> notifyBooking() async {
+// * Init Local Notification
+  initLocationNotification() async {
+    // Initialize the plugin for both iOS and Android
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    tlog("Init Local Notification");
+  }
+
+  Future<void> notifyBooking(
+      {required String title, String? description, bool? isSound}) async {
     try {
       await NotificationLocal.notificationBooking(
-        channel: NotificationLocal.channel,
-        plugin: NotificationLocal.notifications,
-      );
+          channel: NotificationLocal.channel,
+          plugin: NotificationLocal.notifications,
+          title: title,
+          useCustomSound: isSound == null ? false : true,
+          description: description);
       tlog('Notification triggered', level: LogLevel.debug);
     } catch (e) {
       tlog('Error triggering notification: $e', level: LogLevel.error);
     }
   }
 
-  void requestIOSPermissions(
-      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+  // * Total Distance
+  double totalDistance = 0.0;
+
+  // Last known position
+  geoLocator.Position? lastPosition;
+
+  // * Simulate Tracking Distance
+  void simulateTrackingDistance() {
+    getRealTimePassengerLocation()
+        .listen((geoLocator.Position currentLocation) async {
+      if (lastPosition != null) {
+        // Calculate the distance between last and current positions
+        double distance = await trackDistance(lastPosition, currentLocation);
+        if (distance > 0) {
+          totalDistance += distance;
+        }
+
+        Logger().e('Distance for this update: $distance meters');
+        Logger().e('Total Distance: ${totalDistance / 1000} km');
+      }
+
+      lastPosition = currentLocation;
+    });
   }
 
-  //   // Accept Notiication
-  void notifyAcceptBooking() async {
-    try {
-      await NotificationLocal.notificationBooking(
-        channel: NotificationLocal.channel,
-        plugin: NotificationLocal.notifications,
+  // * Update Real time Location in Google Map
+  Stream<geoLocator.Position> getRealTimePassengerLocation() {
+    return geoLocator.Geolocator.getPositionStream(
+        locationSettings: const geoLocator.LocationSettings(
+      accuracy: geoLocator.LocationAccuracy.high,
+      distanceFilter: 10,
+    ));
+  }
+
+  // * Function to Track Distance
+  Future<double> trackDistance(geoLocator.Position? lastPosition,
+      geoLocator.Position currentPosition) async {
+    if (lastPosition != null) {
+      // Calculate the distance between last and current positions
+      return geoLocator.Geolocator.distanceBetween(
+        lastPosition.latitude,
+        lastPosition.longitude,
+        currentPosition.latitude,
+        currentPosition.longitude,
       );
-      tlog('Notification triggered successfully.', level: LogLevel.debug);
-    } catch (e) {
-      tlog('Error triggering notification: $e', level: LogLevel.error);
     }
-  }
-
-  Future<void> showNotification(
-      {required String driverId, required String bookingCode}) async {
-    String channelId =
-        'driver_channel_$driverId'; // Unique channel ID for each driver
-    String channelName =
-        'Notifications for $bookingCode'; // User-friendly channel name
-
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      channelId,
-      channelName,
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
-    );
-
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Passenger Booking: $bookingCode',
-      'This is a test notification $driverId',
-      platformChannelSpecifics,
-    );
+    return 0.0; // Return 0 if lastPosition is null
   }
 
   Future<BitmapDescriptor> loadCustomMarker(
@@ -258,67 +335,7 @@ class Taxi {
     return convertMarkerIcon;
   }
 
-  Future<double> calculateFare({
-    required double startLatitude,
-    required double startLongitude,
-    required double endLatitude,
-    required double endLongitude,
-  }) async {
-    // Define fare rules
-    const double costPerKm = 2500.0;
-    const double minimumDistanceInKm = 1.0;
-
-    try {
-      // Calculate distance between start and end locations in meters
-      double distanceInMeters = Geolocator.distanceBetween(
-        startLatitude,
-        startLongitude,
-        endLatitude,
-        endLongitude,
-      );
-
-      // Convert distance to kilometers
-      double distanceInKm = distanceInMeters / 1000;
-
-      // Ensure minimum distance of 1 kilometer
-      if (distanceInKm < minimumDistanceInKm) {
-        distanceInKm = minimumDistanceInKm;
-      }
-
-      // Calculate the fare based on the distance
-      double fare = distanceInKm * costPerKm;
-
-      tlog("Calculate Fare: $fare ៛");
-      return fare;
-    } catch (e) {
-      print("Error calculating fare: $e");
-      return 0.0; // Return 0 in case of error
-    }
-  }
-
-  List<LatLng> latlng = const [
-    LatLng(11.621809, 104.906953),
-    LatLng(11.622209, 104.906588),
-    LatLng(11.622503, 104.906427),
-    LatLng(11.622567, 104.906738),
-    LatLng(11.622987, 104.906491),
-  ];
-
-  int _currentIndex = 0;
-  Timer? _timer;
-
-  void startLooping(void Function(LatLng) onUpdate) {
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      if (_currentIndex < latlng.length - 1) {
-        _currentIndex++;
-      } else {
-        _currentIndex = 0;
-      }
-      onUpdate(latlng[_currentIndex]);
-    });
-  }
-
-  void connectAndEmitEvent(String url, String eventName, dynamic data) {
+  void connectAndEmitEvent({required String eventName, dynamic data}) {
     // Create the socket instance and connect to the server
     IO.Socket socket = IO.io(
       AppConstant.socketBasedUrl,
@@ -330,7 +347,7 @@ class Taxi {
 
     // Handle socket connection
     socket.onConnect((_) {
-      tlog('Connected to the socket at $url');
+      tlog('Connected to the socket at ${AppConstant.socketBasedUrl}');
 
       // Emit the event once connected
       socket.emit(eventName, data);

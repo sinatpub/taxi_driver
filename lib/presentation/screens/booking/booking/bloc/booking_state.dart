@@ -7,7 +7,10 @@ final class BookingInitial extends BookingState {}
 
 class BookingLoading extends BookingState {}
 
-class ConfirmBookingSuccess extends BookingState {}
+class ConfirmBookingSuccess extends BookingState {
+  final ConfirmBookingModel confirmBookingModel;
+  ConfirmBookingSuccess({required this.confirmBookingModel});
+}
 
 class ConfirmBookingFail extends BookingState {}
 
@@ -21,6 +24,13 @@ class StartTripSuccess extends BookingState {}
 
 class StartTripFail extends BookingState {}
 
+class ArriveSuccess extends BookingState {}
+
+class ArriveFail extends BookingState {}
+
 // Complete Trip
-class CompletedTripSuccess extends BookingState{}
+class CompletedTripSuccess extends BookingState{
+  final CompleteDriverModel completeDriver;
+  CompletedTripSuccess({required this.completeDriver});
+}
 class CompletedTripFail extends BookingState{}

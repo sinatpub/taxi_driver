@@ -7,7 +7,7 @@ class AppConstant {
   static const baseUrlApi = 'http://206.189.38.88:3007/'; // Dev
 
   // Socket IO Client
-  static const socketBasedUrl = "http://206.189.38.88:3009";
+  static const socketBasedUrl = "http://206.189.38.88:3009/";
 
   static const driverId = "5";
 
