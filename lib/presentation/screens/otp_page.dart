@@ -23,8 +23,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-
-  final smartAuth = SmartAuth.instance;
+  final SmartAuth smartAuth = SmartAuth.instance;
   TextEditingController pinputController = TextEditingController();
   int? resentToken;
 
@@ -49,7 +48,6 @@ class _OtpPageState extends State<OtpPage> {
     secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 90;
     startTimer();
   }
-
 
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
@@ -84,7 +82,6 @@ class _OtpPageState extends State<OtpPage> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.dark4, width: 2),
       ),
-      margin: const EdgeInsets.only(left: 12, right: 12),
     );
     return Scaffold(
       backgroundColor: AppColors.light4,
@@ -159,6 +156,7 @@ class _OtpPageState extends State<OtpPage> {
                                   Directionality(
                                     textDirection: TextDirection.ltr,
                                     child: Pinput(
+                                      length: 6,
                                       autofocus: true,
                                       smsRetriever: smsRetriever,
                                       controller: pinController,
@@ -174,35 +172,12 @@ class _OtpPageState extends State<OtpPage> {
                                       onCompleted: (value) async {
                                         context.read<OTPVerifyBloc>().add(
                                               VerifyOTPEvent(
-                                                phoneNumber:
-                                                    widget.phoneNumber.toString(),
+                                                phoneNumber: widget.phoneNumber
+                                                    .toString(),
                                                 otpCode: value.toString(),
                                               ),
                                             );
-                                        // if (value == "1111") {
-                                        //   context.read<OTPVerifyBloc>().add(
-                                        //         VerifyOTPEvent(
-                                        //           phoneNumber: widget
-                                        //               .phoneNumber
-                                        //               .toString(),
-                                        //           otpCode: value.toString(),
-                                        //         ),
-                                        //       );
-                                        // } else {}
                                       },
-                                      cursor: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 9),
-                                            width: 22,
-                                            height: 1,
-                                            color: AppColors.main,
-                                          ),
-                                        ],
-                                      ),
                                       focusedPinTheme: defaultPinTheme.copyWith(
                                         decoration: defaultPinTheme.decoration!
                                             .copyWith(
@@ -211,8 +186,6 @@ class _OtpPageState extends State<OtpPage> {
                                           border: Border.all(
                                               color: AppColors.main, width: 2),
                                         ),
-                                        margin: const EdgeInsets.only(
-                                            left: 12, right: 12),
                                       ),
                                       submittedPinTheme:
                                           defaultPinTheme.copyWith(
@@ -224,8 +197,6 @@ class _OtpPageState extends State<OtpPage> {
                                           border: Border.all(
                                               color: AppColors.dark4, width: 2),
                                         ),
-                                        margin: const EdgeInsets.only(
-                                            left: 12, right: 12),
                                       ),
                                       errorPinTheme:
                                           defaultPinTheme.copyBorderWith(
@@ -322,4 +293,3 @@ class SmsRetrieverImpl implements SmsRetriever {
   @override
   bool get listenForMultipleSms => false;
 }
-
