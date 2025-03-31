@@ -12,6 +12,13 @@ import GoogleMaps
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
 
+    // BGTaskScheduler.shared.register(
+    // forTaskWithIdentifier: "com.tara.driver.backgroundTask",
+    // using: nil
+    // ) { task in
+    //     self.handleBackgroundTask(task as! BGProcessingTask)
+    // }
+
     GMSServices.provideAPIKey("AIzaSyAEZtLQKJGA-Phcfn339c2A5ppu9eh9lAY")
     GeneratedPluginRegistrant.register(with: self)
 
