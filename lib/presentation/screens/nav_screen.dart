@@ -8,7 +8,7 @@ import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/presentation/screens/profile_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
-import 'package:com.tara_driver_application/presentation/screens/riding_history_screen.dart';
+import 'package:com.tara_driver_application/presentation/screens/history_booking/riding_history_screen.dart';
 
 class NavScreen extends StatefulWidget {
   const NavScreen({super.key});

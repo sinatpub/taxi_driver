@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/models/phone_model.dart';
 import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
@@ -9,7 +8,7 @@ import 'package:com.tara_driver_application/presentation/widgets/loading_widget.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
-import 'package:smart_auth/smart_auth.dart';
+// import 'package:smart_auth/smart_auth.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/presentation/screens/register_page.dart';
@@ -24,6 +23,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
+  // final SmartAuth smartAuth = SmartAuth.instance;
   TextEditingController pinputController = TextEditingController();
   int? resentToken;
 
@@ -31,7 +31,7 @@ class _OtpPageState extends State<OtpPage> {
   int secondsRemaining = 0;
   bool isResendEnabled = false;
 
-  late final SmsRetriever smsRetriever;
+  // late final SmsRetriever smsRetriever;
   late final TextEditingController pinController;
   late final FocusNode focusNode;
   late final GlobalKey<FormState> formKey;
@@ -42,13 +42,12 @@ class _OtpPageState extends State<OtpPage> {
     formKey = GlobalKey<FormState>();
     pinController = TextEditingController();
     focusNode = FocusNode();
-    smsRetriever = SmsRetrieverImpl(SmartAuth());
+    // smsRetriever = SmsRetrieverImpl(smartAuth);
 
     // Initialize countdown timer
     secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 90;
     startTimer();
   }
-
 
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
@@ -83,7 +82,6 @@ class _OtpPageState extends State<OtpPage> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.dark4, width: 2),
       ),
-      margin: const EdgeInsets.only(left: 12, right: 12),
     );
     return Scaffold(
       backgroundColor: AppColors.light4,
@@ -158,8 +156,9 @@ class _OtpPageState extends State<OtpPage> {
                                   Directionality(
                                     textDirection: TextDirection.ltr,
                                     child: Pinput(
+                                      length: 6,
                                       autofocus: true,
-                                      smsRetriever: smsRetriever,
+                                      //smsRetriever: smsRetriever,
                                       controller: pinController,
                                       focusNode: focusNode,
                                       defaultPinTheme: defaultPinTheme,
@@ -173,35 +172,12 @@ class _OtpPageState extends State<OtpPage> {
                                       onCompleted: (value) async {
                                         context.read<OTPVerifyBloc>().add(
                                               VerifyOTPEvent(
-                                                phoneNumber:
-                                                    widget.phoneNumber.toString(),
+                                                phoneNumber: widget.phoneNumber
+                                                    .toString(),
                                                 otpCode: value.toString(),
                                               ),
                                             );
-                                        // if (value == "1111") {
-                                        //   context.read<OTPVerifyBloc>().add(
-                                        //         VerifyOTPEvent(
-                                        //           phoneNumber: widget
-                                        //               .phoneNumber
-                                        //               .toString(),
-                                        //           otpCode: value.toString(),
-                                        //         ),
-                                        //       );
-                                        // } else {}
                                       },
-                                      cursor: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 9),
-                                            width: 22,
-                                            height: 1,
-                                            color: AppColors.main,
-                                          ),
-                                        ],
-                                      ),
                                       focusedPinTheme: defaultPinTheme.copyWith(
                                         decoration: defaultPinTheme.decoration!
                                             .copyWith(
@@ -210,8 +186,6 @@ class _OtpPageState extends State<OtpPage> {
                                           border: Border.all(
                                               color: AppColors.main, width: 2),
                                         ),
-                                        margin: const EdgeInsets.only(
-                                            left: 12, right: 12),
                                       ),
                                       submittedPinTheme:
                                           defaultPinTheme.copyWith(
@@ -223,8 +197,6 @@ class _OtpPageState extends State<OtpPage> {
                                           border: Border.all(
                                               color: AppColors.dark4, width: 2),
                                         ),
-                                        margin: const EdgeInsets.only(
-                                            left: 12, right: 12),
                                       ),
                                       errorPinTheme:
                                           defaultPinTheme.copyBorderWith(
@@ -296,29 +268,28 @@ class _OtpPageState extends State<OtpPage> {
   }
 }
 
-class SmsRetrieverImpl implements SmsRetriever {
-  const SmsRetrieverImpl(this.smartAuth);
+// class SmsRetrieverImpl implements SmsRetriever {
+//   SmsRetrieverImpl(this.smartAuth);
 
-  final SmartAuth smartAuth;
+//   final SmartAuth smartAuth;
 
-  @override
-  Future<void> dispose() {
-    return smartAuth.removeSmsListener();
-  }
+//   @override
+//   Future<void> dispose() {
+//     return smartAuth.removeSmsRetrieverApiListener();
+//   }
 
-  @override
-  Future<String?> getSmsCode() async {
-    final signature = await smartAuth.getAppSignature();
-    debugPrint('App Signature: $signature');
-    final res = await smartAuth.getSmsCode(
-      useUserConsentApi: true,
-    );
-    if (res.succeed && res.codeFound) {
-      return res.code!;
-    }
-    return null;
-  }
+//   @override
+//   Future<String?> getSmsCode() async {
+//     final signature = await smartAuth.getAppSignature();
+//     debugPrint('App Signature: $signature');
+//     final res = await smartAuth.getSmsWithRetrieverApi();
 
-  @override
-  bool get listenForMultipleSms => false;
-}
+//     if (res.hasData) {
+//       return res.requireData.code!;
+//     }
+//     return null;
+//   }
+
+//   @override
+//   bool get listenForMultipleSms => false;
+// }
