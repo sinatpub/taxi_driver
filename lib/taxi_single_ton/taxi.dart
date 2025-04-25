@@ -53,7 +53,7 @@ class Taxi {
 
   Future<void> init() async {
     await checkDriverData();
-    await requestLocationPermission();
+    // await requestLocationPermission();
     // await setupBackgroundLocationTracking();
     await checkDriverAvailability();
   }
@@ -171,23 +171,15 @@ class Taxi {
   }
 
   void updateDriverLocation() async {
-    bool granted = await requestPermissionLocation();
-    if (granted == true) {
-      try {
-        await Geolocator.getCurrentPosition().then((value) {
-          UpdateDriverLocation().updateDriverLocationApi(
-            lat: value.latitude,
-            log: value.longitude,
-          );
-        });
-      } catch (e) {
-        if (e is TimeoutException) {
-          print('Location request timed out.');
-        } else {
-          print('Error fetching location: $e');
-        }
-      }
-    } else {}
+    await requestPermissionLocation();
+    await Geolocator.getCurrentPosition().then(
+      (value) {
+        UpdateDriverLocation().updateDriverLocationApi(
+          lat: value.latitude,
+          log: value.longitude,
+        );
+      },
+    );
   }
 
   // End funtion update current location =================

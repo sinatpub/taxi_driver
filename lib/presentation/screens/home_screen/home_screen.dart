@@ -10,6 +10,8 @@ import 'package:com.tara_driver_application/presentation/screens/calculate_fee_s
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -60,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     fetchLocation();
     initialize();
 
-   
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Ensure the widget tree is built before calling registerSocket or accessing Bloc
       registerSocket();
@@ -112,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _markers.removeWhere(
         (marker) => marker.markerId == const MarkerId("driverMarker"),
       );
-      _markers.add(Taxi.shared.driverMarker!);
+      // _markers.add(Taxi.shared.driverMarker);
     });
   }
 
@@ -138,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Taxi.shared.toggleDriverAvailable(isAvailable: val);
         setState(() {
           Taxi.shared.isDriverActive = val;
-            switchButton = !switchButton;
+          switchButton = !switchButton;
         });
       },
     );
@@ -150,6 +151,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: CircularProgressIndicator(),
           )
         : GoogleMap(
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+              Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer(),
+              ),
+            },
             mapType: MapType.normal,
             myLocationEnabled: true,
             compassEnabled: true,
@@ -162,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             markers: _markers,
             onMapCreated: (GoogleMapController controller) {
               mapController = controller;
-              if (!isCameraInitialized) {
+              if (!isCameraInitialized) { 
                 controller.animateCamera(
                   CameraUpdate.newLatLng(
                     LatLng(driverCurrentLat, driverCurrentLng),
@@ -279,15 +285,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     builder: (context) => BookingScreen(
                       namePassanger: dataDriver.passenger!.name.toString(),
                       phonePassanger: dataDriver.passenger!.phone.toString(),
-                      imagePassanger: dataDriver.passenger!.profileImage.toString(),
+                      imagePassanger:
+                          dataDriver.passenger!.profileImage.toString(),
                       timeOut: 30,
-                      processStepBook: dataDriver.status! == 8? 3: dataDriver.status! == 3? 4:2,
+                      processStepBook: dataDriver.status! == 8
+                          ? 3
+                          : dataDriver.status! == 3
+                              ? 4
+                              : 2,
                       bookingCode: dataDriver.bookingCode.toString(),
                       bookingId: dataDriver.id.toString(),
-                      latPassenger: double.parse(dataDriver.passenger!.lastLocation!.latitude.toString()),
-                      lngPassenger: double.parse(dataDriver.passenger!.lastLocation!.longitude.toString()),
-                      latDriver: double.parse(dataDriver.driver!.lastLocation!.latitude.toString()),
-                      lngDriver: double.parse(dataDriver.driver!.lastLocation!.longitude.toString()),
+                      latPassenger: double.parse(dataDriver
+                          .passenger!.lastLocation!.latitude
+                          .toString()),
+                      lngPassenger: double.parse(dataDriver
+                          .passenger!.lastLocation!.longitude
+                          .toString()),
+                      latDriver: double.parse(
+                          dataDriver.driver!.lastLocation!.latitude.toString()),
+                      lngDriver: double.parse(dataDriver
+                          .driver!.lastLocation!.longitude
+                          .toString()),
                       // desLat: data["destination"]['latitude'],
                       // desLng: data["destination"]['longitude'],
                       passengerId: dataDriver.passenger!.id.toString(),

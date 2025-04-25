@@ -1,4 +1,5 @@
 import 'package:com.tara_driver_application/presentation/blocs/multi_bloc.dart';
+import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:com.tara_driver_application/injection_container.dart' as di;
 import 'package:flutter/material.dart';
 import 'package:com.tara_driver_application/presentation/screens/splash_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -34,16 +36,19 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: listBlocProvider,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        title: AppConstant.titleApp,
-        theme: AppTheme.lightTheme,
-        home: const SplashScreen(),
+    return KeyboardDismisser(
+      gestures: const [GestureType.onTap, GestureType.onPanUpdateDownDirection],
+      child: MultiBlocProvider(
+        providers: listBlocProvider,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          title: AppConstant.titleApp,
+          theme: AppTheme.lightTheme,
+          home: const SplashScreen(),
+        ),
       ),
     );
   }
