@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/load_custom_marker.dart';
+import 'package:com.tara_driver_application/data/datasources/update_driver_location_api.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,6 +18,9 @@ class TaxiLocation {
     return _singleton!;
   }
 
+  // repo update current driver
+  UpdateDriverLocation updateLocationRepo = UpdateDriverLocation();
+
   bool isGranted = false;
   LatLng currentLocation = const LatLng(0, 0);
   bool _isRequestingPermission = false; // Track ongoing permission requests
@@ -29,7 +33,6 @@ class TaxiLocation {
   GoogleMapController? mapController;
 
   void onInit() async {
-
     generateMarker();
     await checkLocationPermission();
     await getCurrentLocation();
@@ -133,12 +136,18 @@ class TaxiLocation {
           accuracy: LocationAccuracy.high,
           distanceFilter: 10,
         ),
-      ).listen((Position position) {
+      ).listen((Position position) async {
         currentLocation = LatLng(position.latitude, position.longitude);
         Logger().i(
             "📍 Updated user location: ${position.latitude}, ${position.longitude}");
         updateMarkerPosition();
         centerMapOnCurrentLocation();
+
+        // ! update current location to api
+        await updateLocationRepo.updateDriverLocationApi(
+          lat: position.latitude,
+          log: position.longitude,
+        );
       });
       return currentLocation;
     } catch (e) {
@@ -155,7 +164,8 @@ class TaxiLocation {
 
   void updateMarkerPosition() {
     if (setMarker != null && setMarker!.isNotEmpty) {
-      setMarker!.removeWhere((marker) => marker.markerId.value == AppConstant.driverMarker);
+      setMarker!.removeWhere(
+          (marker) => marker.markerId.value == AppConstant.driverMarker);
       setMarker!.add(Marker(
         markerId: const MarkerId(AppConstant.driverMarker),
         position: currentLocation,

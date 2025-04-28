@@ -176,8 +176,7 @@ class _BookingScreenState extends State<BookingScreen> {
     polylinePoints = PolylinePoints();
     syncMarker();
 
-    Taxi.shared.setupBackgroundLocationTracking();
-    Taxi.shared.updateDriverLocation();
+    TaxiLocation.shared.updateCurrentLocationDriver();
     // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
   }
   // Sync markers for driver and passenger locations
