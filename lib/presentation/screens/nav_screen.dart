@@ -1,5 +1,6 @@
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -117,7 +118,7 @@ class _NavScreenState extends State<NavScreen> {
                         selectedIndex = 0;
                       });
                     },
-                        "Home",
+                        "HOME".tr(),
                         selectedIndex != 0
                             ? ImageAssets.home_outline
                             : ImageAssets.home,
@@ -127,7 +128,7 @@ class _NavScreenState extends State<NavScreen> {
                         selectedIndex = 1;
                       });
                     },
-                        "History",
+                        "HISTORY".tr(),
                         selectedIndex != 1
                             ? ImageAssets.book_outline
                             : ImageAssets.book,
@@ -137,7 +138,7 @@ class _NavScreenState extends State<NavScreen> {
                         selectedIndex = 2;
                       });
                     },
-                        "Profile",
+                        "CONTACTUS".tr(),
                         selectedIndex != 2
                             ? ImageAssets.profile
                             : ImageAssets.profile_fill,

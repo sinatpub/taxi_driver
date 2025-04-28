@@ -5,6 +5,7 @@ import 'package:com.tara_driver_application/presentation/widgets/error_dialog_wi
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/shake_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/x_text_field.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
@@ -33,8 +34,6 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<PhoneLoginBloc, PhoneLoginState>(
         listener: (context, state) {
           if (state is PhoneLoginLoadedState) {
-            // if (!hasNavigated) {
-            //   hasNavigated = true;
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -49,8 +48,8 @@ class _LoginPageState extends State<LoginPage> {
             hasNavigated = false;
             showErrorCustomDialog(
               context,
-              "Please Try Again",
-              "Please make sure you enter the correct phone number",
+              "PLEASE_TRY_AGAIN".tr(),
+              "CHECK_YOUR_PHONE_NUMBER_ERROR".tr(),
             );
           } else {
             FocusScope.of(context).unfocus();
@@ -61,13 +60,13 @@ class _LoginPageState extends State<LoginPage> {
           child: BlocBuilder<PhoneLoginBloc, PhoneLoginState>(
             builder: (context, state) {
               bool isLoading = state is PhoneLoginLoadingState;
-              String? errorMessage;
+              bool? isInvalidPhone;
+              bool? isRequired8Digit;
               if (state is PhoneLoginValidationErrorState) {
-                errorMessage = state.errorMessage;
+                // errorMessage = state.errorMessage;
+                isInvalidPhone = state.isInvalid;
+                isRequired8Digit = state.isRequired8DigitError;
               }
-
-              Logger().e("isLoading $isLoading");
-
               return Stack(
                 children: [
                   Container(
@@ -98,16 +97,16 @@ class _LoginPageState extends State<LoginPage> {
                                   const SizedBox(
                                     height: 68,
                                   ),
-                                  const Text(
-                                    "Login Your Account",
+                                  Text(
+                                    "LOGINTITLE".tr(),
                                     style: ThemeConstands.font20SemiBold,
                                     textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(
                                     height: 18,
                                   ),
-                                  const Text(
-                                    "Enter your number to access your account.",
+                                  Text(
+                                    "LOGINDES".tr(),
                                     style: ThemeConstands.font16Regular,
                                     textAlign: TextAlign.center,
                                   ),
@@ -120,8 +119,8 @@ class _LoginPageState extends State<LoginPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          "Mobile Number",
+                                        Text(
+                                          "MOBILENUM".tr(),
                                           style: ThemeConstands.font16Regular,
                                           textAlign: TextAlign.left,
                                         ),
@@ -144,12 +143,9 @@ class _LoginPageState extends State<LoginPage> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 0),
                                             child: XTextField(
-                                              textController:
-                                                  controller, // logic.phoneTextController,
-                                              hintText:
-                                                  "e.g. 012 345 678", // AppLocale.enterPhoneNumber.tr,
-                                              enable:
-                                                  true, //!logic.state.isLoading.value,
+                                              textController: controller,
+                                              hintText: "012 345 678",
+                                              enable: true,
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
                                                     .digitsOnly,
@@ -166,7 +162,6 @@ class _LoginPageState extends State<LoginPage> {
                                               borderColor: AppColors.dark4,
                                               maxLength: 25,
                                               onChanged: (value) {},
-                                              // logic.state.phoneNumber.value = value,
                                               onFieldSubmitted: (value) {
                                                 context
                                                     .read<PhoneLoginBloc>()
@@ -175,11 +170,19 @@ class _LoginPageState extends State<LoginPage> {
                                                           phoneNumber: value),
                                                     );
                                               },
+
                                               // logic.loginPhoneNumber(),
                                               keyboardType: TextInputType.phone,
                                               textInputAction:
-                                                  TextInputAction.done,
-                                              errorMessage: errorMessage,
+                                                  TextInputAction.send,
+                                              errorMessage: isInvalidPhone ==
+                                                      true
+                                                  ? "CHECK_YOUR_PHONE_NUMBER_ERROR"
+                                                      .tr()
+                                                  : isRequired8Digit == true
+                                                      ? "CHECK_PHONE_NUMBER_DIGIT_ERROR"
+                                                          .tr()
+                                                      : null,
                                               //  logic
                                               //         .state.errorMessage.value!.isEmpty
                                               //     ? null
@@ -261,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                                           },
                                           color: AppColors.red,
                                           textColor: AppColors.light4,
-                                          label: "Next",
+                                          label: "NEXT".tr(),
                                           enableWidth: true,
                                         )
                                       ],

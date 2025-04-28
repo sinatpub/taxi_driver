@@ -1,6 +1,10 @@
 enum ClientMethod { POST, GET, PATCH, DELETE }
 
 class AppConstant {
+  // Translate
+  static const String khmerCode = "km";
+  static const String englishCode = 'en';
+
   static const String titleApp = 'Hello World';
 
   // Based Url
@@ -25,9 +29,7 @@ class AppConstant {
   static const imagePlaceholder =
       "https://www.unityhighschool.org/wp-content/uploads/2014/08/default-placeholder.png";
 
-
-
-/// Marker 
+  /// Marker
   static const String driverMarker = "DriverMarkerId";
 
   // Padding Constant

@@ -1,4 +1,3 @@
-import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
 import 'package:geocoding/geocoding.dart';
 
 Future<String> getAddressFromLatLng(double latitude, double longitude) async {

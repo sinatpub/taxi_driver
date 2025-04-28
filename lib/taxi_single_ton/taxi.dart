@@ -4,13 +4,11 @@ import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
-import 'package:com.tara_driver_application/data/datasources/update_driver_location_api.dart';
 import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
@@ -132,64 +130,64 @@ class Taxi {
     });
   }
 
-//  funtion update current location =================
-  Future<bool> requestPermissionLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (!serviceEnabled) {
-      return false;
-    }
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return false;
-      }
-    }
-    return true;
-  }
+// //  funtion update current location =================
+//   Future<bool> requestPermissionLocation() async {
+//     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//     LocationPermission permission = await Geolocator.checkPermission();
+//     if (!serviceEnabled) {
+//       return false;
+//     }
+//     if (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+//       if (permission == LocationPermission.denied) {
+//         return false;
+//       }
+//     }
+//     return true;
+//   }
 
-  Future<Position?> checkCurrentLocation() async {
-    Position? locationCurrent;
-    bool granted = await requestPermissionLocation();
-    if (granted == true) {
-      try {
-        await Geolocator.getCurrentPosition().then((value) {
-          locationCurrent = value;
-        });
-        return locationCurrent!;
-      } catch (e) {
-        if (e is TimeoutException) {
-          tlog('Location request timed out.');
-        } else {
-          tlog('Error fetching location: $e');
-        }
-        return locationCurrent!;
-      }
-    } else {
-      return locationCurrent!;
-    }
-  }
+//   Future<Position?> checkCurrentLocation() async {
+//     Position? locationCurrent;
+//     bool granted = await requestPermissionLocation();
+//     if (granted == true) {
+//       try {
+//         await Geolocator.getCurrentPosition().then((value) {
+//           locationCurrent = value;
+//         });
+//         return locationCurrent!;
+//       } catch (e) {
+//         if (e is TimeoutException) {
+//           tlog('Location request timed out.');
+//         } else {
+//           tlog('Error fetching location: $e');
+//         }
+//         return locationCurrent!;
+//       }
+//     } else {
+//       return locationCurrent!;
+//     }
+//   }
 
   void updateDriverLocation() async {
-    await requestPermissionLocation();
-    await Geolocator.getCurrentPosition().then(
-      (value) {
-        UpdateDriverLocation().updateDriverLocationApi(
-          lat: value.latitude,
-          log: value.longitude,
-        );
-      },
-    );
+    // await requestPermissionLocation();
+    // await Geolocator.getCurrentPosition().then(
+    //   (value) {
+    //     UpdateDriverLocation().updateDriverLocationApi(
+    //       lat: value.latitude,
+    //       log: value.longitude,
+    //     );
+    //   },
+    // );
   }
 
   // End funtion update current location =================
 
   Future<void> _updateLocationOnServer(LatLng location) async {
     try {
-      await UpdateDriverLocation().updateDriverLocationApi(
-        lat: location.latitude,
-        log: location.longitude,
-      );
+      // await UpdateDriverLocation().updateDriverLocationApi(
+      //   lat: location.latitude,
+      //   log: location.longitude,
+      // );
       // tlog('Location updated on server', level: LogLevel.info);
     } catch (error) {
       tlog('Error updating location on server: $error', level: LogLevel.error);

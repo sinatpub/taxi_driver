@@ -16,6 +16,7 @@ import 'package:com.tara_driver_application/presentation/widgets/loading_widget.
 import 'package:com.tara_driver_application/presentation/widgets/yesno_dialog_widget.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -114,7 +115,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   void getLocation() async {
     // Type  0 = initScreen, 1 = accept ,2 = arrive, 3 = start, 4 = drop;
-    Position? position = await Taxi.shared.checkCurrentLocation();
+    Position? position = await TaxiLocation.shared.getCurrentLocation();
     if (position != null) {
      if (typeProcessBooking == 4) {
         debugPrint("drop - total distance ${Taxi.shared.totalDistance}");

@@ -2,7 +2,9 @@ import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/datasources/phone_num_remote_data_source.dart';
 import 'package:com.tara_driver_application/data/models/phone_model.dart';
+import 'package:com.tara_driver_application/main.dart';
 import 'package:com.tara_driver_application/presentation/widgets/shake_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
@@ -37,9 +39,10 @@ class PhoneLoginLoadedState extends PhoneLoginState {
 }
 
 class PhoneLoginValidationErrorState extends PhoneLoginState {
-  final String errorMessage;
+  final bool? isInvalid;
+  final bool? isRequired8DigitError;
 
-  PhoneLoginValidationErrorState(this.errorMessage);
+  PhoneLoginValidationErrorState({this.isInvalid, this.isRequired8DigitError});
 }
 
 class PhoneLoginFailState extends PhoneLoginState {}
@@ -57,11 +60,12 @@ class PhoneLoginBloc extends Bloc<PhoneEvent, PhoneLoginState> {
       Logger().e(phoneNumber.length);
       if (phoneNumber.isEmpty) {
         phoneShake.currentState?.shake();
-        emit(PhoneLoginValidationErrorState("Please check your phone number"));
+        emit(PhoneLoginValidationErrorState(
+            isInvalid: true, isRequired8DigitError: false));
       } else if (phoneNumber.length < 11) {
         phoneShake.currentState?.shake();
-        emit(
-            PhoneLoginValidationErrorState("Phone number must be 8 digits up"));
+        emit(PhoneLoginValidationErrorState(
+            isInvalid: false, isRequired8DigitError: true));
       } else {
         emit(PhoneLoginInitState());
       }
@@ -80,15 +84,11 @@ class PhoneLoginBloc extends Bloc<PhoneEvent, PhoneLoginState> {
 
         final phoneResponse = await api.postPhoneNumberApi(
             phoneNumer: event.phoneNumber.toString());
-
-        Logger().e("phoneResponse: $phoneResponse");
         emit(PhoneLoginLoadedState(phoneNumberModel: phoneResponse));
-
-        // store phone number into local pref
         StorageSet.setPhoneNumber(event.phoneNumber.toString());
       } catch (e) {
         phoneShake.currentState?.shake();
-        emit(PhoneLoginValidationErrorState("Please check your phone number"));
+        emit(PhoneLoginValidationErrorState(isInvalid: true, isRequired8DigitError: false));
         emit(PhoneLoginFailState());
       }
     });

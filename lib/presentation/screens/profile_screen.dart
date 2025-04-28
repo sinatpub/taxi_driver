@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Profile",
+                "CONTACTUS".tr(),
                 style: ThemeConstands.font22SemiBold
                     .copyWith(color: AppColors.dark1),
               ),
