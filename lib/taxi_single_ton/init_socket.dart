@@ -77,8 +77,7 @@ class DriverSocketService extends BaseSocketService {
             description:
                 "A passenger is waiting for your response. Accept the ride to begin the service.",
             isSound: true);
-        BlocProvider.of<CurrentDriverInfoBloc>(context)
-            .add(GetCurrentInfoEvent());
+        BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
         Navigator.push(
           context,
           MaterialPageRoute(

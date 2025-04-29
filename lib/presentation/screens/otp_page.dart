@@ -1,14 +1,16 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/models/phone_model.dart';
 import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
+import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
+import 'package:easy_localization/easy_localization.dart' as easy_locale;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
-import 'package:smart_auth/smart_auth.dart';
+// import 'package:smart_auth/smart_auth.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/presentation/screens/register_page.dart';
@@ -23,7 +25,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-  final SmartAuth smartAuth = SmartAuth.instance;
+  // final SmartAuth smartAuth = SmartAuth.instance;
   TextEditingController pinputController = TextEditingController();
   int? resentToken;
 
@@ -31,7 +33,7 @@ class _OtpPageState extends State<OtpPage> {
   int secondsRemaining = 0;
   bool isResendEnabled = false;
 
-  late final SmsRetriever smsRetriever;
+  // late final SmsRetriever smsRetriever;
   late final TextEditingController pinController;
   late final FocusNode focusNode;
   late final GlobalKey<FormState> formKey;
@@ -42,7 +44,7 @@ class _OtpPageState extends State<OtpPage> {
     formKey = GlobalKey<FormState>();
     pinController = TextEditingController();
     focusNode = FocusNode();
-    smsRetriever = SmsRetrieverImpl(smartAuth);
+    // smsRetriever = SmsRetrieverImpl(smartAuth);
 
     // Initialize countdown timer
     secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 90;
@@ -137,16 +139,16 @@ class _OtpPageState extends State<OtpPage> {
                                   const SizedBox(
                                     height: 28,
                                   ),
-                                  const Text(
-                                    "Fill Information",
+                                  Text(
+                                    "OTP_VERIFICATION".tr(),
                                     style: ThemeConstands.font20SemiBold,
                                     textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(
                                     height: 18,
                                   ),
-                                  const Text(
-                                    "We have sent the verification code to your Phone Number",
+                                  Text(
+                                    "OTP_VERIFICATION_DES".tr(),
                                     style: ThemeConstands.font16Regular,
                                     textAlign: TextAlign.center,
                                   ),
@@ -158,7 +160,7 @@ class _OtpPageState extends State<OtpPage> {
                                     child: Pinput(
                                       length: 6,
                                       autofocus: true,
-                                      smsRetriever: smsRetriever,
+                                      //smsRetriever: smsRetriever,
                                       controller: pinController,
                                       focusNode: focusNode,
                                       defaultPinTheme: defaultPinTheme,
@@ -211,8 +213,8 @@ class _OtpPageState extends State<OtpPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text(
-                                        "Didn’t Receive OTP?",
+                                      Text(
+                                        "UNRECEIVED_OTP".tr(),
                                         style: ThemeConstands.font16Regular,
                                         textAlign: TextAlign.center,
                                       ),
@@ -232,15 +234,18 @@ class _OtpPageState extends State<OtpPage> {
                                   TextButton(
                                     onPressed: isResendEnabled
                                         ? () {
-                                            tlog('Resend Code Pressed!');
-                                            // BlocProvider.of<PhoneLoginBloc>(context).add(
-                                            //     PhoneNumLoginEvent(
-                                            //         phoneNumber:
-                                            //             widget.phoneNumber.toString()));
+                                            BlocProvider.of<PhoneLoginBloc>(
+                                                    context)
+                                                .add(
+                                              PhoneNumLoginEvent(
+                                                phoneNumber: widget.phoneNumber
+                                                    .toString(),
+                                              ),
+                                            );
                                           }
-                                        : null, // Disable button if countdown is active
+                                        : null,
                                     child: Text(
-                                      "Resend Code",
+                                      "RESEND_CODE".tr(),
                                       style: ThemeConstands.font16SemiBold.copyWith(
                                           decoration: TextDecoration.underline,
                                           color: isResendEnabled
@@ -266,30 +271,4 @@ class _OtpPageState extends State<OtpPage> {
       ),
     );
   }
-}
-
-class SmsRetrieverImpl implements SmsRetriever {
-  SmsRetrieverImpl(this.smartAuth);
-
-  final SmartAuth smartAuth;
-
-  @override
-  Future<void> dispose() {
-    return smartAuth.removeSmsRetrieverApiListener();
-  }
-
-  @override
-  Future<String?> getSmsCode() async {
-    final signature = await smartAuth.getAppSignature();
-    debugPrint('App Signature: $signature');
-    final res = await smartAuth.getSmsWithRetrieverApi();
-
-    if (res.hasData) {
-      return res.requireData.code!;
-    }
-    return null;
-  }
-
-  @override
-  bool get listenForMultipleSms => false;
 }

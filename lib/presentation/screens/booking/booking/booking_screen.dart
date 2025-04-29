@@ -16,6 +16,7 @@ import 'package:com.tara_driver_application/presentation/widgets/loading_widget.
 import 'package:com.tara_driver_application/presentation/widgets/yesno_dialog_widget.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -115,65 +115,11 @@ class _BookingScreenState extends State<BookingScreen> {
 
   void getLocation() async {
     // Type  0 = initScreen, 1 = accept ,2 = arrive, 3 = start, 4 = drop;
-    Position? position = await Taxi.shared.checkCurrentLocation();
+    Position? position = await TaxiLocation.shared.getCurrentLocation();
     if (position != null) {
-
-    // ==============  Accept acion ======================
-      if (typeProcessBooking == 1) {
-        // currentAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
-        // setState(() {
-        //   currentLatDriver = position.latitude;
-        //   currentLngDriver = position.longitude;
-        // });
-        // BlocProvider.of<BookingBloc>(context).add(
-        //   ConfirmBookingEvent(
-        //     rideId: int.parse(widget.bookingId.toString()),
-        //   ),
-        // );
-        // debugPrint("accept and get positon");
-        // Logger().e(
-        //     "D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
-        // _drawPolylines(
-        //     dLocation: LatLng(currentLatDriver, currentLngDriver),
-        //     pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-
-  // ==============  Arrive acion ======================
-      } else if (typeProcessBooking == 2) {
-        // debugPrint("arrived");
-        // currentAddressDriver =
-        //     await getAddressFromLatLng(position.latitude, position.longitude);
-        // setState(() {
-        //   currentLatDriver = position.latitude;
-        //   currentLngDriver = position.longitude;
-        // });
-        // BlocProvider.of<BookingBloc>(context).add(
-        //   ArrivedEvent(
-        //     rideId: int.parse(widget.bookingId),
-        //   ),
-        // );
-        // _clearPolyline();
-  
-  // ==============  Start acion ======================
-      } else if (typeProcessBooking == 3) {
-        // debugPrint("start");
-        // startAddressDriver =
-        //     await getAddressFromLatLng(position.latitude, position.longitude);
-        // setState(() {
-        //   startLatDriver = position.latitude;
-        //   startLngDriver = position.longitude;
-        // });
-        // BlocProvider.of<BookingBloc>(context).add(
-        //   StartTripEvent(
-        //     rideId: int.parse(widget.bookingId),
-        //   ),
-        // );
-        // _clearPolyline();
-
-  // ==============  Drop acion ======================
-      } else if (typeProcessBooking == 4) {
+     if (typeProcessBooking == 4) {
         debugPrint("drop - total distance ${Taxi.shared.totalDistance}");
-        dropAddressDriver =
-            await getAddressFromLatLng(position.latitude, position.longitude);
+        dropAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
         setState(() {
           dropLatDriver = position.latitude;
           dropLngDriver = position.longitude;
@@ -186,7 +132,6 @@ class _BookingScreenState extends State<BookingScreen> {
           endLongitude: dropLngDriver,
         ));
       } 
-
 // ==============  New request acion ======================
       else {
         currentAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
@@ -194,9 +139,13 @@ class _BookingScreenState extends State<BookingScreen> {
            setState(() {
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
+            if(widget.processStepBook != 3 ){
+            _drawPolylines(
+              dLocation: LatLng(currentLatDriver, currentLngDriver),
+              pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+          }
             _turnRight();
             syncMarker();
-            print("fasdfkads");
           });
         }
         else{
@@ -206,10 +155,11 @@ class _BookingScreenState extends State<BookingScreen> {
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
           });
-          Logger().e("D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
-          _drawPolylines(
+          if(typeProcessBooking != 3){
+            _drawPolylines(
               dLocation: LatLng(currentLatDriver, currentLngDriver),
               pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+          }
         }
       }
       debugPrint("Lat: ${position.latitude}, Lng: ${position.longitude}");
@@ -226,11 +176,9 @@ class _BookingScreenState extends State<BookingScreen> {
     polylinePoints = PolylinePoints();
     syncMarker();
 
-    Taxi.shared.setupBackgroundLocationTracking();
-    Taxi.shared.updateDriverLocation();
+    TaxiLocation.shared.updateCurrentLocationDriver();
     // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
   }
-
   // Sync markers for driver and passenger locations
   void syncMarker() async {
     driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
@@ -321,8 +269,8 @@ class _BookingScreenState extends State<BookingScreen> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger: widget.latDriver!,
-              widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger: widget.lngDriver!,
+              widget.processStepBook == 1? widget.latPassenger: widget.latDriver!,
+              widget.processStepBook == 1? widget.lngPassenger: widget.lngDriver!,
             ), // Use the provided LatLng for camera movement
             zoom: 19.151926040649414, // Set zoom level
           ),
@@ -369,8 +317,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
             _turnRight();
             tlog("Confirm Booking Successfully");
-            debugPrint(
-                "acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint("acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "acceptRide",
               data: {
@@ -384,17 +331,14 @@ class _BookingScreenState extends State<BookingScreen> {
               },
             );
           } else if (state is StartTripSuccess) {
-            setState(() {
-              _clearPolyline();
-            });
             tlog("Start Trip Success");
             Taxi.shared.simulateTrackingDistance();
             _turnRight();
             setState(() {
               widget.processStepBook = 4;
+              _clearPolyline();
             });
-            debugPrint(
-                "start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint("start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "startDrive",
               data: {
@@ -409,9 +353,6 @@ class _BookingScreenState extends State<BookingScreen> {
             );
           } else if (state is ArriveSuccess) {
              _turnRight();
-            setState(() {
-              _clearPolyline();
-            });
             tlog("Arrive Trip Success");
             Taxi.shared.connectAndEmitEvent(
               eventName: "rideArrival",
@@ -425,6 +366,7 @@ class _BookingScreenState extends State<BookingScreen> {
               },
             );
             setState(() {
+              _clearPolyline();
               widget.processStepBook = 3;
             });
           } else if (state is CompletedTripSuccess) {
@@ -500,7 +442,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       left: 0,
                       right: 0,
                       child: SmoothCircularCountdown(
-                        countDuration: widget.timeOut??30,
+                        countDuration: widget.timeOut,
                         isPop: true,
                       ),
                     )
@@ -943,6 +885,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       onPressed: () {
                         setState(() {
                           typeProcessBooking = 2;
+                          _turnRight();
                         });
                         getLocation();
                         BlocProvider.of<BookingBloc>(context).add(

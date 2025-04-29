@@ -13,13 +13,12 @@ class SplashScreen extends StatelessWidget {
   void checkDriverToken(BuildContext context) async {
     var driverData = await StorageGet.getDriverData();
     if (driverData != null) {
-      // Check Driver Status 
+      // Check Driver Status
       Taxi.shared.checkDriverAvailability();
       AppConstant.driverToken = driverData.data?.token;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const NavScreen()));
     } else {
-      
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const LoginPage()));
     }
@@ -31,19 +30,20 @@ class SplashScreen extends StatelessWidget {
       checkDriverToken(context);
     });
 
-    return  Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 40,
-              child: Image.asset("/Users/holy/Desktop/taxi_driver/assets/icon/png/logo_app.png"),
+              backgroundColor: Colors.white,
+              child: Image.asset("assets/icon/png/logo_app.png"),
             ),
             const SizedBox(
               height: 10,
             ),
-            const Text("TARA DRIVER", style: AppTextStyles.heading),
+            const Text("TARA DRIVER - តារា តាក់សុី", style: AppTextStyles.heading),
           ],
         ),
       ),

@@ -1,3 +1,19 @@
 {
-    "PROFILE":"Profile"
+    "LOGINTITLE": "Login into your account",
+    "LOGINDES": "Enter your phone number to access this application",
+    "MOBILE_NUMBER": "Mobile Number",
+    "PLEASE_TRY_AGAIN": "Please try again",
+    "CHECK_YOUR_PHONE_NUMBER_ERROR": "Please check your phone number",
+    "CHECK_PHONE_NUMBER_DIGIT_ERROR": "Phone Number must be 8 digits up",
+    "NEXT": "Next",
+    "OTP_VERIFICATION": "OTP Verification",
+    "OTP_VERIFICATION_DES": "We have sent verification code to your phone number",
+    "UNRECEIVED_OTP": "Don't received OTP?",
+    "RESEND_CODE": "Resend CODE",
+    "WELCOME_TO_TARA": "Welcome to TARA",
+    "ONLINE": "Online",
+    "OFFLINE": "Offline",
+    "HOME": "Home",
+    "HISTORY": "History",
+    "CONTACTUS": "Contact Us"
 }

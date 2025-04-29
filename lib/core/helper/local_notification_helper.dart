@@ -2,6 +2,9 @@ import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/core/utils/status_util.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 class NotificationLocal {
   static final notifications = FlutterLocalNotificationsPlugin();
   static const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -12,14 +15,21 @@ class NotificationLocal {
     sound: RawResourceAndroidNotificationSound('booking_sound'),
   );
 
-  static Future<void> initLocalNotification(
-      {required FlutterLocalNotificationsPlugin plugin}) async {
-    const android = AndroidInitializationSettings("@mipmap/ic_launcher");
-    const iOS = DarwinInitializationSettings();
-    const InitializationSettings initializationsSettings =
-        InitializationSettings(android: android, iOS: iOS);
-    bool? initialized = await plugin.initialize(initializationsSettings);
-    tlog("Notification initialized: $initialized");
+  // * Init Local Notification
+  initLocationNotification() async {
+    // Initialize the plugin for both iOS and Android
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    tlog("Init Local Notification");
   }
 
   static Future<void> notificationBooking(

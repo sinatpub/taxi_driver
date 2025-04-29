@@ -4,13 +4,11 @@ import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/storages/set_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
-import 'package:com.tara_driver_application/data/datasources/update_driver_location_api.dart';
 import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
@@ -53,7 +51,7 @@ class Taxi {
 
   Future<void> init() async {
     await checkDriverData();
-    await requestLocationPermission();
+    // await requestLocationPermission();
     // await setupBackgroundLocationTracking();
     await checkDriverAvailability();
   }
@@ -119,101 +117,7 @@ class Taxi {
     location.onLocationChanged.listen((locationData) {
       currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
       driverLocation = locationData;
-      _handleLocationChange();
     });
-  }
-
-  void _handleLocationChange() {
-    _locationUpdateTimer = Timer(const Duration(seconds: 10), () {
-      if (currentLocation != null) {
-        _updateLocationOnServer(currentLocation!);
-        // notifyBooking();
-      }
-    });
-  }
-
-//  funtion update current location =================
-  Future<bool> requestPermissionLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (!serviceEnabled) {
-      return false;
-    }
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Future<Position?> checkCurrentLocation() async {
-    Position? locationCurrent;
-    bool granted = await requestPermissionLocation();
-    if (granted == true) {
-      try {
-        await Geolocator.getCurrentPosition().then((value) {
-          locationCurrent = value;
-        });
-        return locationCurrent!;
-      } catch (e) {
-        if (e is TimeoutException) {
-          tlog('Location request timed out.');
-        } else {
-          tlog('Error fetching location: $e');
-        }
-        return locationCurrent!;
-      }
-    } else {
-      return locationCurrent!;
-    }
-  }
-
-  void updateDriverLocation() async {
-    bool granted = await requestPermissionLocation();
-    if (granted == true) {
-      try {
-        await Geolocator.getCurrentPosition().then((value) {
-          UpdateDriverLocation().updateDriverLocationApi(
-            lat: value.latitude,
-            log: value.longitude,
-          );
-        });
-      } catch (e) {
-        if (e is TimeoutException) {
-          print('Location request timed out.');
-        } else {
-          print('Error fetching location: $e');
-        }
-      }
-    } else {}
-  }
-
-  // End funtion update current location =================
-
-  Future<void> _updateLocationOnServer(LatLng location) async {
-    try {
-      await UpdateDriverLocation().updateDriverLocationApi(
-        lat: location.latitude,
-        log: location.longitude,
-      );
-      // tlog('Location updated on server', level: LogLevel.info);
-    } catch (error) {
-      tlog('Error updating location on server: $error', level: LogLevel.error);
-    }
-  }
-
-  double calculateDistance(
-      double latStart, double lonStart, double latEnd, double lonEnd) {
-    const R = 6371.01; // Radius of Earth in km
-    final dLat = deg2rad(latEnd - latStart), dLon = deg2rad(lonEnd - lonStart);
-    final a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(deg2rad(latStart)) *
-            cos(deg2rad(latEnd)) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-    return R * 2 * atan2(sqrt(a), sqrt(1 - a)) * 1000.0; // Return in meters
   }
 
   double deg2rad(double deg) => deg * pi / 180.0;
@@ -240,27 +144,8 @@ class Taxi {
     }
   }
 
-  Future<void> toggleDriverAvailable({bool isAvailable = true}) async {
-    await statusApi.toggleStatusDriver(status: isAvailable == true ? 1 : 0);
-    checkDriverAvailability();
-  }
 
-// * Init Local Notification
-  initLocationNotification() async {
-    // Initialize the plugin for both iOS and Android
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings();
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-    tlog("Init Local Notification");
-  }
 
   Future<void> notifyBooking(
       {required String title, String? description, bool? isSound}) async {

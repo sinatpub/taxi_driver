@@ -1,24 +1,22 @@
-import 'package:com.tara_driver_application/presentation/blocs/multi_bloc.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:com.tara_driver_application/app/root_main.dart';
+import 'package:com.tara_driver_application/app/service.dart';
+import 'package:com.tara_driver_application/presentation/widgets/custom_animated_loading.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:com.tara_driver_application/core/api_service/client/dio_http_client.dart';
-import 'package:com.tara_driver_application/core/theme/app_theme.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
-import 'package:com.tara_driver_application/injection_container.dart' as di;
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/presentation/screens/splash_screen.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+
+
 
 void main() async {
   BaseHttpClient.init();
-  di.init();
   WidgetsFlutterBinding.ensureInitialized();
-  Taxi.shared.initLocationNotification();
   EasyLocalization.logger.enableBuildModes = [];
+  // * initial service
+  initialService();
+  // * config easy loading
+  configLoading();
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('km'), Locale('en')],
@@ -29,22 +27,19 @@ void main() async {
   );
 }
 
-class Root extends StatelessWidget {
-  const Root({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: listBlocProvider,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        title: AppConstant.titleApp,
-        theme: AppTheme.lightTheme,
-        home: const SplashScreen(),
-      ),
-    );
-  }
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..progressColor = Colors.yellow
+    ..backgroundColor = Colors.green
+    ..indicatorColor = Colors.yellow
+    ..textColor = Colors.yellow
+    ..maskColor = Colors.blue.withOpacity(0.5)
+    ..userInteractions = true
+    ..dismissOnTap = true
+    ..customAnimation = CustomAnimation();
 }

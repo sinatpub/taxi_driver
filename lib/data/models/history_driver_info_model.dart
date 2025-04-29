@@ -9,7 +9,7 @@ HistoryDriveInfoModel historyDriveInfoModelFromJson(String str) => HistoryDriveI
 String historyDriveInfoModelToJson(HistoryDriveInfoModel data) => json.encode(data.toJson());
 
 class HistoryDriveInfoModel {
-    List<Datum>? data;
+    List<DataHistory>? data;
     int? currentPage;
     int? perPage;
     int? total;
@@ -26,7 +26,7 @@ class HistoryDriveInfoModel {
     });
 
     factory HistoryDriveInfoModel.fromJson(Map<String, dynamic> json) => HistoryDriveInfoModel(
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: List<DataHistory>.from(json["data"].map((x) => DataHistory.fromJson(x))),
         currentPage: json["current_page"],
         perPage: json["per_page"],
         total: json["total"],
@@ -44,7 +44,7 @@ class HistoryDriveInfoModel {
     };
 }
 
-class Datum {
+class DataHistory {
     int? id;
     String? bookingCode;
     String? startLatitude;
@@ -64,7 +64,7 @@ class Datum {
     String? createdAt;
     String? updatedAt;
 
-    Datum({
+    DataHistory({
         this.id,
         this.bookingCode,
         this.startLatitude,
@@ -85,7 +85,7 @@ class Datum {
         this.updatedAt,
     });
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    factory DataHistory.fromJson(Map<String, dynamic> json) => DataHistory(
         id: json["id"],
         bookingCode: json["booking_code"],
         startLatitude: json["start_latitude"],
