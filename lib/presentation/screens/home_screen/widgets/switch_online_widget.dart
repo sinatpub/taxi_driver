@@ -23,9 +23,8 @@ class SwitchOnlineWidget extends StatelessWidget {
           inactiveText: "OFFLINE".tr(),
           value: homeBloc.isOnline,
           valueFontSize: 14.0,
-          width: 105,
+          width: 110,
           borderRadius: 15,
-          
           height: 30,
           toggleSize: 35,
           padding: 3,

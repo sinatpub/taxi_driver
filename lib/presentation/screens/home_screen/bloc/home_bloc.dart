@@ -53,7 +53,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           await driverStatusApi.toggleStatusDriver(status: event.isTurnOn);
 
       emit(ToggleDriverService(isTurnon: result.data?.isAvailable ?? 0));
-      Future.delayed(const Duration(milliseconds: 300), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         EasyLoading.dismiss();
       });
     } catch (e) {

@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:com.tara_driver_application/core/api_service/client/dio_http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 
 
