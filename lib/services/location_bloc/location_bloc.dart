@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
+import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
 import 'package:com.tara_driver_application/services/location_bloc/location_event.dart';
 import 'package:com.tara_driver_application/services/location_bloc/location_state.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,15 +13,13 @@ import 'package:com.tara_driver_application/core/utils/load_custom_marker.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
-  final UpdateDriverLocation updateLocationRepo =UpdateDriverLocation();
+  final UpdateDriverLocation updateLocationRepo = UpdateDriverLocation();
   GoogleMapController? mapController;
   Set<Marker>? setMarker;
   BitmapDescriptor? passengerMarker;
   BitmapDescriptor? driverMarker;
 
-
-
-      LocationBloc() : super(LocationInitial()) {
+  LocationBloc() : super(LocationInitial()) {
     on<LoadInitialLocation>(_onLoadInitialLocation);
     on<UpdateLocation>(_onUpdateLocation);
     on<RequestLocationPermission>(_onRequestLocationPermission);
@@ -29,13 +28,15 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   Future<void> _onLoadInitialLocation(
       LoadInitialLocation event, Emitter<LocationState> emit) async {
     emit(LocationLoadInProgress());
-    await generateMarker();
+
     bool hasPermission = await requestPermissionLocation();
     if (hasPermission) {
       Position? position = await getCurrentLocation();
       if (position != null) {
-        emit(LocationLoadSuccess(LatLng(position.latitude, position.longitude)));
+        emit(
+            LocationLoadSuccess(LatLng(position.latitude, position.longitude)));
         centerMapOnCurrentLocation();
+        await generateMarker(LatLng(position.latitude, position.longitude));
       } else {
         emit(LocationLoadFailure("Failed to get current location"));
       }
@@ -47,14 +48,16 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   Future<void> _onUpdateLocation(
       UpdateLocation event, Emitter<LocationState> emit) async {
     try {
-      StreamSubscription<Position>? positionStream = Geolocator.getPositionStream(
+      StreamSubscription<Position>? positionStream =
+          Geolocator.getPositionStream(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
           distanceFilter: 10,
         ),
       ).listen((Position position) async {
         LatLng currentLocation = LatLng(position.latitude, position.longitude);
-        Logger().i("📍 Updated user location: ${position.latitude}, ${position.longitude}");
+        Logger().i(
+            "📍 Updated user location: ${position.latitude}, ${position.longitude}");
         updateMarkerPosition(currentLocation);
         centerMapOnCurrentLocation();
 
@@ -128,7 +131,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   void updateMarkerPosition(LatLng currentLocation) {
-    if (setMarker != null && setMarker!.isNotEmpty) {
+    if (setMarker != null) {
       setMarker!.removeWhere(
           (marker) => marker.markerId.value == AppConstant.driverMarker);
       setMarker!.add(Marker(
@@ -140,13 +143,20 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     }
   }
 
-  Future<void> generateMarker() async {
-    final Uint8List markerDriverImage =
-        await loadImageFromAssets('assets/marker/car_marker.png');
-    final Uint8List markerPassengerImage =
-        await loadImageFromAssets('assets/marker/passenger_marker.png');
+  Future<void> generateMarker(LatLng currentLocation) async {
+    driverMarker =
+        await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
+    passengerMarker =
+        await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
 
-    passengerMarker = BitmapDescriptor.fromBytes(markerPassengerImage);
-    driverMarker = BitmapDescriptor.fromBytes(markerDriverImage);
+    // Initialize the marker set
+    setMarker = {
+      Marker(
+        markerId: const MarkerId(AppConstant.driverMarker),
+        position: currentLocation,
+        infoWindow: const InfoWindow(title: "Driver Location"),
+        icon: driverMarker!,
+      ),
+    };
   }
 }

@@ -161,47 +161,48 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget buildGoogleMap() {
-    return BlocBuilder<LocationBloc, LocationState>(
-      builder: (context, state) {
-        if (state is LocationLoadInProgress) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is LocationLoadSuccess) {
-          return GoogleMap(
-            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-              Factory<OneSequenceGestureRecognizer>(
-                () => EagerGestureRecognizer(),
-              ),
-            },
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            compassEnabled: true,
-            trafficEnabled: true,
-            initialCameraPosition: CameraPosition(
-              target: state.currentLocation,
-              zoom: 17.0,
+ Widget buildGoogleMap() {
+  return BlocBuilder<LocationBloc, LocationState>(
+    builder: (context, state) {
+      if (state is LocationLoadInProgress) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (state is LocationLoadSuccess) {
+        return GoogleMap(
+          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+            Factory<OneSequenceGestureRecognizer>(
+              () => EagerGestureRecognizer(),
             ),
-            markers: context.read<LocationBloc>().setMarker ?? {},
-            onMapCreated: (GoogleMapController controller) {
-              context.read<LocationBloc>().mapController = controller;
-              if (!isCameraInitialized) {
-                controller.animateCamera(
-                  CameraUpdate.newLatLng(state.currentLocation),
-                );
-                isCameraInitialized = true;
-              }
-            },
-          );
-        } else if (state is LocationPermissionDenied) {
-          return const Center(child: Text('Location permission denied'));
-        } else if (state is LocationLoadFailure) {
-          return Center(child: Text('Failed to load location: ${state.error}'));
-        } else {
-          return const Center(child: Text('Something went wrong'));
-        }
-      },
-    );
-  }
+          },
+          mapType: MapType.normal,
+          myLocationEnabled: true,
+          compassEnabled: true,
+          trafficEnabled: true,
+          initialCameraPosition: CameraPosition(
+            target: state.currentLocation,
+            zoom: 17.0,
+          ),
+          markers: context.read<LocationBloc>().setMarker ?? {},
+          onMapCreated: (GoogleMapController controller) {
+            context.read<LocationBloc>().mapController = controller;
+            if (!isCameraInitialized) {
+              controller.animateCamera(
+                CameraUpdate.newLatLng(state.currentLocation),
+              );
+              isCameraInitialized = true;
+            }
+          },
+        );
+      } else if (state is LocationPermissionDenied) {
+        return const Center(child: Text('Location permission denied'));
+      } else if (state is LocationLoadFailure) {
+        return Center(child: Text('Failed to load location: ${state.error}'));
+      } else {
+        return const Center(child: Text('Something went wrong'));
+      }
+    },
+  );
+}
+
 }
 
 Future<BitmapDescriptor> loadCustomMarker({required String imagePath}) async {
