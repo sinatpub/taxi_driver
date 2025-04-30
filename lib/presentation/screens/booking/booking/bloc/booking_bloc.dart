@@ -34,7 +34,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           rideId: event.rideId,
         );
         tlog("Accept Ride: ${event.rideId}");
-        Taxi.shared.notifyBooking(title: "Accept Ride",isSound: false);
+        Taxi.shared.notifyBooking(title: "Accept Ride", isSound: false);
         emit(ConfirmBookingSuccess(confirmBookingModel: dataResporn));
       } catch (e) {
         emit(ConfirmBookingFail());
@@ -48,7 +48,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           rideId: event.rideId,
         );
         emit(StartTripSuccess());
-        Taxi.shared.notifyBooking(title: "Start Trip",isSound: false);
+        Taxi.shared.notifyBooking(title: "Start Trip", isSound: false);
       } catch (e) {
         emit(StartTripFail());
       }
@@ -61,7 +61,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           rideId: event.rideId,
         );
         emit(ArriveSuccess());
-        Taxi.shared.notifyBooking(title: "Arrived ",isSound: false);
+        Taxi.shared.notifyBooking(title: "Arrived ", isSound: false);
       } catch (e) {
         emit(ArriveFail());
       }
@@ -78,7 +78,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
         );
         emit(CompletedTripSuccess(completeDriver: result));
-        Taxi.shared.notifyBooking(title: "Complete Ride",isSound: false);
+        Taxi.shared.notifyBooking(title: "Complete Ride", isSound: false);
       } catch (e) {
         tlog("Complete Trip => $e");
         emit(CompletedTripFail());

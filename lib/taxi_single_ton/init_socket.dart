@@ -1,8 +1,10 @@
+import 'package:com.tara_driver_application/app/root_main.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -73,9 +75,10 @@ class DriverSocketService extends BaseSocketService {
         tlog("Socket New Ride $data");
         // showNewRideAlert(data);
         Taxi.shared.notifyBooking(
-            title: "New Ride Requests",
+             title: "NEWREQUEST".tr(),
             description:
-                "A passenger is waiting for your response. Accept the ride to begin the service.",
+                "DESREQUEST".tr(),
+          
             isSound: true);
         BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
         Navigator.push(

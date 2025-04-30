@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
 import 'package:com.tara_driver_application/services/location_bloc/location_event.dart';
@@ -7,9 +6,7 @@ import 'package:com.tara_driver_application/services/location_bloc/location_stat
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
-
 import 'package:com.tara_driver_application/data/datasources/update_driver_location_api.dart';
-import 'package:com.tara_driver_application/core/utils/load_custom_marker.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {

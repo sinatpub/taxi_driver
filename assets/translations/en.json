@@ -15,5 +15,8 @@
     "OFFLINE": "Offline",
     "HOME": "Home",
     "HISTORY": "History",
-    "CONTACTUS": "Contact Us"
+    "CONTACTUS": "Contact Us",
+
+    "NEWREQUEST":"New Ride Requests",
+    "DESREQUEST":"A passenger is waiting for your response. Accept the ride to begin the service."
 }

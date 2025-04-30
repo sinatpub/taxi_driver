@@ -144,17 +144,14 @@ class Taxi {
     }
   }
 
-
-
-
   Future<void> notifyBooking(
-      {required String title, String? description, bool? isSound}) async {
+      {required String title, String? description, bool isSound = true}) async {
     try {
       await NotificationLocal.notificationBooking(
           channel: NotificationLocal.channel,
           plugin: NotificationLocal.notifications,
           title: title,
-          useCustomSound: isSound == null ? false : true,
+          useCustomSound: isSound,
           description: description);
       tlog('Notification triggered', level: LogLevel.debug);
     } catch (e) {
