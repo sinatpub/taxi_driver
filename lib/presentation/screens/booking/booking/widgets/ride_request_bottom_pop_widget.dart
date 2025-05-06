@@ -138,10 +138,10 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                             children: [
                               SvgPicture.asset(ImageAssets.current_location,width: 22,color: AppColors.dark1,),
                               const SizedBox(width: 8,),
-                              Expanded(child: Text(widget.processType == 1? "${"PASSENGER_LOCATION".tr()}: (${widget.passegerLocationName.toString()})":"${widget.processType== 3 || widget.processType == 4 && widget.whereToGoLocationName != ""? "កន្លែងចាប់ផ្ដើម":"DRIVER_LOCATION".tr()}: (${widget.currentLocationName.toString()})",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
+                              Expanded(child: Text(widget.processType == 1? "${"PASSENGER_LOCATION".tr()}: (${widget.passegerLocationName.toString()})":"${widget.processType== 3 || widget.processType == 4? "កន្លែងចាប់ផ្ដើម":"DRIVER_LOCATION".tr()}: (${widget.currentLocationName.toString()})",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
                             ],
                           ),
-                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): Container(
+                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Container(
                             margin:const EdgeInsets.only(left: 10),
                             alignment: Alignment.centerLeft,
                             child:const DottedLine(
@@ -152,7 +152,7 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                               dashColor: AppColors.dark1,
                             ),
                           ),
-                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): Row(
+                           widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),

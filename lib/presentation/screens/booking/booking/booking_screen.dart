@@ -145,15 +145,6 @@ class _BookingScreenState extends State<BookingScreen> {
                     pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
                 });
             }
-            else{
-              if(widget.desLatPassenger !=null && widget.desLngPassenger != null){
-                setState(() {
-                  _drawPolylines(
-                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
-                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
-                });
-              }
-            }
             _turnRight();
             syncMarker();
           });
@@ -341,6 +332,13 @@ class _BookingScreenState extends State<BookingScreen> {
               if(widget.desLatPassenger == null){
                 _clearPolyline();
               }
+              else{
+                setState(() {
+                  _drawPolylines(
+                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+                });
+              }
             });
             debugPrint("start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
@@ -372,6 +370,13 @@ class _BookingScreenState extends State<BookingScreen> {
             setState(() {
               if(widget.desLatPassenger == null){
                 _clearPolyline();
+              }
+              else{
+                setState(() {
+                  _drawPolylines(
+                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+                });
               }
               widget.processStepBook = 3;
             });
