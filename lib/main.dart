@@ -12,6 +12,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 void main() async {
   BaseHttpClient.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   EasyLocalization.logger.enableBuildModes = [];
   // * initial service
   initialService();

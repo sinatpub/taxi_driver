@@ -32,16 +32,16 @@ class Data {
   dynamic endLongitude;
   dynamic startTime;
   dynamic endTime;
-  String? startAddress;
+  dynamic startAddress;
   dynamic endAddress;
   dynamic fare;
-  int? status;
-  String? statusName;
+  dynamic status;
+  dynamic statusName;
   Driver? passenger;
   Driver? driver;
   dynamic payment;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  dynamic createdAt;
+  dynamic updatedAt;
 
   Data({
     this.id,

@@ -1,4 +1,7 @@
+import 'package:com.tara_driver_application/app/funtion_convert.dart';
 import 'package:com.tara_driver_application/presentation/screens/history_booking/state/history_book_bloc.dart';
+import 'package:com.tara_driver_application/presentation/widgets/simmer_widget.dart';
+import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -52,19 +55,51 @@ class _RidingHistoryScreenState extends State<RidingHistoryScreen> {
         Container(
           alignment: Alignment.centerLeft,
           margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-          child: Text("Riding History",style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.dark1),),
+          child: Text("RIDING_HISTORY".tr(),style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.dark1),),
         ),
-        const Divider(height: 1,color: AppColors.light1,),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              children: [
-                TextButton(
-                  onPressed: (){
-                    setState(() {
-                      indexActive = 0;
-                      historyBookBloc = HistoryBookBloc(status: indexActive == 0?4:5);
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: (){
+                      setState(() {
+                        indexActive = 0;
+                        historyBookBloc = HistoryBookBloc(status: indexActive == 0?4:5);
+                          historyBookBloc.add(FetchPaginatedData());
+                          scrollController.addListener(() {
+                            if (scrollController.position.pixels ==
+                                scrollController.position.maxScrollExtent) {
+                              historyBookBloc.add(FetchPaginatedData());
+                            }
+                          });
+                      });
+                    }, 
+                    child: Text("COMPLETED".tr(),style: ThemeConstands.font16SemiBold.copyWith(color:indexActive== 1?AppColors.dark2: AppColors.red,),),
+                  ),
+                  Container(
+                    width: 100,
+                    height: 4,
+                    decoration:BoxDecoration(
+                      color: indexActive== 1?Colors.transparent: AppColors.red,
+                      borderRadius:const BorderRadius.only(topLeft: Radius.circular(3),topRight: Radius.circular(3))
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(width: 22,),
+            Expanded(
+              child: Column(
+                children: [
+                  TextButton(
+                    onPressed: (){
+                      setState(() {
+                        indexActive = 1;
+                        historyBookBloc = HistoryBookBloc(status: indexActive == 0?4:5);
                         historyBookBloc.add(FetchPaginatedData());
                         scrollController.addListener(() {
                           if (scrollController.position.pixels ==
@@ -72,207 +107,193 @@ class _RidingHistoryScreenState extends State<RidingHistoryScreen> {
                             historyBookBloc.add(FetchPaginatedData());
                           }
                         });
-                    });
-                  }, 
-                  child: Text("Complet",style: ThemeConstands.font16SemiBold.copyWith(color:indexActive== 1?AppColors.dark2: AppColors.red,),),
-                ),
-                Container(
-                  width: 100,
-                  height: 4,
-                  decoration:BoxDecoration(
-                    color: indexActive== 1?Colors.transparent: AppColors.red,
-                    borderRadius:const BorderRadius.only(topLeft: Radius.circular(3),topRight: Radius.circular(3))
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(width: 22,),
-            Column(
-              children: [
-                TextButton(
-                  onPressed: (){
-                    setState(() {
-                      indexActive = 1;
-                      historyBookBloc = HistoryBookBloc(status: indexActive == 0?4:5);
-                      historyBookBloc.add(FetchPaginatedData());
-                      scrollController.addListener(() {
-                        if (scrollController.position.pixels ==
-                            scrollController.position.maxScrollExtent) {
-                          historyBookBloc.add(FetchPaginatedData());
-                        }
                       });
-                    });
-                  }, 
-                  child: Text("Cancel",style: ThemeConstands.font16SemiBold.copyWith(color:indexActive == 0?AppColors.dark2: AppColors.red,),),
-                ),
-                Container(
-                  width: 100,
-                  height: 4,
-                  decoration:BoxDecoration(
-                    color: indexActive== 0?Colors.transparent: AppColors.red,
-                    borderRadius:const BorderRadius.only(topLeft: Radius.circular(3),topRight: Radius.circular(3))
+                    }, 
+                    child: Text("CANCELLED".tr(),style: ThemeConstands.font16SemiBold.copyWith(color:indexActive == 0?AppColors.dark2: AppColors.red,),),
                   ),
-                )
-              ],
+                  Container(
+                    width: 100,
+                    height: 4,
+                    decoration:BoxDecoration(
+                      color: indexActive== 0?Colors.transparent: AppColors.red,
+                      borderRadius:const BorderRadius.only(topLeft: Radius.circular(3),topRight: Radius.circular(3))
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),
-        const Divider(height: 1,color: AppColors.light1,),
+        //const Divider(height: 1,color: AppColors.light1,),
         Expanded(
-          child: BlocBuilder<HistoryBookBloc, HistoryBookState>(
-            bloc: historyBookBloc,
-            builder: (context, state) {
-              if (state is HistoryBookLoading && historyBookBloc.allItems.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is HistoryBookError) {
-                return Center(child: Text(state.message));
-              } else if (state is HistoryBookLoaded) {
-                return RefreshIndicator(
-                  onRefresh: _onRefresh,
-                  child: ListView.builder(
-                    controller: scrollController,
-                    itemCount: state.items.length + (state.hasReachedMax ? 0 : 1),
-                    itemBuilder: (context, index) {
-                      if (index < state.items.length) {
-                        return Container(
-                          padding:const EdgeInsets.all(18),
-                          margin: const EdgeInsets.only(left: 18,right: 18,top: 18),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(width: 1,color: AppColors.light1),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30.0,
-                                    backgroundImage:
-                                        NetworkImage(state.items[index].passenger!.profileImage.toString()),
-                                    backgroundColor: Colors.transparent,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+          child: Container(
+            color: AppColors.light3,
+            child: BlocBuilder<HistoryBookBloc, HistoryBookState>(
+              bloc: historyBookBloc,
+              builder: (context, state) {
+                if (state is HistoryBookLoading && historyBookBloc.allItems.isEmpty) {
+                  return const ShimmerBookStory();
+                } else if (state is HistoryBookError) {
+                  return Center(child: Text(state.message));
+                } else if (state is HistoryBookLoaded) {
+                  return RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: state.items.length + (state.hasReachedMax ? 0 : 1),
+                      itemBuilder: (context, index) {
+                        if (index < state.items.length) {
+                          return Container(
+                            padding:const EdgeInsets.all(18),
+                            margin: const EdgeInsets.only(left: 18,right: 18,top: 18),
+                            decoration: BoxDecoration(
+                              color: AppColors.light4,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 15,
+                                  blurStyle: BlurStyle.normal,
+                                  color: Colors.grey.withOpacity(0.2),
+                                  offset: const Offset(5, 6),
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: TImageWidget(
+                                        image: NetworkImage(
+                                            state.items[index].passenger!.profileImage.toString()),
+                                        width: 50,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text("${"INVOICE".tr()}: #${state.items[index].payment!.invoiceId}",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark2),textAlign: TextAlign.start,),
+                                                Text(state.items[index].statusName.toString().toUpperCase().tr(),style: ThemeConstands.font14SemiBold.copyWith(color:state.items[index].status==4?AppColors.success:AppColors.dark2),textAlign: TextAlign.end,),
+                                              ],
+                                            ),
+                                            Text(state.items[index].passenger!.name.toString(),style: ThemeConstands.font20SemiBold.copyWith(color:AppColors.dark1),),
+                                            Text("${"METHOD".tr()} ${state.items[index].payment!.paymentMethod}",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12,),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("In voice ID: #${state.items[index].payment!.invoiceId}",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark2),textAlign: TextAlign.start,),
-                                              Text(state.items[index].statusName.toString(),style: ThemeConstands.font14SemiBold.copyWith(color:state.items[index].status==4?AppColors.success:AppColors.dark2),textAlign: TextAlign.end,),
-                                            ],
-                                          ),
-                                          Text(state.items[index].passenger!.name.toString(),style: ThemeConstands.font20SemiBold.copyWith(color:AppColors.dark1),),
-                                          Text(state.items[index].payment!.paymentMethod.toString(),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                                          SvgPicture.asset(ImageAssets.map_outline,width: 20,color: AppColors.red,),
+                                          const SizedBox(width: 8,),
+                                          Text(formatDistanceWithUnits(state.items[index].payment!.distance.toString(),context),style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.dark1),),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12,),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(ImageAssets.time_outline,width: 20,color: AppColors.red,),
+                                          const SizedBox(width: 8,),
+                                          Text(state.items[index].status == 4?convertTimeString(state.items[index].payment!.duration.toString()):"UNKNOWN".tr(),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(ImageAssets.payment_outline,width: 20,color: AppColors.red,),
+                                          const SizedBox(width: 8,),
+                                          Text("៛${formatToTwoDecimalPlaces(state.items[index].payment!.amount.toString())}",style: ThemeConstands.font14SemiBold.copyWith(color:AppColors.dark1),),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 18,),
+                                const Divider(
+                                  color: AppColors.light1,
+                                  thickness: 1,
+                                  height: 1,
+                                ),
+                                const SizedBox(height: 18,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("DATE_TIME".tr(),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                                    const SizedBox(width: 8,),
+                                    Text(state.items[index].status == 4?formatDateTime(state.items[index].startTime.toString()):"UNKNOWN".tr(),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                                  ],
+                                ),
+                                const SizedBox(height: 18,),
+                                const Divider(
+                                  color: AppColors.light1,
+                                  thickness: 1,
+                                  height: 1,
+                                ),
+                                const SizedBox(height: 18,),
+                                Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        SvgPicture.asset(ImageAssets.current_location,width: 22,color: AppColors.dark1,),
+                                        const SizedBox(width: 8,),
+                                        Expanded(child: Text(state.items[index].status == 4?state.items[index].startAddress.toString():"UNKNOWN".tr(),style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
+                                      ],
+                                    ),
+                                    state.items[index].status == 5?const SizedBox():Container(
+                                      margin:const EdgeInsets.only(left: 10),
+                                      alignment: Alignment.centerLeft,
+                                      child:const DottedLine(
+                                        alignment: WrapAlignment.start,
+                                        lineLength: 30,
+                                        direction: Axis.vertical,
+                                        lineThickness: 1,
+                                        dashColor: AppColors.dark1,
+                                      ),
+                                    ),
+                                    state.items[index].status == 5?const SizedBox(): Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
                                         const SizedBox(width: 8,),
-                                        Text(state.items[index].payment!.distance.toString(),style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.dark1),),
+                                        Expanded(child: Text(state.items[index].status == 4?state.items[index].endAddress.toString():"UNKNOWN".tr(),style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
                                       ],
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
-                                        const SizedBox(width: 8,),
-                                        Text(state.items[index].status == 4?state.items[index].payment!.duration.toString():"------",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
-                                        const SizedBox(width: 8,),
-                                        Text("៛${state.items[index].payment!.amount.toString()}",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 18,),
-                              const Divider(
-                                color: AppColors.light1,
-                                thickness: 1,
-                                height: 1,
-                              ),
-                              const SizedBox(height: 18,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Date & Time",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
-                                  const SizedBox(width: 8,),
-                                  Text(state.items[index].status == 4?"${DateFormat("yyyy-MM-dd h:mm a").format(DateFormat("yyyy-MM-dd HH:mm:ss").parse(state.items[index].startTime))} - ${DateFormat("yyyy-MM-dd h:mm a").format(DateFormat("yyyy-MM-dd HH:mm:ss").parse(state.items[index].endTime))}":"----",style: ThemeConstands.font14SemiBold.copyWith(color:AppColors.dark1),),
-                                ],
-                              ),
-                              const SizedBox(height: 18,),
-                              const Divider(
-                                color: AppColors.light1,
-                                thickness: 1,
-                                height: 1,
-                              ),
-                              const SizedBox(height: 18,),
-                              Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.dark1,),
-                                      const SizedBox(width: 8,),
-                                      Expanded(child: Text( state.items[index].status == 4?state.items[index].startAddress.toString():"------",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
-                                    ],
-                                  ),
-                                  Container(
-                                    margin:const EdgeInsets.only(left: 9),
-                                    alignment: Alignment.centerLeft,
-                                    child:const DottedLine(
-                                      alignment: WrapAlignment.start,
-                                      lineLength: 30,
-                                      direction: Axis.vertical,
-                                      lineThickness: 1,
-                                      dashColor: AppColors.dark1,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
-                                      const SizedBox(width: 8,),
-                                      Expanded(child: Text(state.items[index].status == 4?state.items[index].endAddress.toString():"------",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        );
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  ),
-                );
-              }
-              return Container();
-            },
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
           ),
          
           // child: ListView.builder(

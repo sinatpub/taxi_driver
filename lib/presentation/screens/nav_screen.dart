@@ -138,7 +138,7 @@ class _NavScreenState extends State<NavScreen> {
                         selectedIndex = 2;
                       });
                     },
-                        "CONTACTUS".tr(),
+                        "MORE".tr(),
                         selectedIndex != 2
                             ? ImageAssets.profile
                             : ImageAssets.profile_fill,
@@ -147,9 +147,7 @@ class _NavScreenState extends State<NavScreen> {
                 ),
               ));
   }
-
-  Widget itemNav(
-      VoidCallback onTap, String title, String icon, int currentActive) {
+  Widget itemNav(VoidCallback onTap, String title, String icon, int currentActive) {
     return Expanded(
       child: MaterialButton(
         padding: const EdgeInsets.all(0),
@@ -164,9 +162,10 @@ class _NavScreenState extends State<NavScreen> {
                 color: currentActive == selectedIndex
                     ? AppColors.error
                     : AppColors.dark1),
+            const SizedBox(height: 4,),
             Text(
               title,
-              style: AppTextStyles.body.copyWith(
+              style: ThemeConstands.font14Regular.copyWith(
                   color: currentActive == selectedIndex
                       ? AppColors.error
                       : AppColors.dark1),

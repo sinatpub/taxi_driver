@@ -1,7 +1,9 @@
+import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showYesNoCustomDialog(
-    BuildContext context, String title, String description, {required Function() onYes}) {
+Future<void> showYesNoCustomDialog({required Function() onYes,required BuildContext context,required String title, required String description,}) {
   return showDialog<bool>(
     context: context,
     barrierDismissible: true,
@@ -18,29 +20,22 @@ Future<void> showYesNoCustomDialog(
         actions: <Widget>[
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              // primary: Colors.red, // Customize your button color
-              // backgroundColor: Colors.red,
-              // foregroundColor: Colors.white,
+             
               padding: const EdgeInsets.symmetric(horizontal: 24),
             ),
-            child: const Text('No'),
+            child: Text('NO'.tr(),style: ThemeConstands.font16Regular.copyWith(color:AppColors.main,)),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
            ElevatedButton(
-            
             style: ElevatedButton.styleFrom(
-              // primary: Colors.red, // Customize your button color
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24),
             ),
             onPressed: onYes,
-            child: const Text('Yes')
-            // ?? () {
-            //   // Navigator.of(context).pop();
-            // },
+            child: Text('YES'.tr(),style: ThemeConstands.font16Regular.copyWith(color:AppColors.light4,))
           ),
         ],
       );

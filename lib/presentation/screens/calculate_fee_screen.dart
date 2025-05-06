@@ -1,7 +1,9 @@
+import 'package:com.tara_driver_application/app/funtion_convert.dart';
 import 'package:com.tara_driver_application/data/datasources/confirm_booking_api.dart';
 import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
 import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
+import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -53,7 +55,7 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
               Container(
                 alignment: Alignment.centerLeft,
                 margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-                child: Text("Calculate fee",style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.dark1),),
+                child: Text("CALCULATE_FEE".tr(),style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.dark1),),
               ),
               const Divider(height: 1,color: AppColors.light1,),
               Expanded(
@@ -61,17 +63,23 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                   child: Column(
                     children: [
                      widget.routFrom == "FromDropBooking"? bodyRecive(
-                        profile: widget.dataComplete!.data!.passenger!.profileImage == null? 'https://via.placeholder.com/150':widget.dataComplete!.data!.passenger!.profileImage.toString(),
+                        startTime: widget.dataComplete!.data!.startTime.toString(),
+                        endAdd: widget.dataComplete!.data!.endAddress.toString(),
+                        startAdd:  widget.dataComplete!.data!.startAddress.toString(),
+                        profile: widget.dataComplete!.data!.passenger!.profileImage!,
                         passagerName: widget.dataComplete!.data!.passenger!.name.toString(),
-                        amount: "៛${widget.dataComplete!.data!.payment!.amount.toString()}",
+                        amount: widget.dataComplete!.data!.payment!.amount.toString(),
                         createAt: widget.dataComplete!.data!.payment!.createdAt.toString(),
                         distance: widget.dataComplete!.data!.payment!.distance.toString(),
                         duration:  widget.dataComplete!.data!.payment!.duration.toString(),
                       ):
                       bodyRecive(
-                        profile: widget.dataDriverInfo!.passenger!.profileImage == null? 'https://via.placeholder.com/150':widget.dataDriverInfo!.passenger!.profileImage.toString(),
+                        startTime: widget.dataDriverInfo!.startTime.toString(),
+                        endAdd: widget.dataDriverInfo!.endAddress.toString(),
+                        startAdd:  widget.dataDriverInfo!.startAddress.toString(),
+                        profile: widget.dataDriverInfo!.passenger!.profileImage!,
                         passagerName: widget.dataDriverInfo!.passenger!.name.toString(),
-                        amount: "៛${widget.dataDriverInfo!.payment!.amount.toString()}",
+                        amount: widget.dataDriverInfo!.payment!.amount.toString(),
                         createAt: widget.dataDriverInfo!.payment!.createdAt.toString(),
                         distance: widget.dataDriverInfo!.payment!.distance.toString(),
                         duration:  widget.dataDriverInfo!.payment!.duration.toString(),
@@ -83,7 +91,7 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                             setState(() {
                               loadingCompletePay = true;
                             });
-                              await BookingApi().completePayment(rideId: widget.routFrom == "FromDropBooking"? widget.dataComplete!.data!.id! :widget.dataDriverInfo!.passenger!.roleId!).then((onValue){
+                              await BookingApi().completePayment(rideId: widget.routFrom == "FromDropBooking"? widget.dataComplete!.data!.id! : int.parse(widget.dataDriverInfo!.id.toString()) ).then((onValue){
                                 if(onValue == true){
                                   Taxi.shared.connectAndEmitEvent(
                                   eventName:"acceptPayment",
@@ -115,7 +123,7 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                           width: 200,
                           color:AppColors.red,
                           textColor: AppColors.light4,
-                          label: "Payment Done",
+                          label: "PAYMENT_DONE".tr(),
                           enableWidth: true,
                         )
                     ],
@@ -136,12 +144,25 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
     required String duration,
     required String distance,
     required String amount,
+    required String startAdd,
+    required String endAdd,
+    required String startTime,
+
   }){
     return Container(
       margin: const EdgeInsets.all(18),
       decoration: BoxDecoration(
+        color: AppColors.light4,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(width: 1,color: AppColors.light1),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 15,
+            blurStyle: BlurStyle.normal,
+            color: Colors.grey.withOpacity(0.2),
+            offset: const Offset(5, 6),
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -151,13 +172,16 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30.0,
-                      backgroundImage:
-                          NetworkImage(profile),
-                      backgroundColor: Colors.transparent,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: TImageWidget(
+                        image: NetworkImage(
+                            profile),
+                        width: 50,
+                      ),
                     ),
                     Expanded(
+                      flex: 2,
                       child: Container(
                         alignment: Alignment.centerLeft,
                         margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
@@ -165,21 +189,13 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(passagerName,style: ThemeConstands.font20SemiBold.copyWith(color:AppColors.dark1),),
-                            Text("Cash payment",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                            Text("${"METHOD".tr()} ${"Unknown Payment"}",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
                           ],
                         ),
                       ),
                     ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-                      child: Column(
-                        children: [
-                          Text("Payment",style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.red),),
-                          Text("Collaction",style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.red),),
-                        ],
-                      ),
-                    ),
+                    Expanded(
+                      child: Text("PAYMENT_COLLECTION".tr(),style: ThemeConstands.font14SemiBold.copyWith(color:AppColors.main),textAlign: TextAlign.start,)),
                   ],
                 ),
                 const SizedBox(height: 12,),
@@ -189,9 +205,9 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
+                          SvgPicture.asset(ImageAssets.map_outline,width: 20,color: AppColors.red,),
                           const SizedBox(width: 8,),
-                          Text(distance,style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.dark1),),
+                          Text(formatDistanceWithUnits(distance,context),style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.dark1),),
                         ],
                       ),
                     ),
@@ -199,9 +215,9 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
+                          SvgPicture.asset(ImageAssets.time_outline,width: 20,color: AppColors.red,),
                           const SizedBox(width: 8,),
-                          Text(duration,style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                          Text(convertTimeString(duration),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
                         ],
                       ),
                     ),
@@ -209,9 +225,9 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
+                          SvgPicture.asset(ImageAssets.payment_outline,width: 20,color: AppColors.red,),
                           const SizedBox(width: 8,),
-                          Text(amount,style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                          Text("៛${formatToTwoDecimalPlaces(amount)}",style: ThemeConstands.font14SemiBold.copyWith(color:AppColors.dark1),),
                         ],
                       ),
                     )
@@ -227,9 +243,9 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Date & Time",style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
+                    Text("DATE_TIME".tr(),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
                     const SizedBox(width: 8,),
-                    Text(formartDate(createAt),style: ThemeConstands.font14SemiBold.copyWith(color:AppColors.dark1),),
+                    Text(formatDateTime(startTime),style: ThemeConstands.font14Regular.copyWith(color:AppColors.dark1),),
                   ],
                 ),
                 const SizedBox(height: 18,),
@@ -244,13 +260,13 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.dark1,),
+                        SvgPicture.asset(ImageAssets.current_location,width: 22,color: AppColors.dark1,),
                         const SizedBox(width: 8,),
-                        Expanded(child: Text(widget.startAddress,style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
+                        Expanded(child: Text(startAdd,style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
                       ],
                     ),
                     Container(
-                      margin:const EdgeInsets.only(left: 9),
+                      margin:const EdgeInsets.only(left: 10),
                       alignment: Alignment.centerLeft,
                       child:const DottedLine(
                         alignment: WrapAlignment.start,
@@ -265,11 +281,11 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                       children: [
                         SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
                         const SizedBox(width: 8,),
-                        Expanded(child: Text(widget.endAddress,style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
+                        Expanded(child: Text(endAdd.toString(),style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
                       ],
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ),
@@ -282,8 +298,8 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
             ),
             child: Row(
               children: [
-                Expanded(child: Text("Total price:",style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.start,)),
-                Expanded(child: Text(amount,style: ThemeConstands.font18SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.end,)),
+                Expanded(child: Text("${"TOTAL_PRICE".tr()}:",style: ThemeConstands.font16SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.start,)),
+                Expanded(child: Text("៛${formatToTwoDecimalPlaces(amount)}",style: ThemeConstands.font18SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.end,)),
               ],
             )
           )

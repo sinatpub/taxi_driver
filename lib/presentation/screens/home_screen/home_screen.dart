@@ -129,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           latDriver: double.parse(dataDriver.driver!.lastLocation!.latitude.toString()),
           lngDriver: double.parse(dataDriver.driver!.lastLocation!.longitude.toString()),
           passengerId: dataDriver.passenger!.id.toString(),
+          desLatPassenger: null,
+          desLngPassenger: null,
         ),
       ),
     );

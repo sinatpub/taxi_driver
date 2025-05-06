@@ -19,6 +19,7 @@ class BookingApi {
       },
       bodyParse: formData,
       onSuccess: (result) {
+        print("fsa,dmf.,sad${result.data}");
         return ConfirmBookingModel?.fromJson(result.data);
       },
     );

@@ -1,26 +1,25 @@
 import 'package:com.tara_driver_application/core/helper/get_address_latlng_helper.dart';
 import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
+import 'package:com.tara_driver_application/presentation/screens/booking/booking/widgets/ride_request_bottom_pop_widget.dart';
 import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
 import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/count_down_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/yesno_dialog_widget.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi_location.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -49,8 +48,8 @@ class BookingScreen extends StatefulWidget {
     required this.latPassenger,
     required this.lngPassenger,
     required this.processStepBook,
-    this.desLatPassenger,
-    this.desLngPassenger,
+    required this.desLatPassenger,
+    required this.desLngPassenger,
     this.latDriver,
     this.lngDriver,
     required this.timeOut,
@@ -112,10 +111,10 @@ class _BookingScreenState extends State<BookingScreen> {
       await launchUrl(Uri.parse(url),);
     }
   }
-
   void getLocation() async {
     // Type  0 = initScreen, 1 = accept ,2 = arrive, 3 = start, 4 = drop;
     Position? position = await TaxiLocation.shared.getCurrentLocation();
+    destinationPassengerPM = widget.desLatPassenger != null && widget.desLngPassenger != null? await getAddressFromLatLng(widget.desLatPassenger!, widget.desLngPassenger!):"";
     if (position != null) {
      if (typeProcessBooking == 4) {
         debugPrint("drop - total distance ${Taxi.shared.totalDistance}");
@@ -139,11 +138,22 @@ class _BookingScreenState extends State<BookingScreen> {
            setState(() {
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
-            if(widget.processStepBook != 3 ){
-            _drawPolylines(
-              dLocation: LatLng(currentLatDriver, currentLngDriver),
-              pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-          }
+            if(widget.processStepBook != 4 && widget.processStepBook != 3){
+                setState(() {
+                  _drawPolylines(
+                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                    pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+                });
+            }
+            else{
+              if(widget.desLatPassenger !=null && widget.desLngPassenger != null){
+                setState(() {
+                  _drawPolylines(
+                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+                });
+              }
+            }
             _turnRight();
             syncMarker();
           });
@@ -155,55 +165,20 @@ class _BookingScreenState extends State<BookingScreen> {
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
           });
-          if(typeProcessBooking != 3){
-            _drawPolylines(
-              dLocation: LatLng(currentLatDriver, currentLngDriver),
-              pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+          if(typeProcessBooking != 3 && typeProcessBooking !=2 ){
+            setState(() {
+              _drawPolylines(
+                dLocation: LatLng(currentLatDriver, currentLngDriver),
+                pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+              
+            });
           }
         }
       }
-      debugPrint("Lat: ${position.latitude}, Lng: ${position.longitude}");
+      // debugPrint("Lat: ${position.latitude}, Lng: ${position.longitude}");
     } else {
       debugPrint("Failed to get location.");
     }
-  }
-
-  @override
-  void initState() {
-    getLocation();
-    registerSocket();
-    super.initState();
-    polylinePoints = PolylinePoints();
-    syncMarker();
-
-    TaxiLocation.shared.updateCurrentLocationDriver();
-    // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
-  }
-  // Sync markers for driver and passenger locations
-  void syncMarker() async {
-    driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
-    passengerMarker = await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
-    destinationPassengerMarker = await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
-
-    _addMarker(
-        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger : widget.latDriver!,
-        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger : widget.lngDriver!,
-        "destinationMarker", widget.processStepBook == 1? passengerMarker : driverMarker);
-
-    getAddressPlaceMarker();
-    setState(() {});
-  }
-
-  // Add a marker on the map
-  void _addMarker(double lat, double lng, String title, BitmapDescriptor icon) {
-    final marker = Marker(
-      markerId: MarkerId(title),
-      position: LatLng(lat, lng),
-      infoWindow: InfoWindow(title: title),
-      icon: icon,
-    );
-    _markers.add(marker);
-    setState(() {});
   }
 
   void _drawPolylines({
@@ -252,12 +227,45 @@ class _BookingScreenState extends State<BookingScreen> {
         // Log error if route couldn't be fetched
         tlog("Error drawing polyline $i: ${result.errorMessage}");
       }
+      setState(() {
+      });
     }
+  }
 
-    // Update the state to reflect changes on the map
+  @override
+  void initState() {
+    getLocation();
+    registerSocket();
+    super.initState();
+    polylinePoints = PolylinePoints();
+    syncMarker();
+    TaxiLocation.shared.updateCurrentLocationDriver();
+    // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
+  }
+  // Sync markers for driver and passenger locations
+  void syncMarker() async {
+    driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
+    passengerMarker = await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
+    destinationPassengerMarker = await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
+    _addMarker(
+        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger : widget.latDriver!,
+        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger : widget.lngDriver!,
+        "destinationMarker", widget.processStepBook == 1? passengerMarker : driverMarker);
+    getAddressPlaceMarker();
     setState(() {});
   }
 
+  // Add a marker on the map
+  void _addMarker(double lat, double lng, String title, BitmapDescriptor icon) {
+    final marker = Marker(
+      markerId: MarkerId(title),
+      position: LatLng(lat, lng),
+      infoWindow: InfoWindow(title: title),
+      icon: icon,
+    );
+    _markers.add(marker);
+    setState(() {});
+  }
   _clearPolyline() {
     _polylines.clear();
   }
@@ -281,8 +289,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // Get address for the place marker
   void getAddressPlaceMarker() async {
-    currentPassengerPM =
-        await getAddressFromLatLng(widget.latPassenger, widget.lngPassenger);
+    currentPassengerPM = await getAddressFromLatLng(widget.latPassenger, widget.lngPassenger);
     // destinationPassengerPM = await getAddressFromLatLng(pDesLat, pDesLng);
     setState(() {});
   }
@@ -292,9 +299,7 @@ class _BookingScreenState extends State<BookingScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(widget.processStepBook == 1
-            ? "Request Booking"
-            : "Accepted Passenger"),
+        title: Text(widget.processStepBook == 1?"HAVE_BOOKING".tr(): widget.processStepBook == 2? "GO_TO_PASSENGER".tr(): widget.processStepBook == 3? "PREPAIR_TO_GO".tr():"CARRYING_PASSENGER".tr(),),
       ),
       body: BlocConsumer<BookingBloc, BookingState>(
         listener: (context, state) {
@@ -312,10 +317,7 @@ class _BookingScreenState extends State<BookingScreen> {
             setState(() {
               widget.processStepBook = 2;
             });
-              _drawPolylines(
-                dLocation: LatLng(currentLatDriver, currentLngDriver),
-                pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-            _turnRight();
+            // _turnRight();
             tlog("Confirm Booking Successfully");
             debugPrint("acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
@@ -336,7 +338,9 @@ class _BookingScreenState extends State<BookingScreen> {
             _turnRight();
             setState(() {
               widget.processStepBook = 4;
-              _clearPolyline();
+              if(widget.desLatPassenger == null){
+                _clearPolyline();
+              }
             });
             debugPrint("start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
@@ -366,7 +370,9 @@ class _BookingScreenState extends State<BookingScreen> {
               },
             );
             setState(() {
-              _clearPolyline();
+              if(widget.desLatPassenger == null){
+                _clearPolyline();
+              }
               widget.processStepBook = 3;
             });
           } else if (state is CompletedTripSuccess) {
@@ -374,8 +380,7 @@ class _BookingScreenState extends State<BookingScreen> {
             setState(() {
               _clearPolyline();
             });
-            debugPrint(
-                "dope bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint("dope bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "dropDrive",
               data: {
@@ -416,6 +421,11 @@ class _BookingScreenState extends State<BookingScreen> {
           return Stack(
             children: [
               GoogleMap(
+                gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                  Factory<OneSequenceGestureRecognizer>(
+                    () => EagerGestureRecognizer(),
+                  ),
+                },
                 mapType: MapType.normal,
                 myLocationEnabled: false,
                 indoorViewEnabled: true,
@@ -447,644 +457,66 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     )
                   : const SizedBox(),
-              widget.processStepBook == 1
-                  ? rideRequestWidget(context)
-                  : widget.processStepBook == 2
-                      ? arrivedPassengerWidget(context)
-                      : widget.processStepBook == 3
-                          ? startDriveWidget(context)
-                          : Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 18, horizontal: 18),
-                                color: Colors.red,
-                                alignment: Alignment.center,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isLoading = true;
-                                      typeProcessBooking = 4;
-                                    });
-                                    getLocation();
-                                  },
-                                  child: const Text("Drop Off"),
-                                ),
-                              ),
-                            ),
+              ModelBottomSheetNewRequestWidget(
+                bookingId: widget.bookingId, 
+                namePassanger: widget.namePassanger, 
+                phonePassanger: widget.phonePassanger, 
+                profilePassanger: widget.imagePassanger, 
+                currentLocationName:currentAddressDriver, 
+                whereToGoLocationName: destinationPassengerPM, 
+                passegerLocationName: currentPassengerPM, 
+                processType: widget.processStepBook, 
+                onTap: () {
+                  if(widget.processStepBook == 1){
+                    setState(() {
+                      setState(() {
+                        typeProcessBooking = 2;
+                      });
+                      getLocation();
+                      BlocProvider.of<BookingBloc>(context).add(
+                        ConfirmBookingEvent(
+                          rideId: int.parse(widget.bookingId.toString()),
+                        ),
+                      );
+                      debugPrint("accept and get positon");
+                    });
+                  }
+                  else if(widget.processStepBook == 2){
+                    setState(() {
+                      typeProcessBooking = 2;
+                      _turnRight();
+                    });
+                    getLocation();
+                    BlocProvider.of<BookingBloc>(context).add(
+                      ArrivedEvent(
+                        rideId: int.parse(widget.bookingId),
+                      ),
+                    );
+                  }
+                  else if(widget.processStepBook == 3){
+                    setState(() {
+                      typeProcessBooking = 3;
+                    });
+                    getLocation();
+                    BlocProvider.of<BookingBloc>(context).add(
+                      StartTripEvent(
+                        rideId: int.parse(widget.bookingId),
+                      ),
+                    );
+                  }
+                  else{
+                    setState(() {
+                      isLoading = true;
+                      typeProcessBooking = 4;
+                    });
+                    getLocation();
+                  }
+                },
+              ),
               if (isLoading) const Positioned(child: LoadingWidget()),
             ],
           );
         },
-      ),
-    );
-  }
-
-  Widget rideRequestWidget(BuildContext context) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        height: MediaQuery.of(context).size.height / 2.8,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.withOpacity(.2)),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: Text(
-                    "Ride Request",
-                    style: AppTextStyles.body
-                        .copyWith(fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const Divider(
-                  thickness: .1,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                                  radius: 24,
-                                  child: Image.network(widget.imagePassanger),
-                                ),
-                      const SizedBox(
-                        width: 18,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.namePassanger,
-                            style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w600, fontSize: 14),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            "Cash Payment",
-                            style: AppTextStyles.bodyDark.copyWith(
-                                color: Colors.grey,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  thickness: .1,
-                ),
-                Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left column with icons
-                        SizedBox(
-                          width: 30,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SvgPicture.asset(
-                                  "assets/icon/svg/current_location.svg",
-                                  width: 32,
-                                  height: 32,
-                                  fit: BoxFit.cover),
-                              const SizedBox(
-                                  height:
-                                      40), // Spacer alternative to creatNe space between icons
-                              widget.desLatPassenger != null &&
-                                      widget.desLngPassenger != null
-                                  ? SvgPicture.asset(
-                                      "assets/icon/svg/bxs_map.svg",
-                                      width: 32,
-                                      height: 32,
-                                      fit: BoxFit.cover)
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 18),
-                        // Right column with location texts
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Top location text
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Passenger Location",
-                                    style: AppTextStyles.bodyDark.copyWith(
-                                      color: AppColors.dark3,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    " $currentPassengerPM  ",
-                                    style: AppTextStyles.bodyDark.copyWith(
-                                      color: AppColors.dark1,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 3,
-                                  ),
-                                ],
-                              ),
-                              // Bottom destination text
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              widget.desLatPassenger != null &&
-                                      widget.desLngPassenger != null
-                                  ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Destination Location",
-                                          style:
-                                              AppTextStyles.bodyDark.copyWith(
-                                            color: AppColors.dark3,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${widget.desLatPassenger} - ${widget.desLngPassenger}",
-                                          style:
-                                              AppTextStyles.bodyDark.copyWith(
-                                            color: AppColors.dark1,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      FBTNWidget(
-                        onPressed: () {
-                          showYesNoCustomDialog(context, "Cancel Booking",
-                              "Are you sure you want to cancel this booking?",
-                              onYes: () {
-                            BlocProvider.of<BookingBloc>(context).add(
-                              CanceBookingEvent(
-                                rideId: int.parse(widget.bookingId),
-                              ),
-                            );
-                          });
-                        },
-                        color: AppColors.dark1,
-                        textColor: AppColors.light4,
-                        label: "Cancel",
-                        enableWidth: true,
-                        width: MediaQuery.of(context).size.width / 3,
-                      ),
-                      FBTNWidget(
-                        onPressed: () {
-                          setState(() {
-                            typeProcessBooking = 1;
-                          });
-                          getLocation();
-                          BlocProvider.of<BookingBloc>(context).add(
-                            ConfirmBookingEvent(
-                              rideId: int.parse(widget.bookingId.toString()),
-                            ),
-                          );
-                          debugPrint("accept and get positon");
-                          // Logger().e(
-                          //     "D+++++++: $currentLatDriver-$currentLngDriver = ${widget.latPassenger} - ${widget.lngPassenger}");
-                          // _drawPolylines(
-                          //     dLocation: LatLng(currentLatDriver, currentLngDriver),
-                          //     pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-                        },
-                        color: AppColors.main,
-                        textColor: AppColors.light4,
-                        label: "Accept",
-                        enableWidth: true,
-                        width: MediaQuery.of(context).size.width / 2,
-                        // enableWidth: false,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget arrivedPassengerWidget(BuildContext context) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        // height: isExpanded
-        //     ? MediaQuery.of(context).size.height / 2.5 // Expanded height
-        //     : MediaQuery.of(context).size.height / 3.5, // Collapsed height
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.withOpacity(.2)),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            children: [
-              ExpansionTile(
-                shape: const Border(),
-                initiallyExpanded: true,
-                title: Text(
-                  "Navigate to Passenger",
-                  style: AppTextStyles.body.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                trailing: Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_up,
-                  color: AppColors.main,
-                ),
-                onExpansionChanged: (expanded) {
-                  setState(() {
-                    isExpanded = expanded;
-                  });
-                },
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 24,
-                                  child: Image.network(widget.imagePassanger),
-                                ),
-                                const SizedBox(width: 18),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.namePassanger,
-                                      style: AppTextStyles.body.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "Cash Payment",
-                                      style: AppTextStyles.bodyDark.copyWith(
-                                          color: Colors.grey,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                _launchLink("tel:${widget.phonePassanger}");
-                              },
-                              icon: const Icon(Icons.phone_outlined,
-                                  color: AppColors.main),
-                            ),
-                          ],
-                        ),
-                        const Divider(thickness: .1, color: Colors.grey),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Top location text
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Passenger Location",
-                                  style: AppTextStyles.bodyDark.copyWith(
-                                    color: AppColors.dark3,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  " $currentPassengerPM  ",
-                                  style: AppTextStyles.bodyDark.copyWith(
-                                    color: AppColors.dark1,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 3,
-                                ),
-                              ],
-                            ),
-                            // Bottom destination text
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            widget.desLatPassenger != null &&
-                                    widget.desLngPassenger != null
-                                ? Column(crossAxisAlignment:CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Destination Location",
-                                        style: AppTextStyles.bodyDark.copyWith(
-                                          color: AppColors.dark3,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        "${widget.desLatPassenger} - ${widget.desLngPassenger}",
-                                        style: AppTextStyles.bodyDark.copyWith(
-                                          color: AppColors.dark1,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                // color: Colors.blueAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    FBTNWidget(
-                      onPressed: () {
-                        showYesNoCustomDialog(context, "Cancel Booking",
-                            "Are you sure you want to cancel this booking?",
-                            onYes: () {
-                          BlocProvider.of<BookingBloc>(context).add(
-                            CanceBookingEvent(rideId: int.parse(widget.bookingId.toString())), // Example ID
-                          );
-                        });
-                      },
-                      color: AppColors.dark1,
-                      textColor: AppColors.light4,
-                      label: "Cancel",
-                      enableWidth: true,
-                      width: MediaQuery.of(context).size.width / 3,
-                    ),
-                    FBTNWidget(
-                      onPressed: () {
-                        setState(() {
-                          typeProcessBooking = 2;
-                          _turnRight();
-                        });
-                        getLocation();
-                        BlocProvider.of<BookingBloc>(context).add(
-                          ArrivedEvent(
-                            rideId: int.parse(widget.bookingId),
-                          ),
-                        );
-                      },
-                      color: AppColors.main,
-                      textColor: AppColors.light4,
-                      label: "Arrived Passenger",
-                      enableWidth: true,
-                      width: MediaQuery.of(context).size.width / 2,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget startDriveWidget(BuildContext context) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        height: MediaQuery.of(context).size.height / 3.2,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.withOpacity(.2)),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    "Customer Location",
-                    style: AppTextStyles.body
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                const Divider(
-                  thickness: .1,
-                  color: Colors.grey,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        child: Image.network(widget.imagePassanger),
-                      ),
-                      const SizedBox(
-                        width: 18,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.namePassanger,
-                            style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w600, fontSize: 14),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            "Cash Payment",
-                            style: AppTextStyles.bodyDark.copyWith(
-                                color: Colors.grey,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  thickness: .1,
-                  color: Colors.grey,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top location text
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Passenger Location",
-                          style: AppTextStyles.bodyDark.copyWith(
-                            color: AppColors.dark3,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          " $currentPassengerPM  ",
-                          style: AppTextStyles.bodyDark.copyWith(
-                            color: AppColors.dark1,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                    // Bottom destination text
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    widget.desLatPassenger != null &&
-                            widget.desLngPassenger != null
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Destination Location",
-                                style: AppTextStyles.bodyDark.copyWith(
-                                  color: AppColors.dark3,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Text(
-                                "${widget.desLatPassenger} - ${widget.desLngPassenger}",
-                                style: AppTextStyles.bodyDark.copyWith(
-                                  color: AppColors.dark1,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      FBTNWidget(
-                        onPressed: () {
-                          showYesNoCustomDialog(context, "Cancel Booking",
-                              "Are you sure you want to cancel this booking?",
-                              onYes: () {
-                            BlocProvider.of<BookingBloc>(context).add(
-                              CanceBookingEvent(rideId: int.parse(widget.bookingId.toString())), // Example ID
-                            );
-                          });
-                        },
-                        color: AppColors.dark1,
-                        textColor: AppColors.light4,
-                        label: "Cancel",
-                        enableWidth: false,
-                      ),
-                      const Spacer(),
-                      Expanded(
-                        child: FBTNWidget(
-                          onPressed: () {
-                            setState(() {
-                              typeProcessBooking = 3;
-                            });
-                            getLocation();
-                            BlocProvider.of<BookingBloc>(context).add(
-                              StartTripEvent(
-                                rideId: int.parse(widget.bookingId),
-                              ),
-                            );
-                          },
-                          color: AppColors.main,
-                          textColor: AppColors.light4,
-                          label: "Start",
-                          enableWidth: true,
-                          width: 400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

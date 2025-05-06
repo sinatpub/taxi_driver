@@ -1,4 +1,3 @@
-import 'package:com.tara_driver_application/app/root_main.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
@@ -94,8 +93,8 @@ class DriverSocketService extends BaseSocketService {
               bookingId: data["booking_id"].toString(),
               latPassenger: data["location"]['latitude'],
               lngPassenger: data["location"]['longitude'],
-              // desLat: data["destination"]['latitude'],
-              // desLng: data["destination"]['longitude'],
+              desLatPassenger: data["destination"]['latitude'],
+              desLngPassenger: data["destination"]['longitude'],
               passengerId: data["passengerId"].toString(),
             ),
           ),
