@@ -1,11 +1,10 @@
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
+import 'package:com.tara_driver_application/services/navigation_service.dart';
 import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 abstract class BaseSocketService {
@@ -72,22 +71,24 @@ class DriverSocketService extends BaseSocketService {
       'newRide',
       (data) {
         tlog("Socket New Ride $data");
-        // showNewRideAlert(data);
+
         Taxi.shared.notifyBooking(
-             title: "NEWREQUEST".tr(),
-            description:
-                "DESREQUEST".tr(),
-          
+            title: "NEWREQUEST".tr(),
+            description: "DESREQUEST".tr(),
             isSound: true);
-        BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookingScreen(
+
+
+        // ! Why call this bloc when new request booking???
+        // BlocProvider.of<CurrentDriverInfoBloc>(context)
+        //     .add(GetCurrentInfoEvent());
+
+        try {
+          NavigationService().navigateTo(
+            BookingScreen(
               namePassanger: data["passenger"]["name"],
               phonePassanger: data["passenger"]["phone"],
               imagePassanger: data["passenger"]["profile"],
-              timeOut:  data["timeout"],
+              timeOut: data["timeout"],
               processStepBook: 1,
               bookingCode: data["booking_code"].toString(),
               bookingId: data["booking_id"].toString(),
@@ -97,24 +98,14 @@ class DriverSocketService extends BaseSocketService {
               desLngPassenger: data["destination"]['longitude'],
               passengerId: data["passengerId"].toString(),
             ),
-          ),
-        );
+          );
+        } catch (e) {
+          tlog("Navigation failed: $e");
+        }
+
       },
     );
   }
-
-//   emit event rideArrival with parameter {
-//     "booking_code": "xxxx",
-//     "passengerId": "xxxx",
-//     "location": {
-//         "latitude": 12.9715987,
-//         "longitude": 77.594566
-//     },
-//     "destination": {
-//         "latitude": 12.927923,
-//         "longitude": 77.627108
-//     }
-// }
 
   void arrivedSocket() {
     _socket?.emit('rideArrival', {
