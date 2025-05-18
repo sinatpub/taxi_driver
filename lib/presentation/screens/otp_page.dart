@@ -103,7 +103,7 @@ class _OtpPageState extends State<OtpPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const NavScreen(),
+                      builder: (context) =>  NavScreen(),
                     ));
               } else if (state is OTPVerifyFailState) {
                 showErrorCustomDialog(context, "Please Try Again",

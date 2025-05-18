@@ -12,14 +12,14 @@ import 'package:com.tara_driver_application/presentation/screens/home_screen/hom
 import 'package:com.tara_driver_application/presentation/screens/history_booking/riding_history_screen.dart';
 
 class NavScreen extends StatefulWidget {
-  const NavScreen({super.key});
+  int? selectedIndex;
+  NavScreen({super.key,this.selectedIndex = 0});
 
   @override
   State<NavScreen> createState() => _NavScreenState();
 }
 
 class _NavScreenState extends State<NavScreen> {
-  int selectedIndex = 0;
   bool isApproved = true;
 
   @override
@@ -52,9 +52,9 @@ class _NavScreenState extends State<NavScreen> {
             children: [
               SafeArea(
                   bottom: false,
-                  child: selectedIndex == 2
+                  child: widget.selectedIndex == 2
                       ? const ProfileScreen()
-                      : selectedIndex == 1
+                      : widget.selectedIndex == 1
                           ? const RidingHistoryScreen()
                           : const HomeScreen()),
               isApproved == false
@@ -115,31 +115,31 @@ class _NavScreenState extends State<NavScreen> {
                   children: [
                     itemNav(() {
                       setState(() {
-                        selectedIndex = 0;
+                        widget.selectedIndex = 0;
                       });
                     },
                         "HOME".tr(),
-                        selectedIndex != 0
+                        widget.selectedIndex != 0
                             ? ImageAssets.home_outline
                             : ImageAssets.home,
                         0),
                     itemNav(() {
                       setState(() {
-                        selectedIndex = 1;
+                        widget.selectedIndex = 1;
                       });
                     },
                         "HISTORY".tr(),
-                        selectedIndex != 1
+                        widget.selectedIndex != 1
                             ? ImageAssets.book_outline
                             : ImageAssets.book,
                         1),
                     itemNav(() {
                       setState(() {
-                        selectedIndex = 2;
+                        widget.selectedIndex = 2;
                       });
                     },
                         "MORE".tr(),
-                        selectedIndex != 2
+                        widget.selectedIndex != 2
                             ? ImageAssets.profile
                             : ImageAssets.profile_fill,
                         2),
@@ -159,14 +159,14 @@ class _NavScreenState extends State<NavScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset(icon,
-                color: currentActive == selectedIndex
+                color: currentActive == widget.selectedIndex
                     ? AppColors.error
                     : AppColors.dark1),
             const SizedBox(height: 4,),
             Text(
               title,
               style: ThemeConstands.font14Regular.copyWith(
-                  color: currentActive == selectedIndex
+                  color: currentActive == widget.selectedIndex
                       ? AppColors.error
                       : AppColors.dark1),
             ),

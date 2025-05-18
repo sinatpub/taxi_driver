@@ -141,8 +141,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   Future<void> generateMarker(LatLng currentLocation) async {
-    driverMarker =
-        await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
+    driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
     passengerMarker =
         await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
 

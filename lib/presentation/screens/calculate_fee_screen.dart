@@ -105,7 +105,7 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                                     loadingCompletePay = false;
                                   });
                                   Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
-                                    pageBuilder: (context, animation1, animation2) => const NavScreen(),
+                                    pageBuilder: (context, animation1, animation2) => NavScreen(),
                                     transitionDuration: Duration.zero,
                                     reverseTransitionDuration: Duration.zero,
                                   ),(route) => false,

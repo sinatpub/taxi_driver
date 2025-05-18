@@ -31,7 +31,7 @@ class _SmoothCircularCountdownState extends State<SmoothCircularCountdown>
     _controller.addListener(() {
       if (_controller.isDismissed && widget.isPop) {
         Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => const NavScreen(),
+          pageBuilder: (context, animation1, animation2) =>  NavScreen(),
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         ),(route) => false,

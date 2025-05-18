@@ -1,3 +1,4 @@
+import 'package:com.tara_driver_application/app/funtion_convert.dart';
 import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
@@ -21,8 +22,10 @@ class ModelBottomSheetNewRequestWidget extends StatefulWidget {
   final String currentLocationName;
   final String passegerLocationName;
   final String whereToGoLocationName;
+  final double distandTotal;
+  final String totalFee;
   final VoidCallback onTap;
-  const ModelBottomSheetNewRequestWidget({super.key,required this.bookingId,required this.namePassanger,required this.phonePassanger,required this.profilePassanger,required this.onTap,required this.processType,required this.currentLocationName,required this.whereToGoLocationName,required this.passegerLocationName});
+  const ModelBottomSheetNewRequestWidget({super.key,required this.distandTotal,required this.totalFee,required this.bookingId,required this.namePassanger,required this.phonePassanger,required this.profilePassanger,required this.onTap,required this.processType,required this.currentLocationName,required this.whereToGoLocationName,required this.passegerLocationName});
 
   @override
   State<ModelBottomSheetNewRequestWidget> createState() => _ModelBottomSheetNewRequestWidgetState();
@@ -152,12 +155,26 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                               dashColor: AppColors.dark1,
                             ),
                           ),
-                           widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Row(
+                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(ImageAssets.book_outline,width: 20,color: AppColors.red,),
                               const SizedBox(width: 8,),
                               Expanded(child: Text(widget.processType == 2?"${"PASSENGER_LOCATION".tr()}: (${widget.passegerLocationName.toString()})": "${ widget.processType== 3 || widget.processType == 4 && widget.whereToGoLocationName != ""?"កន្លែងដែរត្រូវទៅ".tr():"PASSENGER_LOCATION".tr()}: (${widget.whereToGoLocationName.toString()})",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),)),
+                            ],
+                          ),
+                          const SizedBox(height: 18,),
+                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(ImageAssets.map_outline,width: 20,color: AppColors.red,),
+                              const SizedBox(width: 8,),
+                              Expanded(child: Row(
+                                children: [
+                                  Expanded(child: Text(formatDistanceWithUnits(widget.distandTotal.toString(),context),style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),textAlign: TextAlign.start,)),
+                                  Expanded(child: Text("៛${formatToTwoDecimalPlaces(widget.totalFee.toString())}",style: ThemeConstands.font16Regular.copyWith(color:AppColors.dark1),textAlign: TextAlign.end,)),
+                                ],
+                              )),
                             ],
                           ),
                         ],

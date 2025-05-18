@@ -17,7 +17,7 @@ class SplashScreen extends StatelessWidget {
       Taxi.shared.checkDriverAvailability();
       AppConstant.driverToken = driverData.data?.token;
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const NavScreen()));
+          context, MaterialPageRoute(builder: (context) =>  NavScreen()));
     } else {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const LoginPage()));

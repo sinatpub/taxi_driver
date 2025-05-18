@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
             } else if (state is DriverRegisterLoaded) {
               Taxi.shared.checkDriverAvailability();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const NavScreen()));
+                  MaterialPageRoute(builder: (context) => NavScreen()));
             }
           },
           builder: (context, state) {

@@ -90,6 +90,10 @@ class _BookingScreenState extends State<BookingScreen> {
   double dropLatDriver = 0.0;
   double dropLngDriver = 0.0;
   String dropAddressDriver = "";
+
+  // ========  distans descination ========
+  double totalDistance = 0.0;
+  String totalFee = "";
   // * Socket Class
   DriverSocketService driverSocket = DriverSocketService();
   // * Register Socket
@@ -161,11 +165,12 @@ class _BookingScreenState extends State<BookingScreen> {
               _drawPolylines(
                 dLocation: LatLng(currentLatDriver, currentLngDriver),
                 pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-              
             });
           }
+          syncMarker();
         }
       }
+      syncMarker();
       // debugPrint("Lat: ${position.latitude}, Lng: ${position.longitude}");
     } else {
       debugPrint("Failed to get location.");
@@ -185,7 +190,6 @@ class _BookingScreenState extends State<BookingScreen> {
         'end': pLocation, // End location (passenger's location)
       },
     ];
-
     for (int i = 0; i < routes.length; i++) {
       // Fetch route details
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
@@ -196,7 +200,7 @@ class _BookingScreenState extends State<BookingScreen> {
           mode: TravelMode.driving,
         ),
       );
-
+      
       // Check if the route was fetched successfully
       if (result.status == 'OK' && result.points.isNotEmpty) {
         // Extract polyline coordinates
@@ -214,6 +218,19 @@ class _BookingScreenState extends State<BookingScreen> {
             width: 5, // Set polyline width
           ),
         );
+        if(widget.desLatPassenger != null || widget.desLatPassenger != ""){
+         setState(() {
+          totalDistance = Geolocator.distanceBetween(
+              currentLatDriver,
+              currentLngDriver,
+              widget.desLatPassenger!,
+              widget.desLngPassenger!,
+            )/1000;
+          totalFee = "${totalDistance * 1200}";
+          print("hdssaa$totalDistance");
+          print("hdssaa$totalFee");
+        });
+      }
       } else {
         // Log error if route couldn't be fetched
         tlog("Error drawing polyline $i: ${result.errorMessage}");
@@ -241,7 +258,7 @@ class _BookingScreenState extends State<BookingScreen> {
     _addMarker(
         widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger : widget.latDriver!,
         widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger : widget.lngDriver!,
-        "destinationMarker", widget.processStepBook == 1? passengerMarker : driverMarker);
+        "destinationMarker", widget.processStepBook == 1 || widget.processStepBook == 2 ? passengerMarker : driverMarker);
     getAddressPlaceMarker();
     setState(() {});
   }
@@ -268,8 +285,8 @@ class _BookingScreenState extends State<BookingScreen> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              widget.processStepBook == 1? widget.latPassenger: widget.latDriver!,
-              widget.processStepBook == 1? widget.lngPassenger: widget.lngDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2? widget.latPassenger: widget.latDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2? widget.lngPassenger: widget.lngDriver!,
             ), // Use the provided LatLng for camera movement
             zoom: 19.151926040649414, // Set zoom level
           ),
@@ -298,7 +315,7 @@ class _BookingScreenState extends State<BookingScreen> {
             tlog("Booking Loading");
           } else if (state is CancelBookingSuccess) {
             Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => const NavScreen(),
+              pageBuilder: (context, animation1, animation2) =>  NavScreen(),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),(route) => false,
@@ -354,7 +371,6 @@ class _BookingScreenState extends State<BookingScreen> {
               },
             );
           } else if (state is ArriveSuccess) {
-             _turnRight();
             tlog("Arrive Trip Success");
             Taxi.shared.connectAndEmitEvent(
               eventName: "rideArrival",
@@ -380,6 +396,7 @@ class _BookingScreenState extends State<BookingScreen> {
               }
               widget.processStepBook = 3;
             });
+            _turnRight();
           } else if (state is CompletedTripSuccess) {
              _turnRight();
             setState(() {
@@ -463,6 +480,8 @@ class _BookingScreenState extends State<BookingScreen> {
                     )
                   : const SizedBox(),
               ModelBottomSheetNewRequestWidget(
+                totalFee: totalFee,
+                distandTotal: totalDistance,
                 bookingId: widget.bookingId, 
                 namePassanger: widget.namePassanger, 
                 phonePassanger: widget.phonePassanger, 

@@ -1,5 +1,6 @@
 import 'package:com.tara_driver_application/app/alert_widget.dart';
 import 'package:com.tara_driver_application/presentation/blocs/get_profile_bloc.dart';
+import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:com.tara_driver_application/presentation/widgets/simmer_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,8 +11,6 @@ import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/presentation/repository/language_data.dart';
-import 'package:com.tara_driver_application/presentation/screens/payment_screen.dart';
-import 'package:shimmer/shimmer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
@@ -109,6 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 image: NetworkImage(
                                     data!.profileImage.toString()),
                                 width: 80,
+                                height: 80,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -117,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    data!.name.toString(),
+                                    data.name.toString(),
                                     style: ThemeConstands.font22SemiBold
                                         .copyWith(color: AppColors.dark1),
                                   ),
@@ -132,6 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       );
+                    
                     } else {
                       return const ShimmerProfile();
                     }
@@ -271,8 +272,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         : const Icon(null),
                     onTap: () {
                       setState(() {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
                         updateLanguageLocal(Locale(langs[index].sublang),context);
+                        Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
+                          pageBuilder: (context, animation1, animation2) => NavScreen(selectedIndex: 2,),
+                          transitionDuration: Duration.zero,
+                          reverseTransitionDuration: Duration.zero,
+                        ),(route) => false,
+                        );
                       });
                     },
                   ),
