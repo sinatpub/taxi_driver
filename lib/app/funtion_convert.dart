@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart';
 
 String convertTimeString(String input) {
   final hourRegex = RegExp(r'(\d+)\s*hour[s]?', caseSensitive: false);
@@ -42,3 +46,21 @@ String formatDistanceWithUnits(String input, BuildContext context) {
 
   return '${number.toStringAsFixed(2)} ${unit=="km"?translate == "km"?"គ.ម":unit :translate == "km"?"ម":unit}';
 }
+
+  // Future<String> getDrivingDistance(
+  //     LatLng driver, LatLng destination, String apiKey) async {
+  //   final url =
+  //       "https://maps.googleapis.com/maps/api/directions/json?origin=${driver.latitude},${driver.longitude}&destination=${destination.latitude},${destination.longitude}&mode=driving&key=$apiKey";
+
+  //   final response = await get(Uri.parse(url));
+  //   final data = jsonDecode(response.body);
+
+  //   if (data["status"] == "OK") {
+  //     var distance = data["routes"][0]["legs"][0]["distance"]["text"];
+  //     var duration = data["routes"][0]["legs"][0]["duration"]["text"];
+  //     print("Driving Distance: $distance");
+  //     print("Estimated Time: $duration");
+  //   } else {
+  //     print("Error fetching distance: ${data['status']}");
+  //   }
+  // }

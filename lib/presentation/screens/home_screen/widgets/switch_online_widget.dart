@@ -1,9 +1,14 @@
+import 'dart:convert';
 import 'package:com.tara_driver_application/core/theme/colors.dart';
 import 'package:com.tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:com.tara_driver_application/taxi_single_ton/taxi_location.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart';
 
 class SwitchOnlineWidget extends StatelessWidget {
   const SwitchOnlineWidget({super.key});
