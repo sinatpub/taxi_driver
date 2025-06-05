@@ -299,6 +299,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_map_math:
+    dependency: "direct main"
+    description:
+      name: flutter_map_math
+      sha256: "52a3f34c9b8e7dd61ebd2cf9e8c472c22aef04e4b5a4bfa9760d0c90f87e0d48"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -390,13 +398,13 @@ packages:
     source: hosted
     version: "10.1.1"
   geolocator_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: geolocator_android
-      sha256: fcb1760a50d7500deca37c9a666785c047139b5f9ee15aa5469fae7dbbe3170d
+      sha256: "7aefc530db47d90d0580b552df3242440a10fe60814496a979aa67aa98b1fd47"
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.2"
+    version: "4.6.1"
   geolocator_apple:
     dependency: transitive
     description:
@@ -597,6 +605,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  latlong2:
+    dependency: transitive
+    description:
+      name: latlong2
+      sha256: "98227922caf49e6056f91b6c56945ea1c7b166f28ffcd5fb8e72fc0b453cc8fe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.1"
   leak_tracker:
     dependency: transitive
     description:

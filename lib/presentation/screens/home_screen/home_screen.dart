@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             "WELCOME_TO_TARA".tr(),
             style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark1),
           ),
-          const SwitchOnlineWidget(),
+           SwitchOnlineWidget(),
         ],
       ),
     );

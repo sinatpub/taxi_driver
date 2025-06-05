@@ -1,6 +1,7 @@
 import 'package:com.tara_driver_application/core/helper/get_address_latlng_helper.dart';
 import 'package:com.tara_driver_application/core/storages/get_storages.dart';
 import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:com.tara_driver_application/core/utils/calculate_distance.dart';
 import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:com.tara_driver_application/data/models/register_model.dart';
 import 'package:com.tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
@@ -111,60 +112,70 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Future<void> _launchLink(String url) async {
     if (await launchUrl(Uri.parse(url))) {
-    }else{
-      await launchUrl(Uri.parse(url),);
+    } else {
+      await launchUrl(
+        Uri.parse(url),
+      );
     }
   }
+
   void getLocation() async {
     // Type  0 = initScreen, 1 = accept ,2 = arrive, 3 = start, 4 = drop;
     Position? position = await TaxiLocation.shared.getCurrentLocation();
-    destinationPassengerPM = widget.desLatPassenger != null && widget.desLngPassenger != null? await getAddressFromLatLng(widget.desLatPassenger!, widget.desLngPassenger!):"";
+    destinationPassengerPM =
+        widget.desLatPassenger != null && widget.desLngPassenger != null
+            ? await getAddressFromLatLng(
+                widget.desLatPassenger!, widget.desLngPassenger!)
+            : "";
     if (position != null) {
-     if (typeProcessBooking == 4) {
+      if (typeProcessBooking == 4) {
         debugPrint("drop - total distance ${Taxi.shared.totalDistance}");
-        dropAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
+        dropAddressDriver =
+            await getAddressFromLatLng(position.latitude, position.longitude);
         setState(() {
           dropLatDriver = position.latitude;
           dropLngDriver = position.longitude;
         });
         BlocProvider.of<BookingBloc>(context).add(CompletedTripEvent(
-          distance: double.parse((Taxi.shared.totalDistance/100).toStringAsFixed(2).toString()),
+          distance: double.parse(
+              (Taxi.shared.totalDistance / 100).toStringAsFixed(2).toString()),
           rideId: int.parse(widget.bookingId),
           endAddress: dropAddressDriver,
           endLatitude: dropLatDriver,
           endLongitude: dropLngDriver,
         ));
-      } 
+      }
 // ==============  New request acion ======================
       else {
-        currentAddressDriver = await getAddressFromLatLng(position.latitude, position.longitude);
-        if(typeProcessBooking == 0 && widget.processStepBook !=1){
-           setState(() {
+        currentAddressDriver =
+            await getAddressFromLatLng(position.latitude, position.longitude);
+        if (typeProcessBooking == 0 && widget.processStepBook != 1) {
+          setState(() {
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
-            if(widget.processStepBook != 4 && widget.processStepBook != 3){
-                setState(() {
-                  _drawPolylines(
+            if (widget.processStepBook != 4 && widget.processStepBook != 3) {
+              setState(() {
+                _drawPolylines(
                     dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
-                    pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
-                });
+                    pLocation:
+                        LatLng(widget.latPassenger, widget.lngPassenger));
+              });
             }
             _turnRight();
             syncMarker();
           });
-        }
-        else{
+        } else {
           setState(() {
             currentLatDriver = position.latitude;
             currentLngDriver = position.longitude;
             widget.latDriver = position.latitude;
             widget.lngDriver = position.longitude;
           });
-          if(typeProcessBooking != 3 && typeProcessBooking !=2 ){
+          if (typeProcessBooking != 3 && typeProcessBooking != 2) {
             setState(() {
               _drawPolylines(
-                dLocation: LatLng(currentLatDriver, currentLngDriver),
-                pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
+                  dLocation: LatLng(currentLatDriver, currentLngDriver),
+                  pLocation: LatLng(widget.latPassenger, widget.lngPassenger));
             });
           }
           syncMarker();
@@ -195,12 +206,14 @@ class _BookingScreenState extends State<BookingScreen> {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleApiKey: AppConstant.googleKeyApi,
         request: PolylineRequest(
-          origin: PointLatLng(routes[i]['start']!.latitude, routes[i]['start']!.longitude),
-          destination: PointLatLng(routes[i]['end']!.latitude, routes[i]['end']!.longitude),
+          origin: PointLatLng(
+              routes[i]['start']!.latitude, routes[i]['start']!.longitude),
+          destination: PointLatLng(
+              routes[i]['end']!.latitude, routes[i]['end']!.longitude),
           mode: TravelMode.driving,
         ),
       );
-      
+
       // Check if the route was fetched successfully
       if (result.status == 'OK' && result.points.isNotEmpty) {
         // Extract polyline coordinates
@@ -218,25 +231,19 @@ class _BookingScreenState extends State<BookingScreen> {
             width: 5, // Set polyline width
           ),
         );
-        if(widget.desLatPassenger != null || widget.desLatPassenger != ""){
-         setState(() {
-          totalDistance = Geolocator.distanceBetween(
-              currentLatDriver,
-              currentLngDriver,
-              widget.desLatPassenger!,
-              widget.desLngPassenger!,
-            )/1000;
-          totalFee = "${totalDistance * 1200}";
-          print("hdssaa$totalDistance");
-          print("hdssaa$totalFee");
-        });
-      }
+        if (widget.desLatPassenger != null || widget.desLatPassenger != "") {
+          double distanceAsMeter = await AsyncDistance().calculateDistance(
+              LatLng(currentLatDriver, currentLngDriver),
+              LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+          setState(() {
+            totalDistance = distanceAsMeter;
+            totalFee = "${totalDistance * 1200}";
+          });
+        }
       } else {
         // Log error if route couldn't be fetched
         tlog("Error drawing polyline $i: ${result.errorMessage}");
       }
-      setState(() {
-      });
     }
   }
 
@@ -250,15 +257,26 @@ class _BookingScreenState extends State<BookingScreen> {
     TaxiLocation.shared.updateCurrentLocationDriver();
     // Timer.periodic(const Duration(seconds: 10), (Timer t) => Taxi.shared.updateDriverLocation());
   }
+
   // Sync markers for driver and passenger locations
   void syncMarker() async {
-    driverMarker = await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
-    passengerMarker = await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
-    destinationPassengerMarker = await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
+    driverMarker =
+        await loadCustomMarker(imagePath: "assets/marker/car_marker.png");
+    passengerMarker =
+        await loadCustomMarker(imagePath: 'assets/marker/passenger_marker.png');
+    destinationPassengerMarker =
+        await loadCustomMarker(imagePath: 'assets/marker/location_tuktuk.png');
     _addMarker(
-        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.latPassenger : widget.latDriver!,
-        widget.processStepBook == 1 || widget.processStepBook == 2 ? widget.lngPassenger : widget.lngDriver!,
-        "destinationMarker", widget.processStepBook == 1 || widget.processStepBook == 2 ? passengerMarker : driverMarker);
+        widget.processStepBook == 1 || widget.processStepBook == 2
+            ? widget.latPassenger
+            : widget.latDriver!,
+        widget.processStepBook == 1 || widget.processStepBook == 2
+            ? widget.lngPassenger
+            : widget.lngDriver!,
+        "destinationMarker",
+        widget.processStepBook == 1 || widget.processStepBook == 2
+            ? passengerMarker
+            : driverMarker);
     getAddressPlaceMarker();
     setState(() {});
   }
@@ -274,6 +292,7 @@ class _BookingScreenState extends State<BookingScreen> {
     _markers.add(marker);
     setState(() {});
   }
+
   _clearPolyline() {
     _polylines.clear();
   }
@@ -285,8 +304,12 @@ class _BookingScreenState extends State<BookingScreen> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              widget.processStepBook == 1 || widget.processStepBook == 2? widget.latPassenger: widget.latDriver!,
-              widget.processStepBook == 1 || widget.processStepBook == 2? widget.lngPassenger: widget.lngDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2
+                  ? widget.latPassenger
+                  : widget.latDriver!,
+              widget.processStepBook == 1 || widget.processStepBook == 2
+                  ? widget.lngPassenger
+                  : widget.lngDriver!,
             ), // Use the provided LatLng for camera movement
             zoom: 19.151926040649414, // Set zoom level
           ),
@@ -297,7 +320,8 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // Get address for the place marker
   void getAddressPlaceMarker() async {
-    currentPassengerPM = await getAddressFromLatLng(widget.latPassenger, widget.lngPassenger);
+    currentPassengerPM =
+        await getAddressFromLatLng(widget.latPassenger, widget.lngPassenger);
     // destinationPassengerPM = await getAddressFromLatLng(pDesLat, pDesLng);
     setState(() {});
   }
@@ -307,18 +331,29 @@ class _BookingScreenState extends State<BookingScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(widget.processStepBook == 1?"HAVE_BOOKING".tr(): widget.processStepBook == 2? "GO_TO_PASSENGER".tr(): widget.processStepBook == 3? "PREPAIR_TO_GO".tr():"CARRYING_PASSENGER".tr(),),
+        title: Text(
+          widget.processStepBook == 1
+              ? "HAVE_BOOKING".tr()
+              : widget.processStepBook == 2
+                  ? "GO_TO_PASSENGER".tr()
+                  : widget.processStepBook == 3
+                      ? "PREPAIR_TO_GO".tr()
+                      : "CARRYING_PASSENGER".tr(),
+        ),
       ),
       body: BlocConsumer<BookingBloc, BookingState>(
         listener: (context, state) {
           if (state is BookingLoading) {
             tlog("Booking Loading");
           } else if (state is CancelBookingSuccess) {
-            Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>  NavScreen(),
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-            ),(route) => false,
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => NavScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (route) => false,
             );
           } else if (state is ConfirmBookingSuccess) {
             var dataConfirmBooking = state.confirmBookingModel.data;
@@ -327,7 +362,8 @@ class _BookingScreenState extends State<BookingScreen> {
             });
             // _turnRight();
             tlog("Confirm Booking Successfully");
-            debugPrint("acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint(
+                "acceptRide bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "acceptRide",
               data: {
@@ -346,18 +382,19 @@ class _BookingScreenState extends State<BookingScreen> {
             _turnRight();
             setState(() {
               widget.processStepBook = 4;
-              if(widget.desLatPassenger == null){
+              if (widget.desLatPassenger == null) {
                 _clearPolyline();
-              }
-              else{
+              } else {
                 setState(() {
                   _drawPolylines(
-                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
-                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+                      dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                      pLocation: LatLng(
+                          widget.desLatPassenger!, widget.desLngPassenger!));
                 });
               }
             });
-            debugPrint("start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint(
+                "start bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "startDrive",
               data: {
@@ -384,25 +421,26 @@ class _BookingScreenState extends State<BookingScreen> {
               },
             );
             setState(() {
-              if(widget.desLatPassenger == null){
+              if (widget.desLatPassenger == null) {
                 _clearPolyline();
-              }
-              else{
+              } else {
                 setState(() {
                   _drawPolylines(
-                    dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
-                    pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
+                      dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
+                      pLocation: LatLng(
+                          widget.desLatPassenger!, widget.desLngPassenger!));
                 });
               }
               widget.processStepBook = 3;
             });
             _turnRight();
           } else if (state is CompletedTripSuccess) {
-             _turnRight();
+            _turnRight();
             setState(() {
               _clearPolyline();
             });
-            debugPrint("dope bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
+            debugPrint(
+                "dope bookCode${widget.bookingCode} bookId${widget.bookingId} passId${widget.passengerId} lat$currentLatDriver long$currentLngDriver");
             Taxi.shared.connectAndEmitEvent(
               eventName: "dropDrive",
               data: {
@@ -460,7 +498,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 markers: _markers,
                 initialCameraPosition: CameraPosition(
                   // bearing: 192.8334901395799,
-                  target: LatLng( widget.latPassenger, widget.lngPassenger),
+                  target: LatLng(widget.latPassenger, widget.lngPassenger),
                   tilt: 0.0,
                   zoom: 17.151926040649414,
                 ),
@@ -482,16 +520,16 @@ class _BookingScreenState extends State<BookingScreen> {
               ModelBottomSheetNewRequestWidget(
                 totalFee: totalFee,
                 distandTotal: totalDistance,
-                bookingId: widget.bookingId, 
-                namePassanger: widget.namePassanger, 
-                phonePassanger: widget.phonePassanger, 
-                profilePassanger: widget.imagePassanger, 
-                currentLocationName:currentAddressDriver, 
-                whereToGoLocationName: destinationPassengerPM, 
-                passegerLocationName: currentPassengerPM, 
-                processType: widget.processStepBook, 
+                bookingId: widget.bookingId,
+                namePassanger: widget.namePassanger,
+                phonePassanger: widget.phonePassanger,
+                profilePassanger: widget.imagePassanger,
+                currentLocationName: currentAddressDriver,
+                whereToGoLocationName: destinationPassengerPM,
+                passegerLocationName: currentPassengerPM,
+                processType: widget.processStepBook,
                 onTap: () {
-                  if(widget.processStepBook == 1){
+                  if (widget.processStepBook == 1) {
                     setState(() {
                       setState(() {
                         typeProcessBooking = 2;
@@ -504,8 +542,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       );
                       debugPrint("accept and get positon");
                     });
-                  }
-                  else if(widget.processStepBook == 2){
+                  } else if (widget.processStepBook == 2) {
                     setState(() {
                       typeProcessBooking = 2;
                       _turnRight();
@@ -516,8 +553,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         rideId: int.parse(widget.bookingId),
                       ),
                     );
-                  }
-                  else if(widget.processStepBook == 3){
+                  } else if (widget.processStepBook == 3) {
                     setState(() {
                       typeProcessBooking = 3;
                     });
@@ -527,8 +563,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         rideId: int.parse(widget.bookingId),
                       ),
                     );
-                  }
-                  else{
+                  } else {
                     setState(() {
                       isLoading = true;
                       typeProcessBooking = 4;
