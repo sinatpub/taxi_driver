@@ -52,5 +52,6 @@
     "HAVE_BOOKING":"Have Booking",
     "GO_TO_PASSENGER":"Go to passenger",
     "PREPAIR_TO_GO":"Prepare for travel",
-    "CARRYING_PASSENGER":"Carrying passenger"
+    "CARRYING_PASSENGER":"Carrying passenger",
+    "MOBILENUM": "Phone Number"
 }

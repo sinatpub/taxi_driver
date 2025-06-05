@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>TARA-តារា</string>
+	<string>តារា TARA Driver</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,11 +29,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location for background tracking.</string>
+	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs location access to track your position in the background.</string>
+	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access to track your position.</string>
+	<string>Turning location services allows us to show you when you are near a designated location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires Mic permission.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

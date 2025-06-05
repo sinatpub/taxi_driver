@@ -11,7 +11,7 @@
 
 
     <application
-        android:label="TARA-តារា"
+        android:label="តារា TARA Driver"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
