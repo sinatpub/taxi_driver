@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/storages/get_storages.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
 import 'package:dio/dio.dart';
-import 'package:com.tara_driver_application/core/api_service/client/dio_http_client.dart';
-import 'package:com.tara_driver_application/core/api_service/client/http_exception.dart';
-import 'package:com.tara_driver_application/core/utils/errror_message.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/core/api_service/client/dio_http_client.dart';
+import 'package:tara_driver_application/core/api_service/client/http_exception.dart';
+import 'package:tara_driver_application/core/utils/errror_message.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
 
 class BaseApiService {
   late Dio dio;

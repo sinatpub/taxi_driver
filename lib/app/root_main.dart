@@ -1,8 +1,8 @@
-import 'package:com.tara_driver_application/core/theme/app_theme.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
-import 'package:com.tara_driver_application/presentation/blocs/multi_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/splash_screen.dart';
-import 'package:com.tara_driver_application/services/navigation_service.dart';
+import 'package:tara_driver_application/core/theme/app_theme.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/presentation/blocs/multi_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/splash_screen.dart';
+import 'package:tara_driver_application/services/navigation_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

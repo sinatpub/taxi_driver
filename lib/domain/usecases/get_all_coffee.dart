@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/data/models/coffee_model.dart';
-import 'package:com.tara_driver_application/domain/repositories/coffee_reposity.dart';
+import 'package:tara_driver_application/data/models/coffee_model.dart';
+import 'package:tara_driver_application/domain/repositories/coffee_reposity.dart';
 
 class GetAllCoffee {
   final CoffeeRepository repository;

@@ -1,9 +1,9 @@
-import 'package:com.tara_driver_application/core/storages/set_storages.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/datasources/phone_num_remote_data_source.dart';
-import 'package:com.tara_driver_application/data/models/phone_model.dart';
-import 'package:com.tara_driver_application/main.dart';
-import 'package:com.tara_driver_application/presentation/widgets/shake_widget.dart';
+import 'package:tara_driver_application/core/storages/set_storages.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/datasources/phone_num_remote_data_source.dart';
+import 'package:tara_driver_application/data/models/phone_model.dart';
+import 'package:tara_driver_application/main.dart';
+import 'package:tara_driver_application/presentation/widgets/shake_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

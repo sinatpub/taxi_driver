@@ -1,13 +1,13 @@
-import 'package:com.tara_driver_application/data/datasources/get_vehical_remote_data_source.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_profile_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/register_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/vehical_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
-import 'package:com.tara_driver_application/services/location_bloc/location_bloc.dart';
+import 'package:tara_driver_application/data/datasources/get_vehical_remote_data_source.dart';
+import 'package:tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/get_profile_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/otp_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/phone_login_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/register_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/vehical_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
+import 'package:tara_driver_application/services/location_bloc/location_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 List<BlocProvider> _listBlocProvider = [

@@ -1,6 +1,6 @@
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/core/utils/status_util.dart';
-import 'package:com.tara_driver_application/data/models/current_driver_info_model.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/core/utils/status_util.dart';
+import 'package:tara_driver_application/data/models/current_driver_info_model.dart';
 
 class HomeServe {
   initailHomeServe(context) async {

@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/api_service/base_api_service.dart';
-import 'package:com.tara_driver_application/data/models/set_status_model.dart';
+import 'package:tara_driver_application/core/api_service/base_api_service.dart';
+import 'package:tara_driver_application/data/models/set_status_model.dart';
 
 class SetDriverStatusApi {
   Future<SetDriverStatusModel> toggleStatusDriver({int status = 1}) async {

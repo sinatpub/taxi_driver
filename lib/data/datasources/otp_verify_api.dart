@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/api_service/base_api_service.dart';
-import 'package:com.tara_driver_application/data/models/register_model.dart';
+import 'package:tara_driver_application/core/api_service/base_api_service.dart';
+import 'package:tara_driver_application/data/models/register_model.dart';
 
 class OtpVerifyApi {
   Future<RegisterModel> verifyOTPApi(

@@ -1,8 +1,8 @@
 // Define the states
 
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/datasources/get_vehical_remote_data_source.dart';
-import 'package:com.tara_driver_application/data/models/vehical_model.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/datasources/get_vehical_remote_data_source.dart';
+import 'package:tara_driver_application/data/models/vehical_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 

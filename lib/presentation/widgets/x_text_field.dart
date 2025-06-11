@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/presentation/widgets/text_field_decoration.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/presentation/widgets/text_field_decoration.dart';
 import 'package:flutter/material.dart';
 
 class XTextField extends StatelessWidget {

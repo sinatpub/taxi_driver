@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/presentation/widgets/expand_section.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/presentation/widgets/expand_section.dart';
 
 class expandCustom extends StatefulWidget {
   bool isExpand;

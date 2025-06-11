@@ -24,7 +24,7 @@ import GoogleMaps
 
         // Set up the method channel
         let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-        let settingsChannel = FlutterMethodChannel(name: "com.com.tara_driver_application/settings",
+        let settingsChannel = FlutterMethodChannel(name: "com.tara_driver_application/settings",
                                                    binaryMessenger: controller.binaryMessenger)
         
         settingsChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in

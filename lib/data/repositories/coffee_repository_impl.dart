@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/data/datasources/coffee_remote_data_source.dart';
-import 'package:com.tara_driver_application/domain/repositories/coffee_reposity.dart';
+import 'package:tara_driver_application/data/datasources/coffee_remote_data_source.dart';
+import 'package:tara_driver_application/domain/repositories/coffee_reposity.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/coffee_model.dart';

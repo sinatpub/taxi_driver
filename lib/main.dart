@@ -1,8 +1,8 @@
-import 'package:com.tara_driver_application/app/root_main.dart';
-import 'package:com.tara_driver_application/app/service.dart';
-import 'package:com.tara_driver_application/presentation/widgets/custom_animated_loading.dart';
+import 'package:tara_driver_application/app/root_main.dart';
+import 'package:tara_driver_application/app/service.dart';
+import 'package:tara_driver_application/presentation/widgets/custom_animated_loading.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:com.tara_driver_application/core/api_service/client/dio_http_client.dart';
+import 'package:tara_driver_application/core/api_service/client/dio_http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 

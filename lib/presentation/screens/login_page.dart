@@ -1,18 +1,20 @@
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/utils/phone_formatter.dart';
-import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
-import 'package:com.tara_driver_application/presentation/repository/language_data.dart';
-import 'package:com.tara_driver_application/presentation/screens/otp_page.dart';
-import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/shake_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/x_text_field.dart';
+import 'dart:io';
+
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/utils/phone_formatter.dart';
+import 'package:tara_driver_application/presentation/blocs/phone_login_bloc.dart';
+import 'package:tara_driver_application/presentation/repository/language_data.dart';
+import 'package:tara_driver_application/presentation/screens/otp_page.dart';
+import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/loading_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/shake_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/x_text_field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -91,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: IconButton(
                                 alignment: Alignment.centerLeft,
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  exit(0);
                                 },
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,

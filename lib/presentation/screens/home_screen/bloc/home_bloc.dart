@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/data/datasources/set_status_api.dart';
-import 'package:com.tara_driver_application/data/models/set_status_model.dart';
+import 'package:tara_driver_application/data/datasources/set_status_api.dart';
+import 'package:tara_driver_application/data/models/set_status_model.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';

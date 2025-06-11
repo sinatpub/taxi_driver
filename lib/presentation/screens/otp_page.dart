@@ -1,19 +1,19 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/data/models/phone_model.dart';
-import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
-import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
-import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
+import 'package:tara_driver_application/data/models/phone_model.dart';
+import 'package:tara_driver_application/presentation/blocs/otp_bloc.dart';
+import 'package:tara_driver_application/presentation/blocs/phone_login_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/loading_widget.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_locale;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 // import 'package:smart_auth/smart_auth.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/screens/register_page.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/screens/register_page.dart';
 
 class OtpPage extends StatefulWidget {
   final PhoneNumberModel? phoneNumberModel;

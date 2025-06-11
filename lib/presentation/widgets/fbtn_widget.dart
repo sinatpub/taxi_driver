@@ -1,7 +1,7 @@
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
 
 class FBTNWidget extends StatelessWidget {
   final String label;

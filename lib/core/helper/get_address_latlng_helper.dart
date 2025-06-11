@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';

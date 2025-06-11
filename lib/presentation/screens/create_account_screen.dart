@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 
 class CreateAccountScreen extends StatelessWidget {
   const CreateAccountScreen({super.key});

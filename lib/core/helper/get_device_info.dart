@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
 
 class DeviceInfoHelper {
   Future<Map<String, dynamic>> getDeviceInfo() async {

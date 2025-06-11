@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {

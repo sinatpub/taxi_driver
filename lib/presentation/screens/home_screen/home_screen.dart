@@ -1,25 +1,25 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/models/register_model.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
-import 'package:com.tara_driver_application/presentation/screens/calculate_fee_screen.dart';
-import 'package:com.tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/home_screen/widgets/switch_online_widget.dart';
-import 'package:com.tara_driver_application/services/location_bloc/location_bloc.dart';
-import 'package:com.tara_driver_application/services/location_bloc/location_event.dart';
-import 'package:com.tara_driver_application/services/location_bloc/location_state.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
+import 'package:tara_driver_application/core/storages/get_storages.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/models/register_model.dart';
+import 'package:tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
+import 'package:tara_driver_application/presentation/screens/calculate_fee_screen.dart';
+import 'package:tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/home_screen/widgets/switch_online_widget.dart';
+import 'package:tara_driver_application/services/location_bloc/location_bloc.dart';
+import 'package:tara_driver_application/services/location_bloc/location_event.dart';
+import 'package:tara_driver_application/services/location_bloc/location_state.dart';
+import 'package:tara_driver_application/taxi_single_ton/init_socket.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
 
 
 class HomeScreen extends StatefulWidget {

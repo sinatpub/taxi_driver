@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:com.tara_driver_application/data/datasources/get_booking_history.dart';
-import 'package:com.tara_driver_application/data/models/history_driver_info_model.dart';
+import 'package:tara_driver_application/data/datasources/get_booking_history.dart';
+import 'package:tara_driver_application/data/models/history_driver_info_model.dart';
 import 'package:meta/meta.dart';
 
 class HistoryBookBloc extends Bloc<HistoryBookEvent, HistoryBookState> {

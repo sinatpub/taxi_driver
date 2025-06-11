@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
-import 'package:com.tara_driver_application/presentation/screens/login_page.dart';
-import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:tara_driver_application/core/storages/get_storages.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/presentation/screens/login_page.dart';
+import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -38,7 +38,7 @@ class SplashScreen extends StatelessWidget {
             CircleAvatar(
               radius: 40,
               backgroundColor: Colors.white,
-              child: Image.asset("assets/icon/png/logo_app.png"),
+              child: Image.asset("assets/image/png/Tara2.png"),
             ),
             const SizedBox(
               height: 10,

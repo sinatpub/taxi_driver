@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:flutter/material.dart';
 
 class SmoothCircularCountdown extends StatefulWidget {

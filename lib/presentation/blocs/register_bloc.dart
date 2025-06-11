@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:com.tara_driver_application/core/helper/get_device_info.dart';
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/storages/set_storages.dart';
-import 'package:com.tara_driver_application/data/datasources/register_remote_data_source.dart';
-import 'package:com.tara_driver_application/data/models/register_model.dart';
+import 'package:tara_driver_application/core/helper/get_device_info.dart';
+import 'package:tara_driver_application/core/storages/get_storages.dart';
+import 'package:tara_driver_application/core/storages/set_storages.dart';
+import 'package:tara_driver_application/data/datasources/register_remote_data_source.dart';
+import 'package:tara_driver_application/data/models/register_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Event

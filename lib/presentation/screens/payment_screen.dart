@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});

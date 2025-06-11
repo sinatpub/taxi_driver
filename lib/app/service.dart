@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/helper/local_notification_helper.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/taxi_location.dart';
+import 'package:tara_driver_application/core/helper/local_notification_helper.dart';
+import 'package:tara_driver_application/taxi_single_ton/taxi_location.dart';
 
 initialService() {
   // * register notification in local_notification_helper.dart

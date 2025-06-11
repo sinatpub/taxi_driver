@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';

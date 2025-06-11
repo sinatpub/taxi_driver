@@ -1,16 +1,16 @@
-import 'package:com.tara_driver_application/app/alert_widget.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_profile_bloc.dart';
-import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
-import 'package:com.tara_driver_application/presentation/widgets/simmer_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
+import 'package:tara_driver_application/app/alert_widget.dart';
+import 'package:tara_driver_application/presentation/blocs/get_profile_bloc.dart';
+import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/widgets/simmer_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/repository/language_data.dart';
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/repository/language_data.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({

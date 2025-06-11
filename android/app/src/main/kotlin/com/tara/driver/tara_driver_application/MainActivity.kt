@@ -1,0 +1,5 @@
+package com.tara.driver_application
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

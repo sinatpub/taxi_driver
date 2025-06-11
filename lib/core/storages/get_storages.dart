@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:com.tara_driver_application/core/storages/key_storages.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/models/otp_model.dart';
-import 'package:com.tara_driver_application/data/models/register_model.dart';
+import 'package:tara_driver_application/core/storages/key_storages.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/models/otp_model.dart';
+import 'package:tara_driver_application/data/models/register_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

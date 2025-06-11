@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/api_service/base_api_service.dart';
-import 'package:com.tara_driver_application/data/models/history_driver_info_model.dart';
+import 'package:tara_driver_application/core/api_service/base_api_service.dart';
+import 'package:tara_driver_application/data/models/history_driver_info_model.dart';
 
 class GetBopkingHistory {
   static Future<HistoryDriveInfoModel> getHistoryBookApi({required String page, required String status}) async {

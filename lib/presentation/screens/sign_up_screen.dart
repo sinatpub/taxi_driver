@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/presentation/widgets/rtextfield_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/rtextfield_widget.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});

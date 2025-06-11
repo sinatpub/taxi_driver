@@ -1,15 +1,15 @@
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/screens/profile_screen.dart';
-import 'package:com.tara_driver_application/presentation/screens/home_screen/home_screen.dart';
-import 'package:com.tara_driver_application/presentation/screens/history_booking/riding_history_screen.dart';
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/screens/profile_screen.dart';
+import 'package:tara_driver_application/presentation/screens/home_screen/home_screen.dart';
+import 'package:tara_driver_application/presentation/screens/history_booking/riding_history_screen.dart';
 
 class NavScreen extends StatefulWidget {
   int? selectedIndex;

@@ -1,5 +1,5 @@
-import 'package:com.tara_driver_application/core/storages/key_storages.dart';
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/core/storages/key_storages.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageRemove {

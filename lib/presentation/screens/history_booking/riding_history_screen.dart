@@ -1,15 +1,15 @@
-import 'package:com.tara_driver_application/app/funtion_convert.dart';
-import 'package:com.tara_driver_application/presentation/screens/history_booking/state/history_book_bloc.dart';
-import 'package:com.tara_driver_application/presentation/widgets/simmer_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
+import 'package:tara_driver_application/app/funtion_convert.dart';
+import 'package:tara_driver_application/presentation/screens/history_booking/state/history_book_bloc.dart';
+import 'package:tara_driver_application/presentation/widgets/simmer_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
 
 class RidingHistoryScreen extends StatefulWidget {
   const RidingHistoryScreen({super.key});

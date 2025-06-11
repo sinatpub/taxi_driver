@@ -1,18 +1,18 @@
-import 'package:com.tara_driver_application/app/funtion_convert.dart';
-import 'package:com.tara_driver_application/data/datasources/confirm_booking_api.dart';
-import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
-import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
-import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
-import 'package:com.tara_driver_application/presentation/widgets/t_image_widget.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:tara_driver_application/app/funtion_convert.dart';
+import 'package:tara_driver_application/data/datasources/confirm_booking_api.dart';
+import 'package:tara_driver_application/data/models/complete_driver_model.dart';
+import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
+import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
+import 'package:tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
+import 'package:tara_driver_application/core/resources/asset_resource.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 
 import '../../data/models/current_driver_info_model.dart';
 

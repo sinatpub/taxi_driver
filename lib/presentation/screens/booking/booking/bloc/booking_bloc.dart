@@ -1,9 +1,9 @@
-import 'package:com.tara_driver_application/core/utils/pretty_logger.dart';
-import 'package:com.tara_driver_application/data/datasources/confirm_booking_api.dart';
-import 'package:com.tara_driver_application/data/models/complete_driver_model.dart';
-import 'package:com.tara_driver_application/data/models/confirm_booking_model.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/init_socket.dart';
-import 'package:com.tara_driver_application/taxi_single_ton/taxi.dart';
+import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/datasources/confirm_booking_api.dart';
+import 'package:tara_driver_application/data/models/complete_driver_model.dart';
+import 'package:tara_driver_application/data/models/confirm_booking_model.dart';
+import 'package:tara_driver_application/taxi_single_ton/init_socket.dart';
+import 'package:tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

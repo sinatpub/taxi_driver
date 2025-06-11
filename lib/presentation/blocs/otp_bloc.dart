@@ -1,8 +1,8 @@
-import 'package:com.tara_driver_application/core/storages/get_storages.dart';
-import 'package:com.tara_driver_application/core/storages/set_storages.dart';
-import 'package:com.tara_driver_application/data/datasources/otp_verify_api.dart';
-import 'package:com.tara_driver_application/data/models/otp_model.dart';
-import 'package:com.tara_driver_application/data/models/register_model.dart';
+import 'package:tara_driver_application/core/storages/get_storages.dart';
+import 'package:tara_driver_application/core/storages/set_storages.dart';
+import 'package:tara_driver_application/data/datasources/otp_verify_api.dart';
+import 'package:tara_driver_application/data/models/otp_model.dart';
+import 'package:tara_driver_application/data/models/register_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Event

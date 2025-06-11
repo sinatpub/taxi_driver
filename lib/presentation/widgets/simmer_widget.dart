@@ -1,4 +1,4 @@
-import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

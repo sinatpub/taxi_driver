@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:com.tara_driver_application/core/utils/app_constant.dart';
+import 'package:tara_driver_application/core/utils/app_constant.dart';
 
 class BaseHttpClient {
   static late final Dio dio;

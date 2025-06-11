@@ -1,4 +1,4 @@
-# com.tara_driver_application
+# tara_driver_application
 
 A new Flutter project.
 

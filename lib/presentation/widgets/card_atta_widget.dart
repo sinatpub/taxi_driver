@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:tara_driver_application/core/theme/colors.dart';
+import 'package:tara_driver_application/core/theme/text_styles.dart';
 
 class CardUploadAttachment extends StatelessWidget {
   VoidCallback? onPressed;
@@ -26,13 +26,15 @@ class CardUploadAttachment extends StatelessWidget {
       child:  ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: DottedBorder(
-          borderType: BorderType.RRect,
-          radius:const Radius.circular(10),
-          color: AppColors.dark3,
-          dashPattern:const [5, 8],
-          strokeWidth: 1,
-          padding: const EdgeInsets.all(5),
-          borderPadding:const EdgeInsets.all(0),
+          options: RoundedRectDottedBorderOptions(
+                color: AppColors.dark3,
+                dashPattern: const <double>[5, 8],
+                radius: const Radius.circular(10),
+                strokeWidth: 1,
+                borderPadding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(5),
+          ),
+          
           child: Container(
             margin:const EdgeInsets.symmetric(vertical: 0,),
             alignment: Alignment.center,
