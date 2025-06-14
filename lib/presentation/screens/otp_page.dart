@@ -1,19 +1,20 @@
 import 'dart:async';
+
+import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:com.tara_driver_application/core/theme/text_styles.dart';
+import 'package:com.tara_driver_application/core/utils/otp_auto_fill.dart';
 import 'package:com.tara_driver_application/data/models/phone_model.dart';
 import 'package:com.tara_driver_application/presentation/blocs/otp_bloc.dart';
 import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
 import 'package:com.tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:com.tara_driver_application/presentation/screens/register_page.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_locale;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
-// import 'package:smart_auth/smart_auth.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/screens/register_page.dart';
+import 'package:smart_auth/smart_auth.dart';
 
 class OtpPage extends StatefulWidget {
   final PhoneNumberModel? phoneNumberModel;
@@ -25,7 +26,6 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-  // final SmartAuth smartAuth = SmartAuth.instance;
   TextEditingController pinputController = TextEditingController();
   int? resentToken;
 
@@ -33,7 +33,10 @@ class _OtpPageState extends State<OtpPage> {
   int secondsRemaining = 0;
   bool isResendEnabled = false;
 
-  // late final SmsRetriever smsRetriever;
+  // auto fill trigger
+  late final SmsRetriever smsRetriever;
+  final smartAuth = SmartAuth.instance;
+
   late final TextEditingController pinController;
   late final FocusNode focusNode;
   late final GlobalKey<FormState> formKey;
@@ -44,10 +47,10 @@ class _OtpPageState extends State<OtpPage> {
     formKey = GlobalKey<FormState>();
     pinController = TextEditingController();
     focusNode = FocusNode();
-    // smsRetriever = SmsRetrieverImpl(smartAuth);
+    smsRetriever = SmsRetrieverImpl(smartAuth);
 
     // Initialize countdown timer
-    secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 90;
+    secondsRemaining = widget.phoneNumberModel?.data.seconde ?? 60;
     startTimer();
   }
 
@@ -82,7 +85,7 @@ class _OtpPageState extends State<OtpPage> {
       textStyle: ThemeConstands.font22SemiBold,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.dark4, width: 2),
+        border: Border.all(color: AppColors.dark1, width: 2),
       ),
     );
     return Scaffold(
@@ -103,7 +106,7 @@ class _OtpPageState extends State<OtpPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  NavScreen(),
+                      builder: (context) => NavScreen(),
                     ));
               } else if (state is OTPVerifyFailState) {
                 showErrorCustomDialog(context, "Please Try Again",
@@ -117,17 +120,20 @@ class _OtpPageState extends State<OtpPage> {
                   children: [
                     Column(
                       children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                              alignment: Alignment.centerLeft,
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                size: 24,
-                              )),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 18.0),
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: IconButton(
+                                alignment: Alignment.centerLeft,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: 24,
+                                )),
+                          ),
                         ),
                         Expanded(
                           child: Container(

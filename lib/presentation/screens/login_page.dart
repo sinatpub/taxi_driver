@@ -1,19 +1,21 @@
+import 'package:com.tara_driver_application/core/resources/asset_resource.dart';
+import 'package:com.tara_driver_application/core/theme/colors.dart';
+import 'package:com.tara_driver_application/core/theme/text_styles.dart';
 import 'package:com.tara_driver_application/core/utils/phone_formatter.dart';
 import 'package:com.tara_driver_application/presentation/blocs/phone_login_bloc.dart';
+import 'package:com.tara_driver_application/presentation/repository/language_data.dart';
 import 'package:com.tara_driver_application/presentation/screens/otp_page.dart';
 import 'package:com.tara_driver_application/presentation/widgets/error_dialog_widget.dart';
+import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/loading_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/shake_widget.dart';
 import 'package:com.tara_driver_application/presentation/widgets/x_text_field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:com.tara_driver_application/core/theme/colors.dart';
-import 'package:com.tara_driver_application/core/theme/text_styles.dart';
-import 'package:com.tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_svg/svg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,9 +28,15 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController controller = TextEditingController();
   bool hasNavigated = false;
+  List<Lang> langs = allLangs;
+
+  updateLanguageLocal(Locale locale, BuildContext context) {
+    context.setLocale(locale);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final translate = context.locale.toString();
     return Scaffold(
       backgroundColor: AppColors.light4,
       body: BlocListener<PhoneLoginBloc, PhoneLoginState>(
@@ -73,19 +81,36 @@ class _LoginPageState extends State<LoginPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 18),
                     child: Column(
                       children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
+                        Align(
+                          alignment: Alignment.topRight,
                           child: IconButton(
-                            alignment: Alignment.centerLeft,
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 24,
-                              color: Colors.transparent,
-                            ),
-                          ),
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          topRight: Radius.circular(16)),
+                                    ),
+                                    context: context,
+                                    builder: (context) {
+                                      return StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              StateSetter stateSetter) {
+                                        return changeLanguage(
+                                            translate: translate);
+                                      });
+                                    });
+                              },
+                              padding: const EdgeInsets.all(0),
+                              icon: translate == "km"
+                                  ? SvgPicture.asset(
+                                      ImageAssets.flag_km,
+                                      width: 30,
+                                    )
+                                  : Image.asset(
+                                      ImageAssets.flag_en,
+                                      width: 30,
+                                    )),
                         ),
                         Expanded(
                           child: Container(
@@ -127,7 +152,6 @@ class _LoginPageState extends State<LoginPage> {
                                         const SizedBox(
                                           height: 12,
                                         ),
-
                                         ShakeWidget(
                                           key: context
                                               .read<PhoneLoginBloc>()
@@ -144,7 +168,9 @@ class _LoginPageState extends State<LoginPage> {
                                                 horizontal: 0),
                                             child: XTextField(
                                               textController: controller,
-                                              hintText: "012 345 678",
+                                              hintText:
+                                                  "ENTER_YOUR_PHONE_NUMBER"
+                                                      .tr(),
                                               enable: true,
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
@@ -159,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 size: 24.0,
                                               ),
                                               hasShadow: false,
-                                              borderColor: AppColors.dark4,
+                                              borderColor: AppColors.dark1,
                                               maxLength: 25,
                                               onChanged: (value) {},
                                               onFieldSubmitted: (value) {
@@ -183,73 +209,9 @@ class _LoginPageState extends State<LoginPage> {
                                                       ? "CHECK_PHONE_NUMBER_DIGIT_ERROR"
                                                           .tr()
                                                       : null,
-                                              //  logic
-                                              //         .state.errorMessage.value!.isEmpty
-                                              //     ? null
-                                              //     : logic.state.isInvalid.value
-                                              //         ? AppLocale.loginPhoneInvalid.tr
-                                              //         : logic.state.isErrorLogin.value
-                                              //             ? AppLocale.loginErrorMessage.tr
-                                              //             : ""
                                             ),
                                           ),
                                         ),
-
-                                        // TextFormField(
-                                        //   controller: controller,
-                                        //   autofocus: true,
-                                        //   textAlign: TextAlign.start,
-                                        //   keyboardType: TextInputType.number,
-                                        //   // onChanged: (value) {},
-                                        //   // validator: (value) {
-                                        //   // Remove any spaces and check if it is exactly 8 digits
-                                        //   // if (value == null ||
-                                        //   //     value.isEmpty) {
-                                        //   //   return 'Please enter your phone number';
-                                        //   // } else if (value.length != 8) {
-                                        //   //   return 'Phone number must be 8 digits';
-                                        //   // }
-                                        //   // return null; // Valid phone number
-                                        //   // },
-                                        //   decoration: InputDecoration(
-                                        //     prefix: Text(
-                                        //       "+855 - ",
-                                        //       style: ThemeConstands
-                                        //           .font16Regular
-                                        //           .copyWith(
-                                        //               color: AppColors.dark3),
-                                        //     ),
-                                        //     filled: true,
-                                        //     fillColor: AppColors.light3,
-                                        //     hintText: 'xxx-xxx-xxx',
-                                        //     hintStyle: ThemeConstands
-                                        //         .font16Regular
-                                        //         .copyWith(
-                                        //             color: AppColors.dark3),
-                                        //     border: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //     ),
-                                        //     enabledBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //       borderSide: BorderSide.none,
-                                        //     ),
-                                        //     focusedBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(10),
-                                        //       borderSide: const BorderSide(
-                                        //           color: AppColors.main),
-                                        //     ),
-                                        //     errorBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(10),
-                                        //       borderSide: const BorderSide(
-                                        //           color: AppColors.red),
-                                        //     ),
-                                        //   ),
-                                        // ),
-
                                         const SizedBox(
                                           height: 18,
                                         ),
@@ -284,6 +246,83 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget changeLanguage({required String translate}) {
+    return Container(
+      decoration: const BoxDecoration(
+          color: AppColors.light4,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            height: 4,
+            width: 70,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4), color: AppColors.dark4),
+          ),
+          Container(
+            padding:
+                const EdgeInsets.only(top: 16, left: 28, right: 28, bottom: 16),
+            child: Text("CHOOSE_LANGUADE".tr(),
+                style: ThemeConstands.font18SemiBold.copyWith(
+                  color: AppColors.dark2,
+                )),
+          ),
+          const Divider(),
+          ListView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(0),
+              itemCount: langs.length,
+              itemBuilder: (context, index) {
+                var lang = langs[index];
+                return Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: AppColors.light4,
+                      border: Border(
+                          bottom: BorderSide(
+                        color: AppColors.dark2.withOpacity(0.1),
+                        width: 1,
+                      ))),
+                  height: 85,
+                  child: ListTile(
+                    leading: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: ClipOval(
+                          child: SvgPicture.asset(
+                        lang.image,
+                        fit: BoxFit.cover,
+                      )),
+                    ),
+                    title:
+                        Text(lang.title, style: ThemeConstands.font18Regular),
+                    trailing: translate == langs[index].sublang
+                        ? const Icon(
+                            Icons.check_circle_outline_sharp,
+                            color: AppColors.main,
+                          )
+                        : const Icon(null),
+                    onTap: () {
+                      setState(() {
+                        Navigator.of(context).pop();
+                        updateLanguageLocal(
+                            Locale(langs[index].sublang), context);
+                      });
+                    },
+                  ),
+                );
+              }),
+          const SizedBox(
+            height: 15,
+          )
+        ],
       ),
     );
   }

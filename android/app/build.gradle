@@ -34,7 +34,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace = "com.tara_driver_application"
-    compileSdk = 34
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
     // ndkVersion = flutter.ndkVersion
     // compileSdkVersion 34
 
@@ -58,8 +59,8 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         // multiDexEnabled true
-        minSdkVersion 23
-        targetSdkVersion 34
+        minSdkVersion 24
+        targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
 
@@ -72,11 +73,10 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
-    lintOptions {
-        disable 'InvalidPackage'
-        disable "Instantiatable"
-        checkReleaseBuilds false
+    lint {
         abortOnError false
+        checkReleaseBuilds false
+        disable 'InvalidPackage', 'Instantiatable'
     }
 }
 
