@@ -388,8 +388,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 setState(() {
                   _drawPolylines(
                       dLocation: LatLng(widget.latDriver!, widget.lngDriver!),
-                      pLocation: LatLng(
-                          widget.desLatPassenger!, widget.desLngPassenger!));
+                      pLocation: LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
                 });
               }
             });

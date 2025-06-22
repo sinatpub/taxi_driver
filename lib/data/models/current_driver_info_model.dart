@@ -308,6 +308,7 @@ class Passenger {
 class Vehicle {
   int? id;
   int? typeVehicleId;
+  int? pricrVehicle;
   String? model;
   String? manufacturer;
   int? yearOfManufacture;
@@ -321,6 +322,7 @@ class Vehicle {
   Vehicle({
     this.id,
     this.typeVehicleId,
+    this.pricrVehicle,
     this.model,
     this.manufacturer,
     this.yearOfManufacture,
@@ -335,6 +337,7 @@ class Vehicle {
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
         id: json["id"],
         typeVehicleId: json["type_vehicle_id"],
+        pricrVehicle: json["vehicle_price"] == null?null:json["vehicle_price"],
         model: json["model"],
         manufacturer: json["manufacturer"],
         yearOfManufacture: json["year_of_manufacture"],
@@ -352,6 +355,7 @@ class Vehicle {
   Map<String, dynamic> toJson() => {
         "id": id,
         "type_vehicle_id": typeVehicleId,
+        "vehicle_price":pricrVehicle?? pricrVehicle,
         "model": model,
         "manufacturer": manufacturer,
         "year_of_manufacture": yearOfManufacture,

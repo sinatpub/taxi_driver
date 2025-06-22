@@ -164,7 +164,7 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                             ],
                           ),
                           const SizedBox(height: 18,),
-                          widget.processType != 2 && widget.whereToGoLocationName ==""?const SizedBox(): widget.processType == 1?const SizedBox():Row(
+                          widget.processType == 2 || widget.whereToGoLocationName =="" ||widget.processType == 1 ?const SizedBox():Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(ImageAssets.map_outline,width: 20,color: AppColors.red,),

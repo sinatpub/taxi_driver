@@ -5,7 +5,6 @@ const String IMAGE_SVG_PATH = "assets/image/svg";
 const String IMAGE_PNG_PATH = "assets/image/png";
 const String NAV_PATH = "assets/nav_icon";
 
-
 class ImageAssets {
   static const String profile = '$NAV_PATH/profile.svg';
   static const String profile_fill = '$NAV_PATH/profile_fill.svg';
@@ -14,12 +13,20 @@ class ImageAssets {
   static const String home_outline = '$NAV_PATH/home.svg';
   static const String home = '$NAV_PATH/home-angle-2-svgrepo-com.svg';
 
+  // upload attachment
+  static const String driver_license =
+      'assets/icon/svg/driver_license_icon.svg';
+  static const String id_card = 'assets/icon/svg/id_card.svg';
+  static const String vehicle_image = 'assets/icon/svg/vehicle_icon.svg';
+  static const String profile_image = 'assets/icon/svg/profile_icon.svg';
 
   static const String flag_en = '$ICON_PNG_PATH/flag-en.png';
   static const String flag_km = 'assets/image/country/Flag_of_Cambodia.svg';
   static const String icon_logout = '$ICON_SVG_PATH/logout-svgrepo-com.svg';
-  static const String icon_setting_setting = '$ICON_SVG_PATH/humbleicons_dashboard.svg';
-  static const String icon_contact_setting = '$ICON_SVG_PATH/typcn_pin-outline.svg';
+  static const String icon_setting_setting =
+      '$ICON_SVG_PATH/humbleicons_dashboard.svg';
+  static const String icon_contact_setting =
+      '$ICON_SVG_PATH/typcn_pin-outline.svg';
   static const String date_time = '$ICON_SVG_PATH/date_time.svg';
 
   static const String no_image = '$IMAGE_SVG_PATH/no_image.svg';

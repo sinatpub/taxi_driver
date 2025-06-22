@@ -18,6 +18,7 @@ class DriverRegisterEvent extends RegisterEvent {
   final String plateNumber;
   final File cardImage;
   final File profileImage;
+  final File vechicleImage;
   final File driverLicenseImage;
 
   DriverRegisterEvent({
@@ -29,6 +30,7 @@ class DriverRegisterEvent extends RegisterEvent {
     required this.plateNumber,
     required this.cardImage,
     required this.profileImage,
+    required this.vechicleImage,
     required this.driverLicenseImage,
   });
 }
@@ -61,6 +63,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         var response = await registerApi.driverRegister(
             fullName: event.fullname,
             phoneNumber: "$phonePref",
+            vicicleImage: event.vechicleImage,
             vehicalId: event.vehicalId,
             plateNumber: event.plateNumber,
             vehicalColor: event.vehicalColor,

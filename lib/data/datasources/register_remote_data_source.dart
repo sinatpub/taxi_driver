@@ -19,6 +19,7 @@ class UserRegisterRemoteDataSource {
     required String plateNumber,
     required File cardImage,
     required File profileImage,
+    required File vicicleImage,
     required File driverLicenseImage,
   }) async {
     FormData formData = FormData.fromMap({
@@ -31,8 +32,8 @@ class UserRegisterRemoteDataSource {
       "platform": platform,
       "card_image": await MultipartFile.fromFile(cardImage.path),
       "profile_image": await MultipartFile.fromFile(profileImage.path),
-      "driver_license_image":
-          await MultipartFile.fromFile(driverLicenseImage.path),
+      "vehicle_image": await MultipartFile.fromFile(vicicleImage.path),
+      "driver_license_image":await MultipartFile.fromFile(driverLicenseImage.path),
     });
 
     return baseApiService.onRequest<RegisterModel>(

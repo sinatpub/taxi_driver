@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:tara_driver_application/core/resources/asset_resource.dart';
 import 'package:tara_driver_application/core/utils/phone_formatter.dart';
 import 'package:tara_driver_application/presentation/blocs/phone_login_bloc.dart';
@@ -18,7 +16,6 @@ import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:logger/logger.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -31,9 +28,8 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController controller = TextEditingController();
   bool hasNavigated = false;
-
-
   List<Lang> langs = allLangs;
+
   updateLanguageLocal(Locale locale, BuildContext context) {
     context.setLocale(locale);
   }
@@ -85,24 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 18),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: IconButton(
-                                alignment: Alignment.centerLeft,
-                                onPressed: () {
-                                  exit(0);
-                                },
-                                icon: const Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  size: 24,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            IconButton(
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
                               onPressed: () {
                                 showModalBottomSheet(
                                     shape: const RoundedRectangleBorder(
@@ -112,8 +93,11 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     context: context,
                                     builder: (context) {
-                                      return StatefulBuilder(builder:(BuildContext context, StateSetter stateSetter) {
-                                        return changeLanguage(translate: translate);
+                                      return StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              StateSetter stateSetter) {
+                                        return changeLanguage(
+                                            translate: translate);
                                       });
                                     });
                               },
@@ -126,9 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                                   : Image.asset(
                                       ImageAssets.flag_en,
                                       width: 30,
-                                    )
-                            )
-                          ],
+                                    )),
                         ),
                         Expanded(
                           child: Container(
@@ -170,7 +152,6 @@ class _LoginPageState extends State<LoginPage> {
                                         const SizedBox(
                                           height: 12,
                                         ),
-
                                         ShakeWidget(
                                           key: context
                                               .read<PhoneLoginBloc>()
@@ -187,7 +168,9 @@ class _LoginPageState extends State<LoginPage> {
                                                 horizontal: 0),
                                             child: XTextField(
                                               textController: controller,
-                                              hintText: "012 345 678",
+                                              hintText:
+                                                  "ENTER_YOUR_PHONE_NUMBER"
+                                                      .tr(),
                                               enable: true,
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
@@ -202,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 size: 24.0,
                                               ),
                                               hasShadow: false,
-                                              borderColor: AppColors.dark4,
+                                              borderColor: AppColors.dark1,
                                               maxLength: 25,
                                               onChanged: (value) {},
                                               onFieldSubmitted: (value) {
@@ -226,73 +209,9 @@ class _LoginPageState extends State<LoginPage> {
                                                       ? "CHECK_PHONE_NUMBER_DIGIT_ERROR"
                                                           .tr()
                                                       : null,
-                                              //  logic
-                                              //         .state.errorMessage.value!.isEmpty
-                                              //     ? null
-                                              //     : logic.state.isInvalid.value
-                                              //         ? AppLocale.loginPhoneInvalid.tr
-                                              //         : logic.state.isErrorLogin.value
-                                              //             ? AppLocale.loginErrorMessage.tr
-                                              //             : ""
                                             ),
                                           ),
                                         ),
-
-                                        // TextFormField(
-                                        //   controller: controller,
-                                        //   autofocus: true,
-                                        //   textAlign: TextAlign.start,
-                                        //   keyboardType: TextInputType.number,
-                                        //   // onChanged: (value) {},
-                                        //   // validator: (value) {
-                                        //   // Remove any spaces and check if it is exactly 8 digits
-                                        //   // if (value == null ||
-                                        //   //     value.isEmpty) {
-                                        //   //   return 'Please enter your phone number';
-                                        //   // } else if (value.length != 8) {
-                                        //   //   return 'Phone number must be 8 digits';
-                                        //   // }
-                                        //   // return null; // Valid phone number
-                                        //   // },
-                                        //   decoration: InputDecoration(
-                                        //     prefix: Text(
-                                        //       "+855 - ",
-                                        //       style: ThemeConstands
-                                        //           .font16Regular
-                                        //           .copyWith(
-                                        //               color: AppColors.dark3),
-                                        //     ),
-                                        //     filled: true,
-                                        //     fillColor: AppColors.light3,
-                                        //     hintText: 'xxx-xxx-xxx',
-                                        //     hintStyle: ThemeConstands
-                                        //         .font16Regular
-                                        //         .copyWith(
-                                        //             color: AppColors.dark3),
-                                        //     border: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //     ),
-                                        //     enabledBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //       borderSide: BorderSide.none,
-                                        //     ),
-                                        //     focusedBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(10),
-                                        //       borderSide: const BorderSide(
-                                        //           color: AppColors.main),
-                                        //     ),
-                                        //     errorBorder: OutlineInputBorder(
-                                        //       borderRadius:
-                                        //           BorderRadius.circular(10),
-                                        //       borderSide: const BorderSide(
-                                        //           color: AppColors.red),
-                                        //     ),
-                                        //   ),
-                                        // ),
-
                                         const SizedBox(
                                           height: 18,
                                         ),
@@ -330,28 +249,30 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  Widget changeLanguage({required String translate}){
+
+  Widget changeLanguage({required String translate}) {
     return Container(
-      decoration:const BoxDecoration(
-        color:AppColors.light4,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(16),topRight: Radius.circular(16))
-      ),
+      decoration: const BoxDecoration(
+          color: AppColors.light4,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            margin:const EdgeInsets.only(top: 12),
+            margin: const EdgeInsets.only(top: 12),
             height: 4,
             width: 70,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: AppColors.dark4
-            ),
+                borderRadius: BorderRadius.circular(4), color: AppColors.dark4),
           ),
           Container(
-            padding: const EdgeInsets.only(top: 16, left: 28,right: 28,bottom: 16),
-            child: Text("CHOOSE_LANGUADE".tr(),style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark2,
-            )),
+            padding:
+                const EdgeInsets.only(top: 16, left: 28, right: 28, bottom: 16),
+            child: Text("CHOOSE_LANGUADE".tr(),
+                style: ThemeConstands.font18SemiBold.copyWith(
+                  color: AppColors.dark2,
+                )),
           ),
           const Divider(),
           ListView.builder(
@@ -363,9 +284,12 @@ class _LoginPageState extends State<LoginPage> {
                 return Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color:AppColors.light4,
-                    border: Border(bottom: BorderSide(color: AppColors.dark2.withOpacity(0.1),width: 1,))
-                  ),
+                      color: AppColors.light4,
+                      border: Border(
+                          bottom: BorderSide(
+                        color: AppColors.dark2.withOpacity(0.1),
+                        width: 1,
+                      ))),
                   height: 85,
                   child: ListTile(
                     leading: SizedBox(
@@ -377,18 +301,19 @@ class _LoginPageState extends State<LoginPage> {
                         fit: BoxFit.cover,
                       )),
                     ),
-                    title: Text(
-                      lang.title,
-                      style:ThemeConstands.font18Regular
-                    ),
+                    title:
+                        Text(lang.title, style: ThemeConstands.font18Regular),
                     trailing: translate == langs[index].sublang
-                        ? const Icon(Icons.check_circle_outline_sharp,color: AppColors.main,
+                        ? const Icon(
+                            Icons.check_circle_outline_sharp,
+                            color: AppColors.main,
                           )
                         : const Icon(null),
                     onTap: () {
                       setState(() {
-                        updateLanguageLocal(Locale(langs[index].sublang),context);
                         Navigator.of(context).pop();
+                        updateLanguageLocal(
+                            Locale(langs[index].sublang), context);
                       });
                     },
                   ),
