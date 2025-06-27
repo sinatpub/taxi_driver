@@ -7,8 +7,8 @@ import 'package:tara_driver_application/data/models/register_model.dart';
 import 'package:tara_driver_application/presentation/screens/booking/booking/bloc/booking_bloc.dart';
 import 'package:tara_driver_application/presentation/screens/booking/booking/widgets/ride_request_bottom_pop_widget.dart';
 import 'package:tara_driver_application/presentation/screens/calculate_fee_screen.dart';
+import 'package:tara_driver_application/presentation/screens/drawer_screen.dart';
 import 'package:tara_driver_application/presentation/screens/home_screen/home_screen.dart';
-import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/count_down_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/loading_widget.dart';
@@ -41,9 +41,13 @@ class BookingScreen extends StatefulWidget {
   String namePassanger;
   String imagePassanger;
   String phonePassanger;
+  int typeVehicleId;
+  int pricrVehicle;
 
   BookingScreen({
     super.key,
+    required this.typeVehicleId,
+    required this.pricrVehicle,
     required this.bookingId,
     required this.bookingCode,
     required this.latPassenger,
@@ -137,8 +141,7 @@ class _BookingScreenState extends State<BookingScreen> {
           dropLngDriver = position.longitude;
         });
         BlocProvider.of<BookingBloc>(context).add(CompletedTripEvent(
-          distance: double.parse(
-              (Taxi.shared.totalDistance / 100).toStringAsFixed(2).toString()),
+          distance: widget.desLatPassenger == null? double.parse((Taxi.shared.totalDistance / 100).toStringAsFixed(2).toString()):totalDistance,
           rideId: int.parse(widget.bookingId),
           endAddress: dropAddressDriver,
           endLatitude: dropLatDriver,
@@ -237,7 +240,7 @@ class _BookingScreenState extends State<BookingScreen> {
               LatLng(widget.desLatPassenger!, widget.desLngPassenger!));
           setState(() {
             totalDistance = distanceAsMeter;
-            totalFee = "${totalDistance * 1200}";
+            totalFee = "${totalDistance * widget.pricrVehicle}";
           });
         }
       } else {
@@ -349,7 +352,7 @@ class _BookingScreenState extends State<BookingScreen> {
             Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => NavScreen(),
+                pageBuilder: (context, animation1, animation2) => DrawerScreen(),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),

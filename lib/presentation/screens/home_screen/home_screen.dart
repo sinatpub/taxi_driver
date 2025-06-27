@@ -2,24 +2,21 @@ import 'dart:async';
 import 'package:tara_driver_application/core/storages/get_storages.dart';
 import 'package:tara_driver_application/core/utils/app_constant.dart';
 import 'package:tara_driver_application/core/utils/pretty_logger.dart';
+import 'package:tara_driver_application/data/models/current_driver_info_model.dart';
 import 'package:tara_driver_application/data/models/register_model.dart';
 import 'package:tara_driver_application/presentation/blocs/get_current_driver_info_bloc.dart';
 import 'package:tara_driver_application/presentation/screens/booking/booking/booking_screen.dart';
 import 'package:tara_driver_application/presentation/screens/calculate_fee_screen.dart';
 import 'package:tara_driver_application/presentation/screens/home_screen/bloc/home_bloc.dart';
-import 'package:tara_driver_application/presentation/screens/home_screen/widgets/switch_online_widget.dart';
 import 'package:tara_driver_application/services/location_bloc/location_bloc.dart';
 import 'package:tara_driver_application/services/location_bloc/location_event.dart';
 import 'package:tara_driver_application/services/location_bloc/location_state.dart';
 import 'package:tara_driver_application/taxi_single_ton/init_socket.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tara_driver_application/core/theme/colors.dart';
-import 'package:tara_driver_application/core/theme/text_styles.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -61,19 +58,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CurrentDriverInfoBloc, CurrentDriverInfoState>(
-      listener: (blocContext, state) {
-        handleStateChanges(state);
-      },
-      builder: (blocContext, state) {
-        return Column(
-          children: [
-            buildHeader(),
-            Expanded(child: buildGoogleMap()),
-            if (state is CurrentDriverLoading) const SizedBox(),
-          ],
-        );
-      },
+    return Scaffold(
+      body: BlocConsumer<CurrentDriverInfoBloc, CurrentDriverInfoState>(
+        listener: (blocContext, state) {
+          handleStateChanges(state);
+        },
+        builder: (blocContext, state) {
+          return Column(
+            children: [
+              // buildHeader(),
+              Expanded(child: buildGoogleMap()),
+              if (state is CurrentDriverLoading) const SizedBox(),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -82,13 +81,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       tlog("Current Driver Loading");
     } else if (state is CurrentDriverInfoLoaded) {
       tlog("Current Driver Loaded");
-      navigateBasedOnDriverStatus(state.currentDriverInfoModel.data);
+      navigateBasedOnDriverStatus(state.currentDriverInfoModel.data!);
     } else {
       tlog("Current Driver Fail");
     }
   }
 
-  void navigateBasedOnDriverStatus(dataDriver) {
+  void navigateBasedOnDriverStatus(DataDriverInfo dataDriver) {
     if (dataDriver != null) {
       if (dataDriver.status == 6) {
         navigateToCalculateFeeScreen(dataDriver);
@@ -98,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  void navigateToCalculateFeeScreen(dataDriver) {
+  void navigateToCalculateFeeScreen(DataDriverInfo dataDriver) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -112,11 +111,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  void navigateToBookingScreen(dataDriver) {
+  void navigateToBookingScreen(DataDriverInfo dataDriver) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => BookingScreen(
+          typeVehicleId: dataDriver.driver!.vehicle!.typeVehicleId!,
+          pricrVehicle: 1200,
+          //dataDriver.driver!.vehicle!.pricrVehicle!
           namePassanger: dataDriver.passenger!.name.toString(),
           phonePassanger: dataDriver.passenger!.phone.toString(),
           imagePassanger: dataDriver.passenger!.profileImage.toString(),
@@ -129,8 +131,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           latDriver: double.parse(dataDriver.driver!.lastLocation!.latitude.toString()),
           lngDriver: double.parse(dataDriver.driver!.lastLocation!.longitude.toString()),
           passengerId: dataDriver.passenger!.id.toString(),
-          desLatPassenger: null,
-          desLngPassenger: null,
+          desLatPassenger: dataDriver.endLatitude == null?null:double.parse(dataDriver.endLatitude!.toString()),
+          desLngPassenger: dataDriver.endLongitude == null?null: double.parse(dataDriver.endLongitude!.toString()),
         ),
       ),
     );
@@ -147,21 +149,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Widget buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "WELCOME_TO_TARA".tr(),
-            style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark1),
-          ),
-           SwitchOnlineWidget(),
-        ],
-      ),
-    );
-  }
+  // Widget buildHeader() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 12),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         IconButton(onPressed: (){
+  //         }, icon: Icon(Icons.menu)),
+  //         Text(
+  //           "WELCOME_TO_TARA".tr(),
+  //           style: ThemeConstands.font18SemiBold.copyWith(color: AppColors.dark1),
+  //         ),
+  //          SwitchOnlineWidget(),
+  //       ],
+  //     ),
+  //   );
+  // }
 
  Widget buildGoogleMap() {
   return BlocBuilder<LocationBloc, LocationState>(

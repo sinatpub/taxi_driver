@@ -4,7 +4,7 @@ import 'package:tara_driver_application/core/utils/otp_auto_fill.dart';
 import 'package:tara_driver_application/data/models/phone_model.dart';
 import 'package:tara_driver_application/presentation/blocs/otp_bloc.dart';
 import 'package:tara_driver_application/presentation/blocs/phone_login_bloc.dart';
-import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/screens/drawer_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/loading_widget.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_locale;
@@ -106,7 +106,7 @@ class _OtpPageState extends State<OtpPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NavScreen(),
+                      builder: (context) => DrawerScreen(),
                     ));
               } else if (state is OTPVerifyFailState) {
                 showErrorCustomDialog(context, "Please Try Again",

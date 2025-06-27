@@ -78,6 +78,8 @@ dependencies:
 
   # smart otp auto fill
   smart_auth: ^3.2.0
+  internet_connection_checker_plus: ^2.7.2
+  flutter_rating_bar: ^4.0.1
   
 dependency_overrides:
   geolocator_android: 4.6.1

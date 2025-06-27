@@ -85,6 +85,8 @@ class DriverSocketService extends BaseSocketService {
         try {
           NavigationService().navigateTo(
             BookingScreen(
+              typeVehicleId: 1,
+              pricrVehicle: 1200,
               namePassanger: data["passenger"]["name"],
               phonePassanger: data["passenger"]["phone"],
               imagePassanger: data["passenger"]["profile"],

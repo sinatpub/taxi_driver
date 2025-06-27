@@ -1,6 +1,6 @@
 import 'package:tara_driver_application/app/alert_widget.dart';
 import 'package:tara_driver_application/presentation/blocs/get_profile_bloc.dart';
-import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/screens/drawer_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/simmer_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -294,9 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           context,
                           PageRouteBuilder(
                             pageBuilder: (context, animation1, animation2) =>
-                                NavScreen(
-                              selectedIndex: 2,
-                            ),
+                                DrawerScreen(),
                             transitionDuration: Duration.zero,
                             reverseTransitionDuration: Duration.zero,
                           ),
@@ -314,6 +312,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
 }
 
 class Item {

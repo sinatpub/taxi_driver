@@ -11,6 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tara_driver_application/taxi_single_ton/taxi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ModelBottomSheetNewRequestWidget extends StatefulWidget {
@@ -208,6 +209,9 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                           showYesNoCustomDialog(context:  context,title: "CANCEL_BOOK".tr(),
                             description: "CONTANCT_CELCEL_BOOK".tr(),
                             onYes: () {
+                              Taxi.shared.connectAndEmitEvent(
+                                eventName: "rideArrival",
+                              );
                             BlocProvider.of<BookingBloc>(context).add(
                               CanceBookingEvent(
                                 rideId: int.parse(widget.bookingId),

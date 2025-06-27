@@ -1,14 +1,12 @@
 import 'dart:io';
-import 'package:tara_driver_application/core/resources/asset_resource.dart';
 import 'package:tara_driver_application/core/theme/colors.dart';
 import 'package:tara_driver_application/core/theme/text_styles.dart';
 import 'package:tara_driver_application/core/utils/pretty_logger.dart';
 import 'package:tara_driver_application/data/models/vehical_model.dart';
 import 'package:tara_driver_application/presentation/blocs/register_bloc.dart';
 import 'package:tara_driver_application/presentation/blocs/vehical_bloc.dart';
-import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/screens/drawer_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/card_atta_widget.dart';
-import 'package:tara_driver_application/presentation/widgets/dropdown_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/fbtn_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/loading_widget.dart';
@@ -61,7 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
             } else if (state is DriverRegisterLoaded) {
               Taxi.shared.checkDriverAvailability();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => NavScreen()));
+                  MaterialPageRoute(builder: (context) => DrawerScreen()));
             }
           },
           builder: (context, state) {

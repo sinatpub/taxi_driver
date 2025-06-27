@@ -1,7 +1,7 @@
 import 'package:tara_driver_application/app/funtion_convert.dart';
 import 'package:tara_driver_application/data/datasources/confirm_booking_api.dart';
 import 'package:tara_driver_application/data/models/complete_driver_model.dart';
-import 'package:tara_driver_application/presentation/screens/nav_screen.dart';
+import 'package:tara_driver_application/presentation/screens/drawer_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/error_dialog_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:tara_driver_application/taxi_single_ton/taxi.dart';
@@ -105,7 +105,7 @@ class _CalculateFeeScreenState extends State<CalculateFeeScreen> {
                                     loadingCompletePay = false;
                                   });
                                   Navigator.pushAndRemoveUntil(context,PageRouteBuilder(
-                                    pageBuilder: (context, animation1, animation2) => NavScreen(),
+                                    pageBuilder: (context, animation1, animation2) => DrawerScreen(),
                                     transitionDuration: Duration.zero,
                                     reverseTransitionDuration: Duration.zero,
                                   ),(route) => false,
