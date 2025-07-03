@@ -140,16 +140,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                         onChanged: (value) {
                                           setState(() {});
                                         },
+                                        style: ThemeConstands.font16SemiBold.copyWith(color: AppColors.main),
                                         decoration: InputDecoration(
                                           filled: true,
-                                          fillColor: AppColors.light3,
-                                          hintText:
-                                              "Enter Full Name - បញ្ចូលឈ្មោះពេញ",
-                                          hintStyle: ThemeConstands
-                                              .font16Regular
-                                              .copyWith(color: AppColors.dark3),
-                                          border: border,
-                                          enabledBorder: enableBorder,
+                                          fillColor:AppColors.light3,
+                                          hintText:"Enter Full Name - បញ្ចូលឈ្មោះពេញ",
+                                          hintStyle: ThemeConstands.font16Regular.copyWith(color: AppColors.dark3),
+                                          border: controllerName.text !=""?focusColor : border,
+                                          enabledBorder: controllerName.text !=""?focusColor : enableBorder,
                                           focusedBorder: focusColor,
                                           errorBorder: errorColor,
                                         ),
@@ -253,6 +251,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         onChanged: (value) {
                                           setState(() {});
                                         },
+                                        style: ThemeConstands.font16SemiBold.copyWith(color: AppColors.main),
                                         decoration: InputDecoration(
                                           filled: true,
                                           fillColor: AppColors.light3,
@@ -260,8 +259,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                           hintStyle: ThemeConstands
                                               .font16Regular
                                               .copyWith(color: AppColors.dark3),
-                                          border: border,
-                                          enabledBorder: enableBorder,
+                                          border: controllerPlate.text !=""?focusColor : border,
+                                          enabledBorder: controllerPlate.text !=""?focusColor : enableBorder,
                                           focusedBorder: focusColor,
                                           errorBorder: errorColor,
                                         ),

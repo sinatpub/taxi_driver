@@ -287,7 +287,7 @@ class _RidingHistoryScreenState extends State<RidingHistoryScreen> {
                               ),
                             );
                           } else {
-                            return Center(child: CircularProgressIndicator());
+                            return Center(child: state.items.length<10? Container():CircularProgressIndicator());
                           }
                         },
                       ),

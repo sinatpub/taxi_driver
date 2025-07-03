@@ -210,7 +210,7 @@ class _ModelBottomSheetNewRequestWidgetState extends State<ModelBottomSheetNewRe
                             description: "CONTANCT_CELCEL_BOOK".tr(),
                             onYes: () {
                               Taxi.shared.connectAndEmitEvent(
-                                eventName: "rideArrival",
+                                eventName: "driverCancelDrive",
                               );
                             BlocProvider.of<BookingBloc>(context).add(
                               CanceBookingEvent(

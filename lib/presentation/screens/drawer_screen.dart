@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:tara_driver_application/app/alert_widget.dart';
 import 'package:tara_driver_application/core/resources/asset_resource.dart';
@@ -16,6 +15,7 @@ import 'package:tara_driver_application/presentation/blocs/get_profile_bloc.dart
 import 'package:tara_driver_application/presentation/screens/home_screen/widgets/switch_online_widget.dart';
 import 'package:tara_driver_application/presentation/screens/home_screen/home_screen.dart';
 import 'package:tara_driver_application/presentation/screens/history_booking/riding_history_screen.dart';
+import 'package:tara_driver_application/presentation/screens/payment_screen.dart';
 import 'package:tara_driver_application/presentation/widgets/simmer_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/t_image_widget.dart';
 import 'package:tara_driver_application/presentation/widgets/widget_change_laguage.dart';
@@ -60,7 +60,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
         }
       });
       //=============Eend Check internet====================
-    // BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
+    BlocProvider.of<CurrentDriverInfoBloc>(context).add(GetCurrentInfoEvent());
     BlocProvider.of<ProfileBloc>(context).add(GetProfileEvent());
     super.initState();
   }
@@ -78,7 +78,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             children: [
               Expanded(
                 child: Text(
-                   isActiveIndex == 0?"WELCOME_TO_TARA".tr():"RIDING_HISTORY".tr(),style: ThemeConstands.font20SemiBold.copyWith(color: AppColors.dark1),
+                   isActiveIndex == 0?"WELCOME_TO_TARA".tr():isActiveIndex == 1?"RIDING_HISTORY".tr():isActiveIndex == 2?"MY_WALLET".tr():isActiveIndex == 3?"TERMCONDITION".tr():isActiveIndex == 4?"CONTACTUS".tr():"WELCOME_TO_TARA".tr(),style: ThemeConstands.font20SemiBold.copyWith(color: AppColors.dark1),
                    textAlign: TextAlign.center,
                    overflow: TextOverflow.ellipsis,
                 ),
@@ -137,22 +137,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                     style: ThemeConstands.font16Regular
                                         .copyWith(color: AppColors.light4),
                                   ),
-                                  Row(
-                                    children: [
-                                      RatingBarIndicator(
-                                        rating: 3.5,
-                                        itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber),
-                                        itemCount: 5,
-                                        itemSize: 18.0,
-                                        direction: Axis.horizontal,
-                                      ),
-                                      Text(
-                                        "3.5",
-                                        style: ThemeConstands.font14Regular
-                                            .copyWith(color: AppColors.light4),
-                                      ),
-                                    ],
-                                  ),
+                                  // Row(
+                                  //   children: [
+                                  //     RatingBarIndicator(
+                                  //       rating: 3.5,
+                                  //       itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber),
+                                  //       itemCount: 5,
+                                  //       itemSize: 18.0,
+                                  //       direction: Axis.horizontal,
+                                  //     ),
+                                  //     Text(
+                                  //       "3.5",
+                                  //       style: ThemeConstands.font14Regular
+                                  //           .copyWith(color: AppColors.light4),
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ],
                               ),
                             ),
@@ -197,11 +197,24 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ),
                       ListTile(
                         selectedColor: AppColors.main,
+                        leading: Icon(Icons.wallet_outlined,size: 26,color: AppColors.main,),
+                        title: Text("WALLET".tr(),style: ThemeConstands.font20Regular,),
+                        onTap: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            isActiveIndex = 2;
+                          });
+                          // Handle navigation
+                        },
+                      ),
+                      ListTile(
+                        selectedColor: AppColors.main,
                         leading: SvgPicture.asset(ImageAssets.icon_contact_setting),
                         title: Text("TERMCONDITION".tr(),style: ThemeConstands.font20Regular,),
                         onTap: () {
                           Navigator.pop(context);
                           setState(() {
+                            isActiveIndex = 3;
                           });
                           // Handle navigation
                         },
@@ -213,17 +226,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         onTap: () {
                           Navigator.pop(context);
                           setState(() {
-                          });
-                          // Handle navigation
-                        },
-                      ),
-                      ListTile(
-                        selectedColor: AppColors.main,
-                        leading: SvgPicture.asset(ImageAssets.icon_setting_setting,color: AppColors.main,),
-                        title: Text("SETTING".tr(),style: ThemeConstands.font20Regular,),
-                        onTap: () {
-                          Navigator.pop(context);
-                          setState(() {
+                            isActiveIndex = 4;
                           });
                           // Handle navigation
                         },
@@ -327,8 +330,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
             children: [
               SafeArea(
                   bottom: false,
-                  child:isActiveIndex == 1? const RidingHistoryScreen()
-                  : const HomeScreen()),
+                  child: isActiveIndex == 0? HomeScreen() :isActiveIndex == 1? const RidingHistoryScreen()
+                  :isActiveIndex == 2? PaymentScreen() : const HomeScreen()),
               isApproved == false
                   ? Positioned(
                       left: 0,

@@ -54,5 +54,11 @@
     "HAVE_BOOKING":"មានការកក់",
     "GO_TO_PASSENGER":"ទៅកាន់អ្នកធ្វើដំណើរ",
     "PREPAIR_TO_GO":"រៀបចំធ្វើដំណើរ",
-    "CARRYING_PASSENGER":"កំពុងដឹកអ្នកដំណើរ"
+    "CARRYING_PASSENGER":"កំពុងដឹកអ្នកដំណើរ",
+    "COMMISSION_FARE":"ថ្លៃកម្រៃជើងសារ",
+    "WALLET":"កាបូប",
+    "MY_WALLET":"កាបូបរបស់ខ្ញុំ",
+    "TOP_UP_WALLET":"បញ្ចូលលុយក្នុងកាបូប",
+    "PAYMENT_NOW":"ទូរទាត់ឥឡូវនេះ"
+
 }

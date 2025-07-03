@@ -26,7 +26,7 @@
     "TERMCONDITION":"Term & Condition",
     "SETTING":"Setting",
     "PROFILE":"Profile",
-    "CHOOSE_LANGUADE":"Choose languade",
+    "CHOOSE_LANGUADE":"Choose language",
     "RIDING_HISTORY":"Riding History",
     "CANCELLED":"Cancelled",
     "COMPLETED":"Completed",
@@ -56,5 +56,9 @@
     "GO_TO_PASSENGER":"Go to passenger",
     "PREPAIR_TO_GO":"Prepare for travel",
     "CARRYING_PASSENGER":"Carrying passenger",
-    "MOBILENUM": "Phone Number"
+    "COMMISSION_FARE":"Commission Fare",
+    "WALLET":"Wallet",
+    "MY_WALLET":"My Wallet",
+    "TOP_UP_WALLET":"Top Up Wallet",
+    "PAYMENT_NOW":"Payment Now"
 }

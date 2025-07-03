@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tara_driver_application/app/funtion_convert.dart';
 import 'package:tara_driver_application/core/resources/asset_resource.dart';
 import 'package:tara_driver_application/core/theme/colors.dart';
 import 'package:tara_driver_application/core/theme/text_styles.dart';
@@ -24,75 +26,107 @@ class _PaymentScreenState extends State<PaymentScreen> {
         bottom: false,
         child: Column(
          children: [
-           Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-               Row(
-                 children: [
-                   IconButton(
-                     onPressed:(){
-                       Navigator.of(context).pop();
-                     } , 
-                     padding:const EdgeInsets.all(0),
-                     icon:const Icon(Icons.arrow_back_ios_new_rounded,size: 22,)
-                   ),
-                   Text("Payment",style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.dark1),),
-                 ],
-               ),
-               MaterialButton(
-                 height: 30,
-                 minWidth: 30,
-                 color: AppColors.dark4,
-                 onPressed: (){}, 
-                 padding:const EdgeInsets.all(0),
-                 shape:RoundedRectangleBorder(
-                   borderRadius: BorderRadius.circular(6)
-                 ),
-                 child: const Icon(Icons.rotate_left,size: 22,),
-               ),
-             ],
-           ),
            const Divider(height: 1,color: AppColors.light1,),
            Expanded(
              child: SingleChildScrollView(
                child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 18,vertical: 18),
+                margin: const EdgeInsets.symmetric(horizontal: 12,vertical: 18),
                  child: Column(
                    children: [
                      Container(
-                       decoration:const BoxDecoration(
-                         color: AppColors.light4,
-                         borderRadius: BorderRadius.all(Radius.circular(12)),
-                         boxShadow: [
-                             BoxShadow(
-                               color:Color(0xFFDEDADA),
-                               spreadRadius: 2,
-                               blurRadius: 5,
-                               offset: Offset(1, 1),
-                             ),
-                           ],
-                       ),
-                       child: Container(
-                         margin: const EdgeInsets.symmetric(vertical: 18,horizontal: 18),
-                         child: Column(
-                           children: [
-                             Text("Total commission fee",style: ThemeConstands.font18SemiBold.copyWith(color:AppColors.main),textAlign: TextAlign.center,),
-                             const SizedBox(height: 40,),
-                             Row(
-                               children: [
-                                 Expanded(
-                                   child: Text("-\$20",style: ThemeConstands.font28SemiBold.copyWith(color:AppColors.main),textAlign: TextAlign.center,)
+                      padding: EdgeInsets.all(12),
+                      decoration:const BoxDecoration(
+                        color: AppColors.light4,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        boxShadow: [
+                            BoxShadow(
+                              color:Color(0x7CDEDADA),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                      ),
+                       child: Row(
+                         children: [
+                           Expanded(
+                             child: Container(
+                              height: 130,
+                               decoration:const BoxDecoration(
+                                 color: AppColors.main,
+                                 borderRadius: BorderRadius.all(Radius.circular(12)),
+                                 boxShadow: [
+                                     BoxShadow(
+                                       color:Color(0xFFDEDADA),
+                                       spreadRadius: 2,
+                                       blurRadius: 5,
+                                       offset: Offset(1, 1),
+                                     ),
+                                   ],
+                               ),
+                               child: Container(
+                                 margin: const EdgeInsets.symmetric(vertical: 18,horizontal: 18),
+                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                   children: [
+                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                       children: [
+                                         Expanded(child: Text("COMMISSION_FARE".tr(),style: ThemeConstands.font18Regular.copyWith(color:AppColors.light4),textAlign: TextAlign.left,)),
+                                         const SizedBox(width: 12,),
+                                         Icon(Icons.wallet_outlined,color: AppColors.light4,size: 22,)
+                                       ],
+                                     ),
+                                     Text("${formatToTwoDecimalPlaces("100000")}៛",style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.left,),
+                                   ],
                                  ),
-                               ],
+                               ),
                              ),
-                           ],
-                         ),
+                           ),
+                           const SizedBox(width: 18,),
+                           Expanded(
+                             child: Container(
+                               height: 130,
+                               decoration:const BoxDecoration(
+                                 color: Color(0xff01b951),
+                                 borderRadius: BorderRadius.all(Radius.circular(12)),
+                                 boxShadow: [
+                                     BoxShadow(
+                                       color:Color(0xFFDEDADA),
+                                       spreadRadius: 2,
+                                       blurRadius: 5,
+                                       offset: Offset(1, 1),
+                                     ),
+                                   ],
+                               ),
+                               child: Container(
+                                 margin: const EdgeInsets.symmetric(vertical: 18,horizontal: 18),
+                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                   children: [
+                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                       children: [
+                                         Expanded(child: Text("WALLET".tr(),style: ThemeConstands.font18Regular.copyWith(color:AppColors.light4),textAlign: TextAlign.left,)),
+                                         const SizedBox(width: 12,),
+                                         Icon(Icons.wallet_outlined,color: AppColors.light4,size: 22,)
+                                       ],
+                                     ),
+                                     Text("${formatToTwoDecimalPlaces("0")}៛",style: ThemeConstands.font22SemiBold.copyWith(color:AppColors.light4),textAlign: TextAlign.left,),
+                                   ],
+                                 ),
+                               ),
+                             ),
+                           ),
+                         ],
                        ),
                      ),
                      const SizedBox(height: 28,),
                      Align(
                        alignment: Alignment.centerLeft,
-                       child: Text("Payment option",style: ThemeConstands.font18SemiBold.copyWith(color:AppColors.main),textAlign: TextAlign.left,)
+                       child: Text("TOP_UP_WALLET".tr(),style: ThemeConstands.font18SemiBold.copyWith(color:AppColors.dark1),textAlign: TextAlign.left,)
                       ),
                     const SizedBox(height: 22,),
                     Row(
@@ -105,10 +139,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                     const SizedBox(height: 22,),
                     FBTNWidget(
-                      onPressed: (){},
+                      onPressed: bankSelected == 0?null:(){},
                       color:AppColors.red,
                       textColor: AppColors.light4,
-                      label: "Get payment now",
+                      label: "PAYMENT_NOW".tr(),
                       enableWidth: true,
                     )
                    ],

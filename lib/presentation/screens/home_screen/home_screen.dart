@@ -117,8 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       MaterialPageRoute(
         builder: (context) => BookingScreen(
           typeVehicleId: dataDriver.driver!.vehicle!.typeVehicleId!,
-          pricrVehicle: 1200,
-          //dataDriver.driver!.vehicle!.pricrVehicle!
+          pricrVehicle: dataDriver.driver!.vehicle!.pricrVehicle!,
           namePassanger: dataDriver.passenger!.name.toString(),
           phonePassanger: dataDriver.passenger!.phone.toString(),
           imagePassanger: dataDriver.passenger!.profileImage.toString(),

@@ -76,8 +76,6 @@ class DriverSocketService extends BaseSocketService {
             title: "NEWREQUEST".tr(),
             description: "DESREQUEST".tr(),
             isSound: true);
-
-
         // ! Why call this bloc when new request booking???
         // BlocProvider.of<CurrentDriverInfoBloc>(context)
         //     .add(GetCurrentInfoEvent());
@@ -85,8 +83,8 @@ class DriverSocketService extends BaseSocketService {
         try {
           NavigationService().navigateTo(
             BookingScreen(
-              typeVehicleId: 1,
-              pricrVehicle: 1200,
+              typeVehicleId: data["vehicleType"],
+              pricrVehicle: data["vehiclePrice"],
               namePassanger: data["passenger"]["name"],
               phonePassanger: data["passenger"]["phone"],
               imagePassanger: data["passenger"]["profile"],

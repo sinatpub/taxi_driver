@@ -75,6 +75,7 @@ class BookingApi {
       },
       bodyParse: formData,
       onSuccess: (result) {
+        print("fasldfk$result");
         return true;
       },
     );
@@ -107,6 +108,7 @@ class BookingApi {
       onSuccess: (result) {
         // debugPrint(result.data);
         tlog("${result.data}");
+        print("fasldfk$result");
         return CompleteDriverModel?.fromJson(result.data);
         //return true;
       },
